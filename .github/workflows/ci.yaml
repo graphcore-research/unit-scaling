@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push: { branches: [ "main" ] }
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  # Run everything on main, most-recent on PR builds
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: [self-hosted, Linux, X64, 20.04, Ubuntu]
+    container: graphcore/pytorch:3.2.0-ubuntu-20.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - name: Update package info
+        run: apt-get update
+      - name: Install git
+        run: apt-get -y install git
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run CI
+        run: ./dev ci
