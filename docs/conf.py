@@ -1,30 +1,23 @@
 # Configuration file for the Sphinx documentation builder.
 #
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
+# For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-# -- Path setup --------------------------------------------------------------
-
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+# Setup based on https://example-sphinx-basic.readthedocs.io
 import os
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
 
-
 # -- Project information -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Basic Sphinx Example Project"
-copyright = "2022, Read the Docs core team"
-author = "Read the Docs core team"
-
+project = "unit-scaling"
+copyright = "(c) 2023 Graphcore Ltd. All rights reserved"
+author = "Charlie Blake, Douglas Orr"
 
 # -- General configuration ---------------------------------------------------
-# -- General configuration
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
     "sphinx.ext.duration",
@@ -32,7 +25,15 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.napoleon",  # support for google-style docstrings
+    "myst_parser",  # support for including markdown files in .rst files (e.g. readme)
+    "sphinx.ext.viewcode",  # adds source code to docs
 ]
+
+autosummary_generate = True
+napoleon_google_docstring = True
+napoleon_numpy_docstring = False
+
 
 intersphinx_mapping = {
     "rtd": ("https://docs.readthedocs.io/en/stable/", None),

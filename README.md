@@ -2,7 +2,8 @@
 
 A library for unit scaling in PyTorch.
 
-Based on the paper [Unit Scaling: Out-of-the-Box Low-Precision Training](https://arxiv.org/abs/2303.11257).
+Based on the paper
+[Unit Scaling: Out-of-the-Box Low-Precision Training](https://arxiv.org/abs/2303.11257).
 
 ## Development
 
@@ -18,6 +19,12 @@ source .venv/bin/activate
 pip install -r requirements-dev.txt
 ```
 
+**Subsequent setup**:
+
+```bash
+source .venv/bin/activate
+```
+
 **Run pre-flight checks** (or run `./dev --help` to see supported commands):
 
 ```bash
@@ -31,14 +38,22 @@ pip install -r requirements-dev.txt
  - Consider a `.env` file for setting PYTHONPATH, e.g. `echo "PYTHONPATH=$(pwd)" > .env`
  (note that this will be a different path if using devcontainers)
 
+**Docs development**:
+
+```bash
+cd docs/
+make html
+```
+then view `docs/_build/html/index.html` in your browser.
+
 
 ## License
 
 Copyright (c) 2023 Graphcore Ltd. Licensed under the MIT License.
 
-The included code is released under an MIT license, (see [LICENSE](LICENSE)).
+The included code is released under an MIT license, (see `LICENSE`).
 
-Our dependencies are (see [requirements.txt](requirements.txt)):
+Our dependencies are (see `requirements.txt`):
 
 | Component | About | License |
 | --- | --- | --- |
@@ -46,4 +61,4 @@ Our dependencies are (see [requirements.txt](requirements.txt)):
 | poptorch-experimental-addons | A collection of addons to [PopTorch](https://github.com/graphcore/poptorch), with general utility | MIT |
 | scipy | An open-source software for mathematics, science, and engineering | BSD 3-Clause |
 
-We also use additional Python dependencies for development/testing (see [requirements-dev.txt](requirements-dev.txt)).
+We also use additional Python dependencies for development/testing (see `requirements-dev.txt`).
