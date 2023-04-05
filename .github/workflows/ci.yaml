@@ -20,7 +20,6 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y clang-format
           apt-get install -y git
           pip install -r requirements-dev.txt
       - name: Run CI
