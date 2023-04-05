@@ -3,7 +3,6 @@
 from pathlib import Path
 
 import setuptools
-import setuptools.command.build_ext
 
 setuptools.setup(
     name="unit-scaling",
