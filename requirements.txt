@@ -1,11 +1,4 @@
-black==23.1.0
 docstring-parser==0.15
-flake8==6.0.0
-isort==5.12.0
-mypy==1.0.1
 numpy==1.24.2
-pytest==7.2.1
-pytest-cov==4.0.0
-scipy==1.10.1
-wandb==0.13.10
 git+https://github.com/graphcore-research/poptorch-experimental-addons@14886d2285c3e45b0eadf4d719dae87d5f28b109
+scipy==1.10.1
