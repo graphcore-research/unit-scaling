@@ -12,16 +12,15 @@ concurrency:
 
 jobs:
   ci:
-    runs-on: [self-hosted, Linux, X64, 20.04, Ubuntu]
+    runs-on: ubuntu-latest
     container: graphcore/pytorch:3.2.0-ubuntu-20.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - name: Update package info
-        run: apt-get update
-      - name: Install git
-        run: apt-get -y install git
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          apt-get update
+          apt-get install -y git
+          pip install -r requirements-dev.txt
       - name: Run CI
         run: ./dev ci
