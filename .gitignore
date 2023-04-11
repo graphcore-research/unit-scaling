@@ -10,3 +10,6 @@ __pycache__
 
 /build
 /local
+
+/docs/_build
+/docs/generated

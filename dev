@@ -119,6 +119,20 @@ def copyright() -> None:
         sys.exit(1)
 
 
+@cli()
+def doc() -> None:
+    """generate API documentation"""
+    subprocess.call(["rm", "-r", "docs/generated", "docs/_build"])
+    run(
+        [
+            "make",
+            "-C",
+            "docs",
+            "html",
+        ]
+    )
+
+
 @cli(
     "-s",
     "--skip",
@@ -137,6 +151,8 @@ def ci(skip: List[str] = []) -> None:
         format(check=True)
     if "copyright" not in skip:
         copyright()
+    if "doc" not in skip:
+        doc()
 
 
 # Script

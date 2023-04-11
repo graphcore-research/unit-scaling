@@ -1,4 +1,4 @@
-docstring-parser==0.15
-numpy==1.24.2
+docstring-parser
+numpy
 poptorch-experimental-addons @ git+https://github.com/graphcore-research/poptorch-experimental-addons@14886d2285c3e45b0eadf4d719dae87d5f28b109
-scipy==1.10.1
+scipy
