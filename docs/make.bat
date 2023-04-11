@@ -1,3 +1,4 @@
+:: Copyright (c) 2022 Read the Docs Inc. All rights reserved.
 @ECHO OFF
 
 pushd %~dp0

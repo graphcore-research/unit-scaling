@@ -1,3 +1,5 @@
+# Copyright (c) 2022 Read the Docs Inc. All rights reserved.
+
 # Minimal makefile for Sphinx documentation
 #
 
