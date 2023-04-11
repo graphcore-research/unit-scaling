@@ -1,0 +1,6 @@
+unit\_scaling.functional.linear
+===============================
+
+.. currentmodule:: unit_scaling.functional
+
+.. autofunction:: linear

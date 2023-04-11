@@ -1,0 +1,45 @@
+﻿unit\_scaling
+=============
+
+.. automodule:: unit_scaling
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   
+      unit_scaling.constraints
+   
+   
+   
+      unit_scaling.functional
+   
+   
+      unit_scaling.modules
+   
+   
+      unit_scaling.scale
+   
+   
+

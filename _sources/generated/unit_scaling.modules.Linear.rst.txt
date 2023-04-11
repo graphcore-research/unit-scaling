@@ -1,0 +1,9 @@
+unit\_scaling.modules.Linear
+============================
+
+.. currentmodule:: unit_scaling.modules
+
+.. autoclass:: Linear
+   :members:
+   :inherited-members: Module
+   :exclude-members: extra_repr, forward

@@ -1,0 +1,30 @@
+unit\_scaling.functional
+========================
+
+.. automodule:: unit_scaling.functional
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      linear
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

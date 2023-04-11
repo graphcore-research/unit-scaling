@@ -1,0 +1,34 @@
+unit\_scaling.constraints
+=========================
+
+.. automodule:: unit_scaling.constraints
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      amean
+      gmean
+      hmean
+      to_grad_input_scale
+      to_output_scale
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

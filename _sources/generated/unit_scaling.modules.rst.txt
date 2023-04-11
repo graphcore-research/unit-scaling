@@ -1,0 +1,31 @@
+unit\_scaling.modules
+=====================
+
+.. automodule:: unit_scaling.modules
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      Linear
+   
+   
+
+   
+   
+   
+
+
+
