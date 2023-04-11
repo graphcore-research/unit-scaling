@@ -94,6 +94,21 @@ def docstring_from(
     )
 
 
+def format_docstring(*args: str) -> Callable[[T], T]:
+    """Returns a decorator that applies `cls.__doc__.format(*args)` to the target class.
+
+    Returns:
+        Callable[[Type], Type]: a decorator to format the docstring.
+    """
+
+    def f(cls: T) -> T:
+        if isinstance(cls.__doc__, str):
+            cls.__doc__ = cls.__doc__.format(*args)
+        return cls
+
+    return f
+
+
 unary_constraint_docstring = (
     "constraint (Optional[Callable[[float, float], float]], optional): function which"
     "takes `output_scale` and `grad_input_scale` and returns a single"
