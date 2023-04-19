@@ -57,6 +57,7 @@ Our dependencies are (see `requirements.txt`):
 
 | Component | About | License |
 | --- | --- | --- |
+| docstring-parser | Parse Python docstrings | MIT |
 | numpy | Array processing library | BSD 3-Clause |
 | poptorch-experimental-addons | A collection of addons to [PopTorch](https://github.com/graphcore/poptorch), with general utility | MIT |
 | scipy | An open-source software for mathematics, science, and engineering | BSD 3-Clause |
