@@ -8,7 +8,7 @@ import numpy as np
 import torch.nn.functional as F
 from torch import Tensor
 
-from .constraints import gmean
+from .constraints import BinaryConstraint, gmean
 from .docs import docstring_from, format_docstring, unary_constraint_docstring
 from .scale import scale_bwd, scale_fwd
 
@@ -18,7 +18,7 @@ def scale_elementwise(
     f: Callable[..., Tensor],
     output_scale: float,
     grad_input_scale: float,
-    constraint: Optional[Callable[[float, float], float]] = gmean,
+    constraint: Optional[BinaryConstraint] = gmean,
 ) -> Callable[..., Tensor]:
     """Transforms an element-wise function into a scaled version.
 
@@ -50,7 +50,7 @@ def scale_elementwise(
 )
 def gelu(
     input: Tensor,
-    constraint: Optional[Callable[[float, float], float]] = gmean,
+    constraint: Optional[BinaryConstraint] = gmean,
 ) -> Tensor:
     output_scale = 0.588**-1
     grad_input_scale = 0.675**-1
@@ -67,7 +67,7 @@ def linear(
     input: Tensor,
     weight: Tensor,
     bias: Optional[Tensor],
-    constraint: Optional[Callable[[float, float], float]] = gmean,
+    constraint: Optional[BinaryConstraint] = gmean,
 ) -> Tensor:
     fan_out, fan_in = weight.shape
     batch_size = int(np.prod(input.shape[:-1]))

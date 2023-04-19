@@ -2,8 +2,12 @@
 
 """Common scale-constraints used in unit-scaled operations."""
 
+from typing import Callable
+
 import numpy as np
 from scipy import stats
+
+BinaryConstraint = Callable[[float, float], float]
 
 
 def gmean(*scales: float) -> float:
