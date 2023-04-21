@@ -73,8 +73,12 @@
 
 <span class="sd">&quot;&quot;&quot;Common scale-constraints used in unit-scaled operations.&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+
+<span class="n">BinaryConstraint</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="gmean"><a class="viewcode-back" href="../../generated/unit_scaling.constraints.gmean.html#unit_scaling.constraints.gmean">[docs]</a><span class="k">def</span> <span class="nf">gmean</span><span class="p">(</span><span class="o">*</span><span class="n">scales</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>

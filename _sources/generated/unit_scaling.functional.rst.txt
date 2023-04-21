@@ -14,7 +14,9 @@ unit\_scaling.functional
    .. autosummary::
       :toctree:
    
+      gelu
       linear
+      scale_elementwise
    
    
 

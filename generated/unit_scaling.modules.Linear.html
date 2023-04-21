@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="unit_scaling.scale" href="unit_scaling.scale.html" />
-    <link rel="prev" title="unit_scaling.modules" href="unit_scaling.modules.html" /> 
+    <link rel="next" title="unit_scaling.modules.MLP" href="unit_scaling.modules.MLP.html" />
+    <link rel="prev" title="unit_scaling.modules.GELU" href="unit_scaling.modules.GELU.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,13 +49,16 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.modules.html">unit_scaling.modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.GELU.html">unit_scaling.modules.GELU</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.modules.Linear</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#unit_scaling.modules.Linear"><code class="docutils literal notranslate"><span class="pre">Linear</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.MLP.html">unit_scaling.modules.MLP</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">unit_scaling.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -101,7 +104,7 @@
 <li><p><strong>out_features</strong> – size of each output sample</p></li>
 <li><p><strong>bias</strong> – If set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the layer will not learn an additive bias.
 Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-<li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><em>Callable</em><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>]</em><em>]</em><em>?</em>) – function whichtakes <cite>output_scale</cite> and <cite>grad_input_scale</cite> and returns a single ‘constrained’ scale (usuall necessary for valid gradients). If <cite>None</cite> is provided, no constraint will be applied. Defaults to <cite>gmean</cite>.</p></li>
+<li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><em>BinaryConstraint</em><em>]</em><em>?</em>) – function whichtakes <cite>output_scale</cite> and <cite>grad_input_scale</cite> and returns a single ‘constrained’ scale (usuall necessary for valid gradients). If <cite>None</cite> is provided, no constraint will be applied. Defaults to <cite>gmean</cite>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -153,8 +156,8 @@ are the same shape as the input and <span class="math notranslate nohighlight">\
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.modules.html" class="btn btn-neutral float-left" title="unit_scaling.modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.scale.html" class="btn btn-neutral float-right" title="unit_scaling.scale" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.modules.GELU.html" class="btn btn-neutral float-left" title="unit_scaling.modules.GELU" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.modules.MLP.html" class="btn btn-neutral float-right" title="unit_scaling.modules.MLP" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

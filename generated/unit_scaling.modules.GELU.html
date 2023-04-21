@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>unit_scaling.modules.GELU &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="unit_scaling.modules.Linear" href="unit_scaling.modules.Linear.html" />
+    <link rel="prev" title="unit_scaling.modules" href="unit_scaling.modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="unit_scaling.html">unit_scaling</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.modules.html">unit_scaling.modules</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.modules.GELU</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.modules.GELU"><code class="docutils literal notranslate"><span class="pre">GELU</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.Linear.html">unit_scaling.modules.Linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.MLP.html">unit_scaling.modules.MLP</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">unit_scaling.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.html">unit_scaling</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.modules.html">unit_scaling.modules</a></li>
+      <li class="breadcrumb-item active">unit_scaling.modules.GELU</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/unit_scaling.modules.GELU.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="unit-scaling-modules-gelu">
+<h1>unit_scaling.modules.GELU<a class="headerlink" href="#unit-scaling-modules-gelu" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="unit_scaling.modules.GELU">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.modules.</span></span><span class="sig-name descname"><span class="pre">GELU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">approximate:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'none',</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[float,</span> <span class="pre">float],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/modules.html#GELU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.modules.GELU" title="Permalink to this definition"></a></dt>
+<dd><p>Applies a <strong>unit-scaled</strong> Gaussian Error Linear Units function:</p>
+<div class="math notranslate nohighlight">
+\[\text{GELU}(x) = x * \Phi(x)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Phi(x)\)</span> is the Cumulative Distribution Function for Gaussian Distribution.</p>
+<p>When the approximate argument is ‘tanh’, Gelu is estimated with:</p>
+<div class="math notranslate nohighlight">
+\[\text{GELU}(x) = 0.5 * x * (1 + \text{Tanh}(\sqrt(2 / \pi) * (x + 0.044715 * x^3)))\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>approximate</strong> (<em>str?</em>) – the gelu approximation algorithm to use:
+<code class="docutils literal notranslate"><span class="pre">'none'</span></code> | <code class="docutils literal notranslate"><span class="pre">'tanh'</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">'none'</span></code></p></li>
+<li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><em>BinaryConstraint</em><em>]</em><em>?</em>) – function whichtakes <cite>output_scale</cite> and <cite>grad_input_scale</cite> and returns a single ‘constrained’ scale (usuall necessary for valid gradients). If <cite>None</cite> is provided, no constraint will be applied. Defaults to <cite>gmean</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Shape:</dt><dd><ul class="simple">
+<li><p>Input: <span class="math notranslate nohighlight">\((*)\)</span>, where <span class="math notranslate nohighlight">\(*\)</span> means any number of dimensions.</p></li>
+<li><p>Output: <span class="math notranslate nohighlight">\((*)\)</span>, same shape as the input.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">GELU</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unit_scaling.modules.html" class="btn btn-neutral float-left" title="unit_scaling.modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.modules.Linear.html" class="btn btn-neutral float-right" title="unit_scaling.modules.Linear" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

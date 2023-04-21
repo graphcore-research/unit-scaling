@@ -19,7 +19,9 @@ unit\_scaling.modules
       :toctree:
       :template: custom-class-template.rst
    
+      GELU
       Linear
+      MLP
    
    
 

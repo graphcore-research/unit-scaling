@@ -1,0 +1,9 @@
+unit\_scaling.utils.ScaleTracker
+================================
+
+.. currentmodule:: unit_scaling.utils
+
+.. autoclass:: ScaleTracker
+   :members:
+   :inherited-members: Module
+   :exclude-members: extra_repr, forward

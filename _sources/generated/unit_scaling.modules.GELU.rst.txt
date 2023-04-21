@@ -1,0 +1,9 @@
+unit\_scaling.modules.GELU
+==========================
+
+.. currentmodule:: unit_scaling.modules
+
+.. autoclass:: GELU
+   :members:
+   :inherited-members: Module
+   :exclude-members: extra_repr, forward

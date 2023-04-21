@@ -1,0 +1,9 @@
+unit\_scaling.modules.MLP
+=========================
+
+.. currentmodule:: unit_scaling.modules
+
+.. autoclass:: MLP
+   :members:
+   :inherited-members: Module
+   :exclude-members: extra_repr, forward
