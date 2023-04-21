@@ -24,8 +24,9 @@ class ScalePair:
     backward: Optional[float] = None
 
     def __str__(self) -> str:
-        assert self.forward is not None and self.backward is not None
-        return f"(-> {self.forward:.3}, <- {self.backward:.3})"
+        fwd = f"{self.forward:.3}" if self.forward is not None else "n/a"
+        bwd = f"{self.backward:.3}" if self.backward is not None else "n/a"
+        return f"(-> {fwd}, <- {bwd})"
 
 
 ScaleDict = typing.OrderedDict[str, ScalePair]
@@ -115,10 +116,10 @@ def _annotate(code: str, scales: ScaleDict, syntax_highlight: bool) -> str:
                 return f"{code_line}  {', '.join(scale_strs)}"
         return code_line
 
-    annotated_code = "\n".join(map(_annotate_line, code.splitlines())).strip()
-    if not syntax_highlight:
-        return annotated_code
-    return highlight(annotated_code, PythonLexer(), TerminalFormatter())
+    code = "\n".join(map(_annotate_line, code.splitlines())).strip()
+    if syntax_highlight:
+        return highlight(code, PythonLexer(), TerminalFormatter())  # pragma: no cover
+    return code
 
 
 class _DeepTracer(fx.Tracer):
@@ -138,8 +139,8 @@ class _DeepTracer(fx.Tracer):
 
 def analyse_module(
     module: nn.Module,
-    dummy_input: Tensor,
-    dummy_backward: Tensor,
+    input: Tensor,
+    backward: Tensor,
     recurse_modules: bool = True,
     syntax_highlight: bool = True,
 ) -> str:
@@ -149,9 +150,8 @@ def analyse_module(
 
     Args:
         module (nn.Module): the module to analyse.
-        dummy_input (Tensor): fed into the forward pass for analysis.
-        dummy_backward (Tensor): fed into the output's `.backward()` method for
-            analysis.
+        input (Tensor): fed into the forward pass for analysis.
+        backward (Tensor): fed into the output's `.backward()` method for analysis.
         recurse_modules (bool, optional): toggles recursive behavour. Defaults to True.
         syntax_highlight (bool, optional): Defaults to True.
 
@@ -197,5 +197,5 @@ def analyse_module(
     fx_graph = tracer.trace(module)
     fx_graph_module = fx.GraphModule(tracer.root, fx_graph)
 
-    scales = _record_scales(fx_graph_module, dummy_input, dummy_backward)
+    scales = _record_scales(fx_graph_module, input, backward)
     return _annotate(fx_graph_module.code, scales, syntax_highlight=syntax_highlight)

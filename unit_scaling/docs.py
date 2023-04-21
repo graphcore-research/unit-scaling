@@ -109,7 +109,7 @@ def format_docstring(*args: str) -> Callable[[T], T]:
     return f
 
 
-unary_constraint_docstring = (
+binary_constraint_docstring = (
     "constraint (Optional[BinaryConstraint], optional): function which"
     "takes `output_scale` and `grad_input_scale` and returns a single"
     " 'constrained' scale (usuall necessary for valid gradients). If `None` is"

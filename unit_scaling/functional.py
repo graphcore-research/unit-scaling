@@ -9,11 +9,11 @@ import torch.nn.functional as F
 from torch import Tensor
 
 from .constraints import BinaryConstraint, gmean
-from .docs import docstring_from, format_docstring, unary_constraint_docstring
+from .docs import binary_constraint_docstring, docstring_from, format_docstring
 from .scale import scale_bwd, scale_fwd
 
 
-@format_docstring(unary_constraint_docstring)
+@format_docstring(binary_constraint_docstring)
 def scale_elementwise(
     f: Callable[..., Tensor],
     output_scale: float,
@@ -46,7 +46,7 @@ def scale_elementwise(
 @docstring_from(
     F.gelu,
     short_description="Applies a **unit-scaled** GELU function.",
-    add_args=[unary_constraint_docstring],
+    add_args=[binary_constraint_docstring],
 )
 def gelu(
     input: Tensor,
@@ -61,7 +61,7 @@ def gelu(
 @docstring_from(
     F.linear,
     short_description="Applies a **unit-scaled** linear transformation.",
-    add_args=[unary_constraint_docstring],
+    add_args=[binary_constraint_docstring],
 )
 def linear(
     input: Tensor,

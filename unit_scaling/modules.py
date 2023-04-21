@@ -8,12 +8,12 @@ from torch import Tensor, nn
 
 from . import functional as U
 from .constraints import BinaryConstraint, gmean
-from .docs import format_docstring, inherit_docstring, unary_constraint_docstring
+from .docs import binary_constraint_docstring, format_docstring, inherit_docstring
 
 
 @inherit_docstring(
     short_description="Applies a **unit-scaled** Gaussian Error Linear Units function:",
-    add_args=[unary_constraint_docstring],
+    add_args=[binary_constraint_docstring],
 )
 class GELU(nn.GELU):
     def __init__(
@@ -32,7 +32,7 @@ class GELU(nn.GELU):
     short_description=(
         "Applies a **unit-scaled** linear transformation to the incoming data."
     ),
-    add_args=[unary_constraint_docstring],
+    add_args=[binary_constraint_docstring],
 )
 class Linear(nn.Linear):
     def __init__(
@@ -56,7 +56,7 @@ class Linear(nn.Linear):
         return U.linear(input, self.weight, self.bias, self.constraint)
 
 
-@format_docstring(unary_constraint_docstring)
+@format_docstring(binary_constraint_docstring)
 class MLP(nn.Module):
     """A **unit-scaled** implementation of an MLP layer.
 
