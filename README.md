@@ -51,15 +51,4 @@ then view `docs/_build/html/index.html` in your browser.
 
 Copyright (c) 2023 Graphcore Ltd. Licensed under the MIT License.
 
-The included code is released under an MIT license, (see `LICENSE`).
-
-Our dependencies are (see `requirements.txt`):
-
-| Component | About | License |
-| --- | --- | --- |
-| docstring-parser | Parse Python docstrings | MIT |
-| numpy | Array processing library | BSD 3-Clause |
-| poptorch-experimental-addons | A collection of addons to [PopTorch](https://github.com/graphcore/poptorch), with general utility | MIT |
-| scipy | An open-source software for mathematics, science, and engineering | BSD 3-Clause |
-
-We also use additional Python dependencies for development/testing (see `requirements-dev.txt`).
+See [NOTICE.md](NOTICE.md) for further details.
