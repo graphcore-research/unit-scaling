@@ -2,24 +2,24 @@
 
 """Unit-scaled versions of common `torch.nn` modules."""
 
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 
 from torch import Tensor, nn
 
 from . import functional as U
-from .constraints import gmean
-from .docs import format_docstring, inherit_docstring, unary_constraint_docstring
+from .constraints import BinaryConstraint, gmean
+from .docs import binary_constraint_docstring, format_docstring, inherit_docstring
 
 
 @inherit_docstring(
     short_description="Applies a **unit-scaled** Gaussian Error Linear Units function:",
-    add_args=[unary_constraint_docstring],
+    add_args=[binary_constraint_docstring],
 )
 class GELU(nn.GELU):
     def __init__(
         self,
         approximate: str = "none",
-        constraint: Optional[Callable[[float, float], float]] = gmean,
+        constraint: Optional[BinaryConstraint] = gmean,
     ) -> None:
         super().__init__(approximate)
         self.constraint = constraint
@@ -32,7 +32,7 @@ class GELU(nn.GELU):
     short_description=(
         "Applies a **unit-scaled** linear transformation to the incoming data."
     ),
-    add_args=[unary_constraint_docstring],
+    add_args=[binary_constraint_docstring],
 )
 class Linear(nn.Linear):
     def __init__(
@@ -42,7 +42,7 @@ class Linear(nn.Linear):
         bias: bool = True,
         device: Any = None,
         dtype: Any = None,
-        constraint: Optional[Callable[[float, float], float]] = gmean,
+        constraint: Optional[BinaryConstraint] = gmean,
     ) -> None:
         super().__init__(in_features, out_features, bias, device, dtype)
         self.constraint = constraint
@@ -56,7 +56,7 @@ class Linear(nn.Linear):
         return U.linear(input, self.weight, self.bias, self.constraint)
 
 
-@format_docstring(unary_constraint_docstring)
+@format_docstring(binary_constraint_docstring)
 class MLP(nn.Module):
     """A **unit-scaled** implementation of an MLP layer.
 
@@ -74,7 +74,7 @@ class MLP(nn.Module):
         hidden_size: int,
         act_fn: nn.Module = GELU(),
         expansion_factor: int = 4,
-        constraint: Optional[Callable[[float, float], float]] = gmean,
+        constraint: Optional[BinaryConstraint] = gmean,
     ) -> None:
         super().__init__()
         intermediate_size = hidden_size * expansion_factor

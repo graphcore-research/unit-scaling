@@ -8,17 +8,17 @@ import numpy as np
 import torch.nn.functional as F
 from torch import Tensor
 
-from .constraints import gmean
-from .docs import docstring_from, format_docstring, unary_constraint_docstring
+from .constraints import BinaryConstraint, gmean
+from .docs import binary_constraint_docstring, docstring_from, format_docstring
 from .scale import scale_bwd, scale_fwd
 
 
-@format_docstring(unary_constraint_docstring)
+@format_docstring(binary_constraint_docstring)
 def scale_elementwise(
     f: Callable[..., Tensor],
     output_scale: float,
     grad_input_scale: float,
-    constraint: Optional[Callable[[float, float], float]] = gmean,
+    constraint: Optional[BinaryConstraint] = gmean,
 ) -> Callable[..., Tensor]:
     """Transforms an element-wise function into a scaled version.
 
@@ -46,11 +46,11 @@ def scale_elementwise(
 @docstring_from(
     F.gelu,
     short_description="Applies a **unit-scaled** GELU function.",
-    add_args=[unary_constraint_docstring],
+    add_args=[binary_constraint_docstring],
 )
 def gelu(
     input: Tensor,
-    constraint: Optional[Callable[[float, float], float]] = gmean,
+    constraint: Optional[BinaryConstraint] = gmean,
 ) -> Tensor:
     output_scale = 0.588**-1
     grad_input_scale = 0.675**-1
@@ -61,13 +61,13 @@ def gelu(
 @docstring_from(
     F.linear,
     short_description="Applies a **unit-scaled** linear transformation.",
-    add_args=[unary_constraint_docstring],
+    add_args=[binary_constraint_docstring],
 )
 def linear(
     input: Tensor,
     weight: Tensor,
     bias: Optional[Tensor],
-    constraint: Optional[Callable[[float, float], float]] = gmean,
+    constraint: Optional[BinaryConstraint] = gmean,
 ) -> Tensor:
     fan_out, fan_in = weight.shape
     batch_size = int(np.prod(input.shape[:-1]))
