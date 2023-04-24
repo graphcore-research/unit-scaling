@@ -3,16 +3,21 @@
 """Utility functions for developing unit-scaled models."""
 
 import ast
+import math
 import typing
 from collections import OrderedDict
 from dataclasses import dataclass
-from typing import Any, Optional, Tuple
+from types import ModuleType
+from typing import Any, Callable, Dict, Optional, Tuple
 
+import einops
 import torch
 from pygments import highlight
 from pygments.formatters import TerminalFormatter
 from pygments.lexers import PythonLexer
 from torch import Tensor, fx, nn
+
+import unit_scaling.constraints
 
 
 @dataclass
@@ -54,6 +59,17 @@ class ScaleTracker(torch.autograd.Function):
         return t, None, None
 
 
+# Fx tracing can't handle constraint functions, to we replace them with strings.
+# This is then undone during by the interpreter when executing the code.
+constraint_to_str = {}
+str_to_constraint = {}
+for attr_name in dir(unit_scaling.constraints):
+    attr = getattr(unit_scaling.constraints, attr_name)
+    if callable(attr):
+        constraint_to_str[attr] = attr_name
+        str_to_constraint[attr_name] = attr
+
+
 class ScaleTrackingInterpreter(fx.Interpreter):
     """Wraps an `fx.GraphModule` such than when executed it records the standard
     deviation of every intermediate `nn.Tensor` in the forward and backward pass.
@@ -73,11 +89,32 @@ class ScaleTrackingInterpreter(fx.Interpreter):
             out = ScaleTracker.apply(out, self.scales[n.name])
         return out
 
+    def call_function(
+        self, target: fx.node.Target, args: Tuple[Any, ...], kwargs: Dict[str, Any]
+    ) -> Any:
+        args, kwargs = self.replace_constraint_placeholders(args, kwargs)
+        return super().call_function(target, args, kwargs)
+
+    def replace_constraint_placeholders(
+        self, args: Tuple[Any, ...], kwargs: Dict[str, Any]
+    ) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+        """Constraint functions are replaced by strings during tracing. This
+        method reverses that process for the interpreter, which executes them."""
+        args = tuple(
+            str_to_constraint.get(a, a) if isinstance(a, str) else a for a in args
+        )
+        if "constraint" in kwargs:
+            kwargs = kwargs.copy()
+            kwargs["constraint"] = str_to_constraint.get(
+                kwargs["constraint"], kwargs["constraint"]
+            )
+        return args, kwargs
+
 
 def _record_scales(
     fx_graph_module: fx.GraphModule,
-    dummy_input: Tensor,
-    dummy_backward: Tensor,
+    input: Tensor,
+    backward: Tensor,
 ) -> ScaleDict:
     """Given a `torch.fx.GraphModule`, and dummy tensors to feed into the forward and
     backward passes, returns a dictionary of the scales (standard deviations) of every
@@ -85,16 +122,16 @@ def _record_scales(
 
     Args:
         fx_graph_module (fx.GraphModule): the module to record.
-        dummy_input (Tensor): fed into the forward pass for analysis.
-        dummy_backward (Tensor): fed into the output's `.backward()`  method for
+        input (Tensor): fed into the forward pass for analysis.
+        backward (Tensor): fed into the output's `.backward()`  method for
             analysis.
 
     Returns:
         ScaleDict: An ordered dictionary with `ScalePair`s for each intermediate tensor.
     """
     tracking_module = ScaleTrackingInterpreter(fx_graph_module)
-    out = tracking_module.run(dummy_input)
-    out.backward(dummy_backward)
+    out = tracking_module.run(input)
+    out.backward(backward)
     return tracking_module.scales
 
 
@@ -103,6 +140,8 @@ def _annotate(code: str, scales: ScaleDict, syntax_highlight: bool) -> str:
     scales, annotates the code to include the scales on the right-hand side."""
 
     def _annotate_line(code_line: str) -> str:
+        if code_line.startswith("torch.fx._symbolic_trace.wrap"):
+            return ""
         code_line = code_line.split(";")[0]
         words = code_line.strip().split(" ")
         if words:
@@ -113,10 +152,14 @@ def _annotate(code: str, scales: ScaleDict, syntax_highlight: bool) -> str:
                 assert isinstance(parsed, ast.FunctionDef)
                 arg_names = [arg.arg for arg in parsed.args.args]
                 scale_strs = [str(scales[a]) for a in arg_names if a in scales]
-                return f"{code_line}  {', '.join(scale_strs)}"
+                if scale_strs:
+                    return f"{code_line}  {', '.join(scale_strs)}"  # pragma: no cover
+                else:
+                    return code_line
         return code_line
 
     code = "\n".join(map(_annotate_line, code.splitlines())).strip()
+    code = code.replace("unit_scaling_functional_", "U.")
     if syntax_highlight:
         return highlight(code, PythonLexer(), TerminalFormatter())  # pragma: no cover
     return code
@@ -127,14 +170,35 @@ class _DeepTracer(fx.Tracer):
 
     Args:
         recurse_modules (bool): toggles recursive behavour. Defaults to True.
+        autowrap_modules (Tuple[ModuleType]): defaults to `(math, einops)`,
+            Python modules whose functions should be wrapped automatically
+            without needing to use fx.wrap().
+        autowrap_function (Tuple[Callable, ...]): defaults to `()`,
+            Python functions that should be wrapped automatically without
+            needing to use fx.wrap().
     """
 
-    def __init__(self, recurse_modules: bool = True) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        recurse_modules: bool = True,
+        autowrap_modules: Tuple[ModuleType, ...] = (math, einops),
+        autowrap_functions: Tuple[Callable[..., Any], ...] = (),
+    ) -> None:
+        super().__init__(
+            autowrap_modules=autowrap_modules, autowrap_functions=autowrap_functions
+        )
         self.recurse_modules = recurse_modules
 
     def is_leaf_module(self, m: nn.Module, module_qualified_name: str) -> bool:
         return not self.recurse_modules
+
+    def create_arg(self, a: Any) -> fx.node.Argument:
+        """Replaces constraint functions with strings for tracing."""
+        if callable(a):
+            constraint_arg = constraint_to_str.get(a, None)
+            if constraint_arg:
+                return constraint_arg
+        return super().create_arg(a)  # type: ignore
 
 
 def analyse_module(
@@ -143,6 +207,8 @@ def analyse_module(
     backward: Tensor,
     recurse_modules: bool = True,
     syntax_highlight: bool = True,
+    autowrap_modules: Tuple[ModuleType, ...] = (math, einops),
+    autowrap_functions: Tuple[Callable[..., Any], ...] = (),
 ) -> str:
     """Given a `nn.Module` and dummy forward and backward tensors, generates code
     representing the module annotated with the scales (standard deviation) of each
@@ -154,6 +220,12 @@ def analyse_module(
         backward (Tensor): fed into the output's `.backward()` method for analysis.
         recurse_modules (bool, optional): toggles recursive behavour. Defaults to True.
         syntax_highlight (bool, optional): Defaults to True.
+        autowrap_modules (Tuple[ModuleType]): defaults to `(math, einops)`,
+            Python modules whose functions should be wrapped automatically
+            without needing to use fx.wrap().
+        autowrap_function (Tuple[Callable, ...]): defaults to `()`,
+            Python functions that should be wrapped automatically without
+            needing to use fx.wrap().
 
     Returns:
         str:
@@ -193,7 +265,7 @@ def analyse_module(
             linear_1 = torch._C._nn.linear(relu, fc2_weight, fc2_bias);  (-> 0.235, <- 0.999)
             return linear_1
     """  # noqa: E501
-    tracer = _DeepTracer(recurse_modules=recurse_modules)
+    tracer = _DeepTracer(recurse_modules, autowrap_modules, autowrap_functions)
     fx_graph = tracer.trace(module)
     fx_graph_module = fx.GraphModule(tracer.root, fx_graph)
 

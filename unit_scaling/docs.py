@@ -97,6 +97,9 @@ def docstring_from(
 def format_docstring(*args: str) -> Callable[[T], T]:
     """Returns a decorator that applies `cls.__doc__.format(*args)` to the target class.
 
+    Args:
+        args: (*str): the arguments to be passed to the docstrings `.format()` method.
+
     Returns:
         Callable[[Type], Type]: a decorator to format the docstring.
     """
@@ -114,4 +117,18 @@ binary_constraint_docstring = (
     "takes `output_scale` and `grad_input_scale` and returns a single"
     " 'constrained' scale (usuall necessary for valid gradients). If `None` is"
     " provided, no constraint will be applied. Defaults to `gmean`."
+)
+
+ternary_constraint_docstring = (
+    "constraint (Optional[Callable[[float, float, float], float]], optional): function"
+    " which takes `output_scale`, `left_grad_scale` & `right_grad_scale` (in that"
+    " order) and returns a single 'constrained' scale (usuall necessary for valid"
+    " gradients). If `None` is provided, no constraint will be applied. Defaults to"
+    " `gmean`."
+)
+
+variadic_constraint_docstring = (
+    "constraint (Optional[Callable[..., float]], optional): function"
+    " which takes any number of input scales and returns a single 'constrained' scale."
+    " If `None` is provided, no constraint will be applied. Defaults to `gmean`."
 )

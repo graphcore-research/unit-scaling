@@ -2,12 +2,12 @@
 
 """Common scale-constraints used in unit-scaled operations."""
 
+from math import prod
 from typing import Callable
 
-import numpy as np
-from scipy import stats
-
 BinaryConstraint = Callable[[float, float], float]
+TernaryConstraint = Callable[[float, float, float], float]
+VariadicConstraint = Callable[..., float]
 
 
 def gmean(*scales: float) -> float:
@@ -19,7 +19,7 @@ def gmean(*scales: float) -> float:
     Returns:
         float: the geometric mean.
     """
-    return stats.gmean(scales)  # type: ignore
+    return float(prod(scales) ** (1 / len(scales)))
 
 
 def hmean(*scales: float) -> float:
@@ -31,7 +31,7 @@ def hmean(*scales: float) -> float:
     Returns:
         float: the harmonic mean.
     """
-    return stats.hmean(scales)  # type: ignore
+    return float(1 / (sum(1 / s for s in scales) / len(scales)))
 
 
 def amean(*scales: float) -> float:
@@ -43,7 +43,7 @@ def amean(*scales: float) -> float:
     Returns:
         float: the arithmetic mean.
     """
-    return float(np.mean(scales))
+    return float(sum(scales) / len(scales))
 
 
 def to_output_scale(output_scale: float, *grad_input_scale: float) -> float:
@@ -73,3 +73,39 @@ def to_grad_input_scale(output_scale: float, grad_input_scale: float) -> float:
         float: equal to `grad_input_scale`
     """
     return grad_input_scale
+
+
+def to_left_grad_scale(
+    output_scale: float, left_grad_scale: float, right_grad_scale: float
+) -> float:
+    """Assumes three provided scales:
+    `(output_scale, left_grad_scale, right_grad_scale)`. Selects only `left_grad_scale`
+    as the chosen scaling factor.
+
+    Args:
+        output_scale (float): the scale of the op's output
+        left_grad_scale (float): the scale of the op's left input gradient
+        right_grad_scale (float): the scale of the op's right input gradient
+
+    Returns:
+        float: equal to `left_grad_scale`
+    """
+    return left_grad_scale
+
+
+def to_right_grad_scale(
+    output_scale: float, left_grad_scale: float, right_grad_scale: float
+) -> float:
+    """Assumes three provided scales:
+    `(output_scale, left_grad_scale, right_grad_scale)`. Selects only `right_grad_scale`
+    as the chosen scaling factor.
+
+    Args:
+        output_scale (float): the scale of the op's output
+        left_grad_scale (float): the scale of the op's left input gradient
+        right_grad_scale (float): the scale of the op's right input gradient
+
+    Returns:
+        float: equal to `right_grad_scale`
+    """
+    return right_grad_scale
