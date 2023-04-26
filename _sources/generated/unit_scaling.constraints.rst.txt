@@ -22,7 +22,9 @@ unit\_scaling.constraints
       gmean
       hmean
       to_grad_input_scale
+      to_left_grad_scale
       to_output_scale
+      to_right_grad_scale
    
    
 

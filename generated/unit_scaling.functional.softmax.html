@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>unit_scaling.functional.linear &mdash; unit-scaling  documentation</title>
+  <title>unit_scaling.functional.softmax &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="unit_scaling.functional.matmul" href="unit_scaling.functional.matmul.html" />
-    <link rel="prev" title="unit_scaling.functional.gelu" href="unit_scaling.functional.gelu.html" /> 
+    <link rel="next" title="unit_scaling.modules" href="unit_scaling.modules.html" />
+    <link rel="prev" title="unit_scaling.functional.scale_elementwise" href="unit_scaling.functional.scale_elementwise.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,13 +50,13 @@
 <li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">unit_scaling.functional.dropout</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">unit_scaling.functional.gelu</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.functional.linear</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.linear"><code class="docutils literal notranslate"><span class="pre">linear()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">unit_scaling.functional.linear</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">unit_scaling.functional.matmul</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">unit_scaling.functional.scale_elementwise</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">unit_scaling.functional.softmax</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.functional.softmax</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.softmax"><code class="docutils literal notranslate"><span class="pre">softmax()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.modules.html">unit_scaling.modules</a></li>
@@ -82,9 +82,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.html">unit_scaling</a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.functional.html">unit_scaling.functional</a></li>
-      <li class="breadcrumb-item active">unit_scaling.functional.linear</li>
+      <li class="breadcrumb-item active">unit_scaling.functional.softmax</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/unit_scaling.functional.linear.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/unit_scaling.functional.softmax.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -92,33 +92,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="unit-scaling-functional-linear">
-<h1>unit_scaling.functional.linear<a class="headerlink" href="#unit-scaling-functional-linear" title="Permalink to this heading"></a></h1>
+  <section id="unit-scaling-functional-softmax">
+<h1>unit_scaling.functional.softmax<a class="headerlink" href="#unit-scaling-functional-softmax" title="Permalink to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="unit_scaling.functional.linear">
-<span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input:</span> <span class="pre">~torch.Tensor,</span> <span class="pre">weight:</span> <span class="pre">~torch.Tensor,</span> <span class="pre">bias:</span> <span class="pre">~typing.Optional[~torch.Tensor],</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[float,</span> <span class="pre">float],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#linear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.linear" title="Permalink to this definition"></a></dt>
-<dd><p>Applies a <strong>unit-scaled</strong> linear transformation.</p>
-<p>Applies a linear transformation to the incoming data: <span class="math notranslate nohighlight">\(y = xA^T + b\)</span>.</p>
-<p>This opperation supports 2-D <code class="xref py py-attr docutils literal notranslate"><span class="pre">weight</span></code> with <span class="xref std std-ref">sparse layout</span></p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Sparse support is a beta feature and some layout(s)/dtype/device combinations may not be supported,
-or may not have autograd support. If you notice missing functionality please
-open a feature request.</p>
-</div>
-<p>This operator supports <span class="xref std std-ref">TensorFloat32</span>.</p>
+<dt class="sig sig-object py" id="unit_scaling.functional.softmax">
+<span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">softmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input:</span> <span class="pre">~torch.Tensor,</span> <span class="pre">dim:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">dtype:</span> <span class="pre">~typing.Optional[~torch.dtype]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[float,</span> <span class="pre">float],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#softmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.softmax" title="Permalink to this definition"></a></dt>
+<dd><p>Applies a <strong>unit-scaled</strong> softmax function.</p>
+<p>Softmax is defined as:</p>
+<p><span class="math notranslate nohighlight">\(\text{Softmax}(x_{i}) = \frac{\exp(x_i)}{\sum_j \exp(x_j)}\)</span></p>
+<p>It is applied to all slices along dim, and will re-scale them so that the elements
+lie in the range <cite>[0, 1]</cite> and sum to 1.</p>
+<p>See <code class="xref py py-class docutils literal notranslate"><span class="pre">Softmax</span></code> for more details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>constraint</strong> (<em>Optional</em><em>[</em><em>BinaryConstraint</em><em>]</em><em>?</em>) – function whichtakes <cite>output_scale</cite> and <cite>grad_input_scale</cite> and returns a single ‘constrained’ scale (usually necessary for valid gradients). If <cite>None</cite> is provided, no constraint will be applied. Defaults to <cite>gmean</cite>.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Shape:</dt><dd><ul class="simple">
-<li><p>Input: <span class="math notranslate nohighlight">\((*, in\_features)\)</span> where <cite>*</cite> means any number of
-additional dimensions, including none</p></li>
-<li><p>Weight: <span class="math notranslate nohighlight">\((out\_features, in\_features)\)</span> or <span class="math notranslate nohighlight">\((in\_features)\)</span></p></li>
-<li><p>Bias: <span class="math notranslate nohighlight">\((out\_features)\)</span> or <span class="math notranslate nohighlight">\(()\)</span></p></li>
-<li><p>Output: <span class="math notranslate nohighlight">\((*, out\_features)\)</span> or <span class="math notranslate nohighlight">\((*)\)</span>, based on the shape of the weight</p></li>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> (<em>Tensor</em>) – input</p></li>
+<li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – A dimension along which softmax will be computed.</p></li>
+<li><p><strong>(</strong> (<em>dtype</em>) – class:<cite>torch.dtype</cite>, optional): the desired data type of returned tensor.
+If specified, the input tensor is casted to <code class="xref py py-attr docutils literal notranslate"><span class="pre">dtype</span></code> before the operation
+is performed. This is useful for preventing data type overflows. Default: None.</p></li>
+<li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><em>BinaryConstraint</em><em>]</em><em>?</em>) – function whichtakes <cite>output_scale</cite> and <cite>grad_input_scale</cite> and returns a single ‘constrained’ scale (usually necessary for valid gradients). If <cite>None</cite> is provided, no constraint will be applied. Defaults to <cite>gmean</cite>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -130,8 +123,8 @@ additional dimensions, including none</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.functional.gelu.html" class="btn btn-neutral float-left" title="unit_scaling.functional.gelu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.functional.matmul.html" class="btn btn-neutral float-right" title="unit_scaling.functional.matmul" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.functional.scale_elementwise.html" class="btn btn-neutral float-left" title="unit_scaling.functional.scale_elementwise" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.modules.html" class="btn btn-neutral float-right" title="unit_scaling.modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

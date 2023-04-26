@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>unit_scaling.modules.MLP &mdash; unit-scaling  documentation</title>
+  <title>unit_scaling.modules.MHSA &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="unit_scaling.modules.Softmax" href="unit_scaling.modules.Softmax.html" />
-    <link rel="prev" title="unit_scaling.modules.MHSA" href="unit_scaling.modules.MHSA.html" /> 
+    <link rel="next" title="unit_scaling.modules.MLP" href="unit_scaling.modules.MLP.html" />
+    <link rel="prev" title="unit_scaling.modules.Linear" href="unit_scaling.modules.Linear.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,11 +51,11 @@
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.Dropout.html">unit_scaling.modules.Dropout</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.GELU.html">unit_scaling.modules.GELU</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.Linear.html">unit_scaling.modules.Linear</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.MHSA.html">unit_scaling.modules.MHSA</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.modules.MLP</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.modules.MLP"><code class="docutils literal notranslate"><span class="pre">MLP</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.modules.MHSA</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.modules.MHSA"><code class="docutils literal notranslate"><span class="pre">MHSA</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.MLP.html">unit_scaling.modules.MLP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.Softmax.html">unit_scaling.modules.Softmax</a></li>
 </ul>
 </li>
@@ -81,9 +81,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.html">unit_scaling</a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.modules.html">unit_scaling.modules</a></li>
-      <li class="breadcrumb-item active">unit_scaling.modules.MLP</li>
+      <li class="breadcrumb-item active">unit_scaling.modules.MHSA</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/unit_scaling.modules.MLP.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/unit_scaling.modules.MHSA.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -91,21 +91,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="unit-scaling-modules-mlp">
-<h1>unit_scaling.modules.MLP<a class="headerlink" href="#unit-scaling-modules-mlp" title="Permalink to this heading"></a></h1>
+  <section id="unit-scaling-modules-mhsa">
+<h1>unit_scaling.modules.MHSA<a class="headerlink" href="#unit-scaling-modules-mhsa" title="Permalink to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="unit_scaling.modules.MLP">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.modules.</span></span><span class="sig-name descname"><span class="pre">MLP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hidden_size:</span> <span class="pre">int,</span> <span class="pre">act_fn:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">=</span> <span class="pre">GELU(approximate='none'),</span> <span class="pre">expansion_factor:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[float,</span> <span class="pre">float],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/modules.html#MLP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.modules.MLP" title="Permalink to this definition"></a></dt>
-<dd><p>A <strong>unit-scaled</strong> implementation of an MLP layer.</p>
+<dt class="sig sig-object py" id="unit_scaling.modules.MHSA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.modules.</span></span><span class="sig-name descname"><span class="pre">MHSA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hidden_size:</span> <span class="pre">int,</span> <span class="pre">heads:</span> <span class="pre">int,</span> <span class="pre">dropout_p:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[...],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/modules.html#MHSA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.modules.MHSA" title="Permalink to this definition"></a></dt>
+<dd><p>A <strong>unit-scaled</strong> implementation of a multi-head self-attention layer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – the hidden dimension size of the input.</p></li>
-<li><p><strong>act_fn</strong> (<em>nn.Module</em>) – the activation function module.
-Defaults to <cite>GELU()</cite>.</p></li>
-<li><p><strong>expansion_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – the factor by which the MLP’s intermediate size
-increases relative to <cite>hidden_size</cite>.</p></li>
-<li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><em>BinaryConstraint</em><em>]</em><em>, </em><em>optional</em>) – function whichtakes <cite>output_scale</cite> and <cite>grad_input_scale</cite> and returns a single ‘constrained’ scale (usually necessary for valid gradients). If <cite>None</cite> is provided, no constraint will be applied. Defaults to <cite>gmean</cite>.</p></li>
+<li><p><strong>heads</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – the number of attention heads.</p></li>
+<li><p><strong>dropout_p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – the probability of the post-softmax dropout.
+Defaults to 0.1.</p></li>
+<li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><em>Callable</em><em>[</em><em>...</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>]</em><em>]</em><em>, </em><em>optional</em>) – function which takes any number of output/grad-input scales and returns a single ‘constrained’ scale. If <cite>None</cite> is provided, no constraint will be applied. Defaults to <cite>gmean</cite>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -117,8 +116,8 @@ increases relative to <cite>hidden_size</cite>.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.modules.MHSA.html" class="btn btn-neutral float-left" title="unit_scaling.modules.MHSA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.modules.Softmax.html" class="btn btn-neutral float-right" title="unit_scaling.modules.Softmax" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.modules.Linear.html" class="btn btn-neutral float-left" title="unit_scaling.modules.Linear" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.modules.MLP.html" class="btn btn-neutral float-right" title="unit_scaling.modules.MLP" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

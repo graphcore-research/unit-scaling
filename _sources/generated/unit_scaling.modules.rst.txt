@@ -23,9 +23,12 @@ unit\_scaling.modules
       :toctree:
       :template: custom-class-template.rst
    
+      Dropout
       GELU
       Linear
+      MHSA
       MLP
+      Softmax
    
    
 

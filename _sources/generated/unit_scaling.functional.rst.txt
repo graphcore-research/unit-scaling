@@ -18,9 +18,12 @@ unit\_scaling.functional
    .. autosummary::
       :toctree:
    
+      dropout
       gelu
       linear
+      matmul
       scale_elementwise
+      softmax
    
    
 

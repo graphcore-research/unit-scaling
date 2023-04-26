@@ -1,0 +1,6 @@
+unit\_scaling.functional.matmul
+===============================
+
+.. currentmodule:: unit_scaling.functional
+
+.. autofunction:: matmul

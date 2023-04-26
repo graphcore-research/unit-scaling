@@ -1,0 +1,6 @@
+unit\_scaling.constraints.to\_right\_grad\_scale
+================================================
+
+.. currentmodule:: unit_scaling.constraints
+
+.. autofunction:: to_right_grad_scale

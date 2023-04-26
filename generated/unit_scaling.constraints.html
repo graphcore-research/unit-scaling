@@ -50,7 +50,9 @@
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.gmean.html">unit_scaling.constraints.gmean</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.hmean.html">unit_scaling.constraints.hmean</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_grad_input_scale.html">unit_scaling.constraints.to_grad_input_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_left_grad_scale.html">unit_scaling.constraints.to_left_grad_scale</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_output_scale.html">unit_scaling.constraints.to_output_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_right_grad_scale.html">unit_scaling.constraints.to_right_grad_scale</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a></li>
@@ -104,8 +106,14 @@
 <tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.constraints.to_grad_input_scale.html#unit_scaling.constraints.to_grad_input_scale" title="unit_scaling.constraints.to_grad_input_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_grad_input_scale</span></code></a>(output_scale, ...)</p></td>
 <td><p>Assumes two provided scales: <cite>(output_scale, grad_input_scale)</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.constraints.to_output_scale.html#unit_scaling.constraints.to_output_scale" title="unit_scaling.constraints.to_output_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_output_scale</span></code></a>(output_scale, *grad_input_scale)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.constraints.to_left_grad_scale.html#unit_scaling.constraints.to_left_grad_scale" title="unit_scaling.constraints.to_left_grad_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_left_grad_scale</span></code></a>(output_scale, ...)</p></td>
+<td><p>Assumes three provided scales: <cite>(output_scale, left_grad_scale, right_grad_scale)</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.constraints.to_output_scale.html#unit_scaling.constraints.to_output_scale" title="unit_scaling.constraints.to_output_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_output_scale</span></code></a>(output_scale, *grad_input_scale)</p></td>
 <td><p>Assumes an output scale is provided and any number of grad input scales: <cite>(output_scale, *grad_input_scales)</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.constraints.to_right_grad_scale.html#unit_scaling.constraints.to_right_grad_scale" title="unit_scaling.constraints.to_right_grad_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_right_grad_scale</span></code></a>(output_scale, ...)</p></td>
+<td><p>Assumes three provided scales: <cite>(output_scale, left_grad_scale, right_grad_scale)</cite>.</p></td>
 </tr>
 </tbody>
 </table>

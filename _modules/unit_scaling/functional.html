@@ -75,12 +75,17 @@
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
 
-<span class="kn">from</span> <span class="nn">.constraints</span> <span class="kn">import</span> <span class="n">BinaryConstraint</span><span class="p">,</span> <span class="n">gmean</span>
-<span class="kn">from</span> <span class="nn">.docs</span> <span class="kn">import</span> <span class="n">binary_constraint_docstring</span><span class="p">,</span> <span class="n">docstring_from</span><span class="p">,</span> <span class="n">format_docstring</span>
+<span class="kn">from</span> <span class="nn">.constraints</span> <span class="kn">import</span> <span class="n">BinaryConstraint</span><span class="p">,</span> <span class="n">TernaryConstraint</span><span class="p">,</span> <span class="n">gmean</span>
+<span class="kn">from</span> <span class="nn">.docs</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">binary_constraint_docstring</span><span class="p">,</span>
+    <span class="n">docstring_from</span><span class="p">,</span>
+    <span class="n">format_docstring</span><span class="p">,</span>
+    <span class="n">ternary_constraint_docstring</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.scale</span> <span class="kn">import</span> <span class="n">scale_bwd</span><span class="p">,</span> <span class="n">scale_fwd</span>
 
 
@@ -123,10 +128,74 @@
     <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
     <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BinaryConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmean</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="c1"># Scale factors determined empirically, assuming unit scaled input &amp; grad</span>
     <span class="n">output_scale</span> <span class="o">=</span> <span class="mf">0.588</span><span class="o">**-</span><span class="mi">1</span>
     <span class="n">grad_input_scale</span> <span class="o">=</span> <span class="mf">0.675</span><span class="o">**-</span><span class="mi">1</span>
     <span class="n">scaled_gelu</span> <span class="o">=</span> <span class="n">scale_elementwise</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">gelu</span><span class="p">,</span> <span class="n">output_scale</span><span class="p">,</span> <span class="n">grad_input_scale</span><span class="p">,</span> <span class="n">constraint</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">scaled_gelu</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="softmax"><a class="viewcode-back" href="../../generated/unit_scaling.functional.softmax.html#unit_scaling.functional.softmax">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+    <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">,</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** softmax function.&quot;</span><span class="p">,</span>
+    <span class="n">add_args</span><span class="o">=</span><span class="p">[</span><span class="n">binary_constraint_docstring</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">softmax</span><span class="p">(</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BinaryConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmean</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="n">dim_size</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="k">if</span> <span class="n">dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">input</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+    <span class="c1"># Scale factors determined empirically, assuming unit-scaled &amp; large dim_size</span>
+    <span class="n">output_scale</span> <span class="o">=</span> <span class="n">dim_size</span> <span class="o">/</span> <span class="mf">1.31</span>
+    <span class="n">grad_input_scale</span> <span class="o">=</span> <span class="n">dim_size</span> <span class="o">/</span> <span class="mf">1.65</span>
+    <span class="n">scaled_softmax</span> <span class="o">=</span> <span class="n">scale_elementwise</span><span class="p">(</span>
+        <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">,</span> <span class="n">output_scale</span><span class="p">,</span> <span class="n">grad_input_scale</span><span class="p">,</span> <span class="n">constraint</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">scaled_softmax</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dropout"><a class="viewcode-back" href="../../generated/unit_scaling.functional.dropout.html#unit_scaling.functional.dropout">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+    <span class="n">F</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span> <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** dropout function.&quot;</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">dropout</span><span class="p">(</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">training</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="n">output_scale</span> <span class="o">=</span> <span class="n">grad_input_scale</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+    <span class="n">scaled_dropout</span> <span class="o">=</span> <span class="n">scale_elementwise</span><span class="p">(</span>
+        <span class="n">F</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span> <span class="n">output_scale</span><span class="p">,</span> <span class="n">grad_input_scale</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">scaled_dropout</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">training</span><span class="p">,</span> <span class="n">inplace</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="matmul"><a class="viewcode-back" href="../../generated/unit_scaling.functional.matmul.html#unit_scaling.functional.matmul">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">,</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;A **unit-scaled** matrix product of two tensors.&quot;</span><span class="p">,</span>
+    <span class="n">add_args</span><span class="o">=</span><span class="p">[</span><span class="n">ternary_constraint_docstring</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span>
+    <span class="n">left</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">right</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TernaryConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmean</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="n">left_size</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">inner_size</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">right_size</span> <span class="o">=</span> <span class="n">right</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">output_scale</span> <span class="o">=</span> <span class="n">inner_size</span><span class="o">**-</span><span class="mf">0.5</span>
+    <span class="n">left_grad_scale</span> <span class="o">=</span> <span class="n">right_size</span><span class="o">**-</span><span class="mf">0.5</span>
+    <span class="n">right_grad_scale</span> <span class="o">=</span> <span class="n">left_size</span><span class="o">**-</span><span class="mf">0.5</span>
+
+    <span class="k">if</span> <span class="n">constraint</span><span class="p">:</span>
+        <span class="n">output_scale</span> <span class="o">=</span> <span class="n">left_grad_scale</span> <span class="o">=</span> <span class="n">right_grad_scale</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">(</span>
+            <span class="n">output_scale</span><span class="p">,</span> <span class="n">left_grad_scale</span><span class="p">,</span> <span class="n">right_grad_scale</span>
+        <span class="p">)</span>
+
+    <span class="n">left</span> <span class="o">=</span> <span class="n">scale_bwd</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">left_grad_scale</span><span class="p">)</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="n">scale_bwd</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">right_grad_scale</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">output_scale</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="linear"><a class="viewcode-back" href="../../generated/unit_scaling.functional.linear.html#unit_scaling.functional.linear">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
@@ -141,7 +210,7 @@
     <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BinaryConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmean</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
     <span class="n">fan_out</span><span class="p">,</span> <span class="n">fan_in</span> <span class="o">=</span> <span class="n">weight</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">//</span> <span class="n">fan_in</span>
 
     <span class="n">output_scale</span> <span class="o">=</span> <span class="n">fan_in</span><span class="o">**-</span><span class="mf">0.5</span>
     <span class="n">grad_input_scale</span> <span class="o">=</span> <span class="n">fan_out</span><span class="o">**-</span><span class="mf">0.5</span>
