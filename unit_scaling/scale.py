@@ -5,7 +5,7 @@
 from typing import Tuple
 
 import torch
-from torch import Tensor
+from torch import Tensor, fx
 
 try:
     import poptorch
@@ -26,7 +26,13 @@ class _ScaledGrad(torch.autograd.Function):  # pragma: no cover
         fwd_scale: float,
         bwd_scale: float,
     ) -> Tensor:
-        ctx.save_for_backward(torch.tensor(bwd_scale, dtype=X.dtype))
+        # Special cases required for torch.fx tracing
+        if isinstance(bwd_scale, fx.proxy.Proxy):
+            ctx.save_for_backward(bwd_scale)
+        elif isinstance(X, fx.proxy.Proxy):
+            ctx.save_for_backward(torch.tensor(bwd_scale))
+        else:
+            ctx.save_for_backward(torch.tensor(bwd_scale, dtype=X.dtype))
         return fwd_scale * X
 
     @staticmethod

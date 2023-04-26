@@ -42,7 +42,7 @@ def assert_unit_scaled(*tensors: Optional[Tensor]) -> None:
         assert t is not None
         t = t.detach()
         approx_1 = pytest.approx(1, abs=0.1)
-        assert t.std() == approx_1, f"shape={list(t.shape)}"
+        assert t.std() == approx_1, f"std={t.std():.3f}, shape={list(t.shape)}"
 
 
 def assert_not_unit_scaled(*tensors: Optional[Tensor]) -> None:
@@ -50,4 +50,18 @@ def assert_not_unit_scaled(*tensors: Optional[Tensor]) -> None:
         assert t is not None
         t = t.detach()
         approx_1 = pytest.approx(1, abs=0.1)
-        assert t.std() != approx_1, f"shape={list(t.shape)}"
+        assert t.std() != approx_1, f"std={t.std():.3f}, shape={list(t.shape)}"
+
+
+def assert_zeros(*tensors: Optional[Tensor]) -> None:
+    for t in tensors:
+        assert t is not None
+        t = t.detach()
+        assert torch.all(t == 0)
+
+
+def assert_non_zeros(*tensors: Optional[Tensor]) -> None:
+    for t in tensors:
+        assert t is not None
+        t = t.detach()
+        assert torch.any(t != 0)

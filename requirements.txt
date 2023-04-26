@@ -1,4 +1,5 @@
 docstring-parser
+einops
 numpy
 poptorch-experimental-addons @ git+https://github.com/graphcore-research/poptorch-experimental-addons@14886d2285c3e45b0eadf4d719dae87d5f28b109
-scipy
+torch
