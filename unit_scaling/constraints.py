@@ -2,7 +2,7 @@
 
 """Common scale-constraints used in unit-scaled operations."""
 
-from math import prod
+from math import pow, prod
 from typing import Callable
 
 BinaryConstraint = Callable[[float, float], float]
@@ -19,7 +19,7 @@ def gmean(*scales: float) -> float:
     Returns:
         float: the geometric mean.
     """
-    return float(prod(scales) ** (1 / len(scales)))
+    return pow(prod(scales), (1 / len(scales)))
 
 
 def hmean(*scales: float) -> float:
@@ -31,7 +31,7 @@ def hmean(*scales: float) -> float:
     Returns:
         float: the harmonic mean.
     """
-    return float(1 / (sum(1 / s for s in scales) / len(scales)))
+    return 1 / (sum(1 / s for s in scales) / len(scales))
 
 
 def amean(*scales: float) -> float:
@@ -43,7 +43,7 @@ def amean(*scales: float) -> float:
     Returns:
         float: the arithmetic mean.
     """
-    return float(sum(scales) / len(scales))
+    return sum(scales) / len(scales)
 
 
 def to_output_scale(output_scale: float, *grad_input_scale: float) -> float:

@@ -4,11 +4,12 @@
 
 import ast
 import math
+import re
 import typing
 from collections import OrderedDict
 from dataclasses import dataclass
-from types import ModuleType
-from typing import Any, Callable, Dict, Optional, Tuple
+from types import FunctionType, ModuleType
+from typing import Any, Callable, Dict, Iterator, Optional, Tuple, Union
 
 import einops
 import torch
@@ -17,7 +18,7 @@ from pygments.formatters import TerminalFormatter
 from pygments.lexers import PythonLexer
 from torch import Tensor, fx, nn
 
-import unit_scaling.constraints
+from . import functional
 
 
 @dataclass
@@ -59,17 +60,6 @@ class ScaleTracker(torch.autograd.Function):
         return t, None, None
 
 
-# Fx tracing can't handle constraint functions, to we replace them with strings.
-# This is then undone during by the interpreter when executing the code.
-constraint_to_str = {}
-str_to_constraint = {}
-for attr_name in dir(unit_scaling.constraints):
-    attr = getattr(unit_scaling.constraints, attr_name)
-    if callable(attr):
-        constraint_to_str[attr] = attr_name
-        str_to_constraint[attr_name] = attr
-
-
 class ScaleTrackingInterpreter(fx.Interpreter):
     """Wraps an `fx.GraphModule` such than when executed it records the standard
     deviation of every intermediate `nn.Tensor` in the forward and backward pass.
@@ -92,23 +82,20 @@ class ScaleTrackingInterpreter(fx.Interpreter):
     def call_function(
         self, target: fx.node.Target, args: Tuple[Any, ...], kwargs: Dict[str, Any]
     ) -> Any:
-        args, kwargs = self.replace_constraint_placeholders(args, kwargs)
         return super().call_function(target, args, kwargs)
 
-    def replace_constraint_placeholders(
-        self, args: Tuple[Any, ...], kwargs: Dict[str, Any]
-    ) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
-        """Constraint functions are replaced by strings during tracing. This
-        method reverses that process for the interpreter, which executes them."""
-        args = tuple(
-            str_to_constraint.get(a, a) if isinstance(a, str) else a for a in args
-        )
-        if "constraint" in kwargs:
-            kwargs = kwargs.copy()
-            kwargs["constraint"] = str_to_constraint.get(
-                kwargs["constraint"], kwargs["constraint"]
-            )
-        return args, kwargs
+    def placeholder(
+        self,
+        target: fx.node.Target,
+        args: Tuple[fx.node.Argument, ...],
+        kwargs: Dict[str, Any],
+    ) -> Any:
+        """To handle functions being passed as arguments (e.g. constraints) the tracer
+        represents them as placeholder nodes. This method extracts the original function
+        from the node, as stored in the `target_to_function` dict."""
+        if isinstance(target, str) and target.startswith("function_placeholder__"):
+            return self.module.graph._tracer_extras["target_to_function"][target]
+        return super().placeholder(target, args, kwargs)
 
 
 def _record_scales(
@@ -139,10 +126,20 @@ def _annotate(code: str, scales: ScaleDict, syntax_highlight: bool) -> str:
     """Given a string representation of some code and an `ScaleDict` with accompanying
     scales, annotates the code to include the scales on the right-hand side."""
 
-    def _annotate_line(code_line: str) -> str:
+    function_placeholder_regex = r"function_placeholder__(\w+)"
+
+    def is_function_placeholder_line(code_line: str) -> bool:
+        return bool(re.search(f" = {function_placeholder_regex}$", code_line))
+
+    def remove_function_placeholder_args(code_line: str) -> str:
+        return re.sub(f", {function_placeholder_regex}", "", code_line)
+
+    def annotate_line(code_line: str) -> str:
         if code_line.startswith("torch.fx._symbolic_trace.wrap"):
             return ""
         code_line = code_line.split(";")[0]
+        if is_function_placeholder_line(code_line):
+            return ""
         words = code_line.strip().split(" ")
         if words:
             if words[0] in scales:
@@ -152,13 +149,18 @@ def _annotate(code: str, scales: ScaleDict, syntax_highlight: bool) -> str:
                 assert isinstance(parsed, ast.FunctionDef)
                 arg_names = [arg.arg for arg in parsed.args.args]
                 scale_strs = [str(scales[a]) for a in arg_names if a in scales]
+                code_line = remove_function_placeholder_args(code_line)
                 if scale_strs:
                     return f"{code_line}  {', '.join(scale_strs)}"  # pragma: no cover
                 else:
                     return code_line
         return code_line
 
-    code = "\n".join(map(_annotate_line, code.splitlines())).strip()
+    def remove_empty_lines(code_lines: Iterator[str]) -> Iterator[str]:
+        return (line for line in code_lines if line.strip())
+
+    code_lines = map(annotate_line, code.splitlines())
+    code = "\n".join(remove_empty_lines(code_lines)).strip()
     code = code.replace("unit_scaling_functional_", "U.")
     if syntax_highlight:
         return highlight(code, PythonLexer(), TerminalFormatter())  # pragma: no cover
@@ -170,7 +172,8 @@ class _DeepTracer(fx.Tracer):
 
     Args:
         recurse_modules (bool): toggles recursive behavour. Defaults to True.
-        autowrap_modules (Tuple[ModuleType]): defaults to `(math, einops)`,
+        autowrap_modules (Tuple[ModuleType]): defaults to
+            `(math, einops, U.functional)`,
             Python modules whose functions should be wrapped automatically
             without needing to use fx.wrap().
         autowrap_function (Tuple[Callable, ...]): defaults to `()`,
@@ -181,24 +184,47 @@ class _DeepTracer(fx.Tracer):
     def __init__(
         self,
         recurse_modules: bool = True,
-        autowrap_modules: Tuple[ModuleType, ...] = (math, einops),
+        autowrap_modules: Tuple[ModuleType, ...] = (math, einops, functional),
         autowrap_functions: Tuple[Callable[..., Any], ...] = (),
     ) -> None:
         super().__init__(
             autowrap_modules=autowrap_modules, autowrap_functions=autowrap_functions
         )
         self.recurse_modules = recurse_modules
+        self.target_to_function: Dict[str, FunctionType] = {}
+        self.function_to_node: Dict[FunctionType, fx.Node] = {}
 
     def is_leaf_module(self, m: nn.Module, module_qualified_name: str) -> bool:
         return not self.recurse_modules
 
     def create_arg(self, a: Any) -> fx.node.Argument:
-        """Replaces constraint functions with strings for tracing."""
-        if callable(a):
-            constraint_arg = constraint_to_str.get(a, None)
-            if constraint_arg:
-                return constraint_arg
+        """Replaces callable arguments with strings for tracing."""
+        if isinstance(a, FunctionType):
+            node = self.function_to_node.get(a)
+            if node is None:
+                assert hasattr(
+                    a, "__name__"
+                ), f"can't create arg for unnamed function: {a}"
+                name = getattr(a, "__name__")
+                target = f"function_placeholder__{name}"
+                node = self.create_node("placeholder", target, (), {}, name)
+                self.target_to_function[target] = a
+                self.function_to_node[a] = node
+            return node
         return super().create_arg(a)  # type: ignore
+
+    def trace(
+        self,
+        root: Union[torch.nn.Module, Callable[..., Any]],
+        concrete_args: Optional[Dict[str, Any]] = None,
+    ) -> fx.Graph:
+        """Adds the `target_to_function` dict to the graph so the interpreter can use it
+        downstream."""
+        graph = super().trace(root, concrete_args)
+        if graph._tracer_extras is None:
+            graph._tracer_extras = {}
+        graph._tracer_extras["target_to_function"] = self.target_to_function
+        return graph  # type: ignore
 
 
 def analyse_module(
@@ -207,7 +233,7 @@ def analyse_module(
     backward: Tensor,
     recurse_modules: bool = True,
     syntax_highlight: bool = True,
-    autowrap_modules: Tuple[ModuleType, ...] = (math, einops),
+    autowrap_modules: Tuple[ModuleType, ...] = (math, einops, functional),
     autowrap_functions: Tuple[Callable[..., Any], ...] = (),
 ) -> str:
     """Given a `nn.Module` and dummy forward and backward tensors, generates code
@@ -220,7 +246,8 @@ def analyse_module(
         backward (Tensor): fed into the output's `.backward()` method for analysis.
         recurse_modules (bool, optional): toggles recursive behavour. Defaults to True.
         syntax_highlight (bool, optional): Defaults to True.
-        autowrap_modules (Tuple[ModuleType]): defaults to `(math, einops)`,
+        autowrap_modules (Tuple[ModuleType]): defaults to
+            `(math, einops, U.functional)`,
             Python modules whose functions should be wrapped automatically
             without needing to use fx.wrap().
         autowrap_function (Tuple[Callable, ...]): defaults to `()`,

@@ -43,7 +43,7 @@ def cli(*args: Any, **kwargs: Any) -> Callable[[T], T]:
 
 # Commands
 
-PYTHON_ROOTS = ["unit_scaling", "dev"]
+PYTHON_ROOTS = ["unit_scaling", "dev", "examples"]
 
 
 @cli("-k", "--filter")
@@ -62,9 +62,9 @@ def tests(filter: Optional[str]) -> None:
 
 
 @cli("command", nargs="*")
-def python(command: List[Any]) -> None:
+def python(*command: Any) -> None:
     """run Python with the current directory on PYTHONPATH, for development"""
-    run(["python"] + command)
+    run(["python"] + list(command))
 
 
 @cli()

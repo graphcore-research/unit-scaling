@@ -2,13 +2,11 @@
 
 """Unit-scaled versions of common `torch.nn.functional` functions."""
 
-import inspect
-import sys
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Optional
 
 import torch
 import torch.nn.functional as F
-from torch import Tensor, fx
+from torch import Tensor
 
 from .constraints import BinaryConstraint, TernaryConstraint, gmean
 from .docs import (
@@ -59,6 +57,7 @@ def gelu(
     input: Tensor,
     constraint: Optional[BinaryConstraint] = gmean,
 ) -> Tensor:
+    # Scale factors determined empirically, assuming unit scaled input & grad
     output_scale = 0.588**-1
     grad_input_scale = 0.675**-1
     scaled_gelu = scale_elementwise(F.gelu, output_scale, grad_input_scale, constraint)
@@ -77,6 +76,7 @@ def softmax(
     constraint: Optional[BinaryConstraint] = gmean,
 ) -> Tensor:
     dim_size = input.shape[dim] if dim is not None else input.numel()
+    # Scale factors determined empirically, assuming unit-scaled & large dim_size
     output_scale = dim_size / 1.31
     grad_input_scale = dim_size / 1.65
     scaled_softmax = scale_elementwise(
@@ -152,18 +152,3 @@ def linear(
     bias = scale_bwd(bias, grad_bias_scale) if bias is not None else None
     output = F.linear(input, weight, bias)
     return scale_fwd(output, output_scale)
-
-
-# Wrap the public functions in this module so that fx tracing doesn't recurse
-# into them
-def _get_public_fns() -> List[str]:
-    fns = []
-    module = sys.modules[__name__]
-    for name, obj in inspect.getmembers(module):
-        if inspect.isfunction(obj) and not name.startswith("_"):
-            fns.append(name)
-    return fns
-
-
-for f in _get_public_fns():
-    fx.wrap(f)

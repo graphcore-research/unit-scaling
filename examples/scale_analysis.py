@@ -1,3 +1,4 @@
+# Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 import torch
 
 from unit_scaling.modules import MHSA, MLP, Linear

@@ -115,20 +115,20 @@ def format_docstring(*args: str) -> Callable[[T], T]:
 binary_constraint_docstring = (
     "constraint (Optional[BinaryConstraint], optional): function which"
     "takes `output_scale` and `grad_input_scale` and returns a single"
-    " 'constrained' scale (usuall necessary for valid gradients). If `None` is"
+    " 'constrained' scale (usually necessary for valid gradients). If `None` is"
     " provided, no constraint will be applied. Defaults to `gmean`."
 )
 
 ternary_constraint_docstring = (
     "constraint (Optional[Callable[[float, float, float], float]], optional): function"
     " which takes `output_scale`, `left_grad_scale` & `right_grad_scale` (in that"
-    " order) and returns a single 'constrained' scale (usuall necessary for valid"
+    " order) and returns a single 'constrained' scale (usually necessary for valid"
     " gradients). If `None` is provided, no constraint will be applied. Defaults to"
     " `gmean`."
 )
 
 variadic_constraint_docstring = (
-    "constraint (Optional[Callable[..., float]], optional): function"
-    " which takes any number of input scales and returns a single 'constrained' scale."
-    " If `None` is provided, no constraint will be applied. Defaults to `gmean`."
+    "constraint (Optional[Callable[..., float]], optional): function which takes any"
+    " number of output/grad-input scales and returns a single 'constrained'"
+    " scale. If `None` is provided, no constraint will be applied. Defaults to `gmean`."
 )
