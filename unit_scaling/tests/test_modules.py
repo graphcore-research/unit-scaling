@@ -4,7 +4,16 @@ import pytest
 import torch
 from torch.optim import SGD
 
-from ..modules import GELU, MHSA, MLP, Dropout, Linear, Softmax
+from ..modules import (
+    GELU,
+    MHSA,
+    MLP,
+    Dropout,
+    LayerNorm,
+    Linear,
+    Softmax,
+    TransformerLayer,
+)
 from .helper import (
     assert_non_zeros,
     assert_not_unit_scaled,
@@ -67,6 +76,19 @@ def test_linear() -> None:
     assert_non_zeros(model.bias)
 
 
+def test_layer_norm() -> None:
+    input = unit_normal(2**8, 2**10)
+    model = LayerNorm(2**10)
+    output = model(input)
+
+    assert output.shape == torch.Size([2**8, 2**10])
+
+    unit_backward(output)
+    SGD(model.parameters(), lr=1).step()
+
+    assert_unit_scaled(output, input.grad, model.weight.grad, model.bias.grad)
+
+
 def test_mlp() -> None:
     input = unit_normal(2**8, 2**10)
     model = MLP(2**10)
@@ -102,3 +124,18 @@ def test_mhsa() -> None:
     assert combined_std == pytest.approx(1, abs=0.5)
 
     assert_not_unit_scaled(model.linear_qkv.weight, model.linear_o.weight)
+
+
+def test_transformer_layer() -> None:
+    b, s, d = 2**8, 2**6, 2**6
+    input = unit_normal(b, s, d)
+    model = TransformerLayer(d, heads=8)
+    output = model(input)
+
+    assert output.shape == torch.Size([b, s, d])
+
+    unit_backward(output)
+    SGD(model.parameters(), lr=1).step()
+
+    combined_std = output.std().detach() * input.grad.std()  # type: ignore
+    assert combined_std == pytest.approx(1, abs=0.1)

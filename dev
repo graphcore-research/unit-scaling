@@ -61,10 +61,10 @@ def tests(filter: Optional[str]) -> None:
     )
 
 
-@cli("command", nargs="*")
-def python(*command: Any) -> None:
+@cli("commands", nargs="*")
+def python(commands: List[Any]) -> None:
     """run Python with the current directory on PYTHONPATH, for development"""
-    run(["python"] + list(command))
+    run(["python"] + commands)
 
 
 @cli()
