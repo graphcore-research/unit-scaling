@@ -266,7 +266,7 @@ def cross_entropy(
     else:
         assert (
             len(input.shape) == 1
-        ), "Input must be (vocab_size) or (batch_size, vocab_size)"
+        ), "cross_entropy input shape must be (vocab_size,) or (batch_size, vocab_size)"
         batch_size, vocab_size = 1, input.shape[0]
     input = scale_bwd(input, vocab_size / (vocab_size - 1) ** 0.5)
     loss = F.cross_entropy(

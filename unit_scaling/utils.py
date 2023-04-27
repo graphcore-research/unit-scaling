@@ -74,7 +74,7 @@ class ScaleTrackingInterpreter(fx.Interpreter):
 
     def run_node(self, n: fx.Node) -> Any:
         out = super().run_node(n)
-        if isinstance(out, Tensor):
+        if isinstance(out, Tensor) and out.is_floating_point():
             self.scales[n.name] = ScalePair()
             out = ScaleTracker.apply(out, self.scales[n.name])
         return out
@@ -100,8 +100,8 @@ class ScaleTrackingInterpreter(fx.Interpreter):
 
 def _record_scales(
     fx_graph_module: fx.GraphModule,
-    input: Tensor,
-    backward: Tensor,
+    inputs: Tuple[Tensor, ...],
+    backward: Optional[Tensor] = None,
 ) -> ScaleDict:
     """Given a `torch.fx.GraphModule`, and dummy tensors to feed into the forward and
     backward passes, returns a dictionary of the scales (standard deviations) of every
@@ -109,15 +109,15 @@ def _record_scales(
 
     Args:
         fx_graph_module (fx.GraphModule): the module to record.
-        input (Tensor): fed into the forward pass for analysis.
-        backward (Tensor): fed into the output's `.backward()`  method for
-            analysis.
+        input (Tuple[Tensor, ...]): fed into the forward pass for analysis.
+        backward (Tensor, optional): fed into the output's `.backward()`  method for
+            analysis. Defaults to `None`, equivalent to calling plain `.backward()`.
 
     Returns:
         ScaleDict: An ordered dictionary with `ScalePair`s for each intermediate tensor.
     """
     tracking_module = ScaleTrackingInterpreter(fx_graph_module)
-    out = tracking_module.run(input)
+    out = tracking_module.run(*inputs)
     out.backward(backward)
     return tracking_module.scales
 
@@ -229,8 +229,8 @@ class _DeepTracer(fx.Tracer):
 
 def analyse_module(
     module: nn.Module,
-    input: Tensor,
-    backward: Tensor,
+    inputs: Union[Tensor, Tuple[Tensor, ...]],
+    backward: Optional[Tensor] = None,
     recurse_modules: bool = True,
     syntax_highlight: bool = True,
     autowrap_modules: Tuple[ModuleType, ...] = (math, einops, functional),
@@ -242,8 +242,10 @@ def analyse_module(
 
     Args:
         module (nn.Module): the module to analyse.
-        input (Tensor): fed into the forward pass for analysis.
-        backward (Tensor): fed into the output's `.backward()` method for analysis.
+        inputs (Union[Tensor, Tuple[Tensor, ...]]): fed into the forward pass for
+            analysis.
+        backward (Tensor, optional): fed into the output's `.backward()` method for
+            analysis. Defaults to `None`, equivalent to calling plain `.backward()`.
         recurse_modules (bool, optional): toggles recursive behavour. Defaults to True.
         syntax_highlight (bool, optional): Defaults to True.
         autowrap_modules (Tuple[ModuleType]): defaults to
@@ -296,5 +298,7 @@ def analyse_module(
     fx_graph = tracer.trace(module)
     fx_graph_module = fx.GraphModule(tracer.root, fx_graph)
 
-    scales = _record_scales(fx_graph_module, input, backward)
+    if not isinstance(inputs, tuple):
+        inputs = (inputs,)
+    scales = _record_scales(fx_graph_module, inputs, backward)
     return _annotate(fx_graph_module.code, scales, syntax_highlight=syntax_highlight)

@@ -15,6 +15,7 @@ from ..modules import (
     LayerNorm,
     Linear,
     Softmax,
+    TransformerDecoder,
     TransformerLayer,
 )
 from .helper import (
@@ -136,13 +137,13 @@ def test_mlp() -> None:
 
 
 def test_mhsa() -> None:
-    b, s, d = 2**8, 2**6, 2**6
-    input = unit_normal(b, s, d)
-    model = MHSA(d, heads=8)
+    batch_sz, seq_len, hidden_dim = 2**8, 2**6, 2**6
+    input = unit_normal(batch_sz, seq_len, hidden_dim)
+    model = MHSA(hidden_dim, heads=8)
     output = model(input)
 
     assert_unit_scaled(model.linear_qkv.weight, model.linear_o.weight)
-    assert output.shape == torch.Size([b, s, d])
+    assert output.shape == torch.Size([batch_sz, seq_len, hidden_dim])
 
     unit_backward(output)
     SGD(model.parameters(), lr=1).step()
@@ -154,15 +155,44 @@ def test_mhsa() -> None:
 
 
 def test_transformer_layer() -> None:
-    b, s, d = 2**8, 2**6, 2**6
-    input = unit_normal(b, s, d)
-    model = TransformerLayer(d, heads=8)
+    batch_sz, seq_len, hidden_dim, heads = 2**8, 2**6, 2**6, 8
+    input = unit_normal(batch_sz, seq_len, hidden_dim)
+    model = TransformerLayer(hidden_dim, heads=heads)
     output = model(input)
 
-    assert output.shape == torch.Size([b, s, d])
+    assert output.shape == torch.Size([batch_sz, seq_len, hidden_dim])
 
     unit_backward(output)
     SGD(model.parameters(), lr=1).step()
 
     combined_std = output.std().detach() * input.grad.std()  # type: ignore
     assert combined_std == pytest.approx(1, abs=0.1)
+
+
+def test_transformer_decoder() -> None:
+    batch_size = 2**8
+    seq_len = 2**6
+    hidden_size = 2**6
+    vocab_size = 2**12
+    layers = 2
+    heads = 4
+
+    input_idxs = torch.randint(low=0, high=vocab_size, size=(batch_size, seq_len))
+    labels = torch.roll(input_idxs, -1, 1)
+    model = TransformerDecoder(hidden_size, vocab_size, layers, heads)
+    loss = model(input_idxs, labels)
+
+    assert loss.shape == torch.Size([])
+
+    loss.backward()
+    SGD(model.parameters(), lr=1).step()
+
+    for name, p in model.named_parameters():
+        if "layer_norm.weight" in name:
+            threshold = 5.0
+        elif "layer_norm.bias" in name:
+            threshold = 20.0
+        else:
+            threshold = 2.5
+        assert p.grad is not None
+        assert p.grad.std().detach() == pytest.approx(1, rel=threshold), name

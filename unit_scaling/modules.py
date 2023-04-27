@@ -263,3 +263,52 @@ class TransformerLayer(nn.Module):
         input = self.mlp(input)
         input = U.dropout(input, self.dropout_p, self.training)
         return U.residual_add(input, skip, self.tau)
+
+
+class TransformerDecoder(nn.Module):
+    """A **unit-scaled** implementation of a decoder-type transformer.
+
+    Note: this class is currently just for demonstrating scaling and lacks key
+    functionality (e.g. causal masking, positional embeddings, usage for inference).
+
+    Args:
+        hidden_size (int): _description_
+        vocab_size (int): _description_
+        layers (int): _description_
+        heads (int): _description_
+        dropout_p (float, optional): _description_. Defaults to 0.1.
+        act_fn (nn.Module, optional): _description_. Defaults to GELU().
+        tau (float, optional): _description_. Defaults to 0.2.
+        constraint (Optional[VariadicConstraint], optional): _description_. Defaults to
+            gmean.
+    """
+
+    def __init__(
+        self,
+        hidden_size: int,
+        vocab_size: int,
+        layers: int,
+        heads: int,
+        dropout_p: float = 0.1,
+        act_fn: nn.Module = GELU(),
+        tau: float = 0.2,
+        constraint: Optional[VariadicConstraint] = gmean,
+    ) -> None:
+        super().__init__()
+        self.embedding = Embedding(vocab_size, hidden_size)
+        self.dropout_p = dropout_p
+        self.transformer_layers = nn.Sequential(
+            *(
+                TransformerLayer(hidden_size, heads, dropout_p, act_fn, tau, constraint)
+                for _ in range(layers)
+            )
+        )
+        self.final_layer_norm = LayerNorm(hidden_size)
+
+    def forward(self, input_ids: Tensor, labels: Tensor) -> Tensor:
+        input = self.embedding(input_ids)
+        input = U.dropout(input, self.dropout_p, self.training)
+        input = self.transformer_layers(input)
+        input = self.final_layer_norm(input)
+        input = U.linear(input, self.embedding.weight, bias=None, constraint=None)
+        return U.cross_entropy(input.flatten(end_dim=-2), labels.flatten())
