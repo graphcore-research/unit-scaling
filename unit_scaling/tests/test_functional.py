@@ -2,7 +2,8 @@
 
 
 import pytest
-from torch import Tensor, zeros
+import torch.nn.functional as F
+from torch import Tensor, randint, zeros
 
 from ..constraints import (
     gmean,
@@ -12,7 +13,9 @@ from ..constraints import (
     to_right_grad_scale,
 )
 from ..functional import (
+    cross_entropy,
     dropout,
+    embedding,
     gelu,
     layer_norm,
     linear,
@@ -279,3 +282,34 @@ def test_residual() -> None:
         unit_backward(output)
 
         assert_unit_scaled(residual, output, residual.grad, skip.grad, input.grad)
+
+
+# --- test embedding() ---
+
+
+def test_embedding() -> None:
+    batch_sz, seq_len, embedding_dim, num_embeddings = 2**4, 2**5, 2**6, 2**12
+    input_idxs = randint(low=0, high=2**12, size=(batch_sz, seq_len))
+    embedding_table = unit_normal(num_embeddings, embedding_dim)
+    output = embedding(input_idxs, embedding_table)
+    unit_backward(output)
+
+    assert_unit_scaled(output, embedding_table.grad)
+
+
+# --- test cross_entropy() ---
+
+
+def test_cross_entropy() -> None:
+    num_tokens, vocab_sz = 2**12, 2**8
+    for reduction in ["mean", "sum"]:
+        for input_shape in [(vocab_sz,), (num_tokens, vocab_sz)]:
+            input = unit_normal(*input_shape)
+            label_size = (input_shape[0],) if len(input_shape) == 2 else ()
+            labels = randint(low=0, high=vocab_sz, size=label_size)
+            loss = cross_entropy(input, labels, reduction=reduction)
+            standard_loss = F.cross_entropy(input, labels, reduction=reduction)
+            loss.backward()  # type: ignore [no-untyped-call]
+
+            assert loss == standard_loss
+            assert_unit_scaled(input.grad)

@@ -219,3 +219,67 @@ def residual_add(residual: Tensor, skip: Tensor, tau: float = 0.2) -> Tensor:
     residual = scale_fwd(residual, tau**0.5)
     skip = scale_fwd(skip, (1 - tau) ** 0.5)
     return residual + skip
+
+
+@docstring_from(
+    F.embedding,
+    short_description=(
+        "A **unit-scaled** lookup table that looks up embeddings in a fixed dictionary"
+        "and size."
+    ),
+)
+def embedding(
+    input: Tensor,
+    weight: Tensor,
+    padding_idx: Optional[int] = None,
+    max_norm: Optional[float] = None,
+    norm_type: float = 2.0,
+    scale_grad_by_freq: bool = False,
+    sparse: bool = False,
+) -> Tensor:
+    batch_size = prod(input.shape)
+    weight = scale_bwd(weight, (weight.shape[0] / batch_size) ** 0.5)
+    return F.embedding(
+        input, weight, padding_idx, max_norm, norm_type, scale_grad_by_freq, sparse
+    )
+
+
+@docstring_from(
+    F.cross_entropy,
+    short_description=(
+        "Computes a **unit-scaled** the cross entropy loss between input logits and"
+        " target."
+    ),
+)
+def cross_entropy(
+    input: Tensor,
+    target: Tensor,
+    weight: Optional[Tensor] = None,
+    size_average: Optional[bool] = None,
+    ignore_index: int = -100,
+    reduce: Optional[bool] = None,
+    reduction: str = "mean",
+    label_smoothing: float = 0.0,
+) -> Tensor:
+    if len(input.shape) == 2:
+        batch_size, vocab_size = input.shape
+    else:
+        assert (
+            len(input.shape) == 1
+        ), "Input must be (vocab_size) or (batch_size, vocab_size)"
+        batch_size, vocab_size = 1, input.shape[0]
+    input = scale_bwd(input, vocab_size / (vocab_size - 1) ** 0.5)
+    loss = F.cross_entropy(
+        input,
+        target,
+        weight,
+        size_average,
+        ignore_index,
+        reduce,
+        reduction="sum",
+        label_smoothing=label_smoothing,
+    )
+    if reduction == "mean":
+        return scale_fwd(loss, 1 / batch_size)
+    assert reduction == "sum", "cross_entropy reduction must be either 'sum' or 'mean'."
+    return loss

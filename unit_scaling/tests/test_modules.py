@@ -2,13 +2,16 @@
 
 import pytest
 import torch
+from torch import randint
 from torch.optim import SGD
 
 from ..modules import (
     GELU,
     MHSA,
     MLP,
+    CrossEntropyLoss,
     Dropout,
+    Embedding,
     LayerNorm,
     Linear,
     Softmax,
@@ -87,6 +90,30 @@ def test_layer_norm() -> None:
     SGD(model.parameters(), lr=1).step()
 
     assert_unit_scaled(output, input.grad, model.weight.grad, model.bias.grad)
+
+
+def test_embedding() -> None:
+    batch_sz, seq_len, embedding_dim, num_embeddings = 2**4, 2**5, 2**6, 2**12
+    input_idxs = randint(low=0, high=2**12, size=(batch_sz, seq_len))
+    model = Embedding(num_embeddings, embedding_dim)
+    output = model(input_idxs)
+
+    assert output.shape == torch.Size([batch_sz, seq_len, embedding_dim])
+
+    unit_backward(output)
+
+    assert_unit_scaled(model.weight.grad)
+
+
+def test_cross_entropy_loss() -> None:
+    num_tokens, vocab_sz = 2**12, 2**8
+    input = unit_normal(num_tokens, vocab_sz)
+    labels = randint(low=0, high=vocab_sz, size=(num_tokens,))
+    model = CrossEntropyLoss()
+    loss = model(input, labels)
+    loss.backward()
+
+    assert_unit_scaled(input.grad)
 
 
 def test_mlp() -> None:

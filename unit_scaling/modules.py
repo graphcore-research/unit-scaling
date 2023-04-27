@@ -110,6 +110,43 @@ class LayerNorm(nn.LayerNorm):
         )
 
 
+@inherit_docstring(
+    short_description=(
+        "A **unit-scaled** lookup table that looks up embeddings in a fixed dictionary"
+        " and size."
+    )
+)
+class Embedding(nn.Embedding):
+    def forward(self, input: Tensor) -> Tensor:
+        return U.embedding(
+            input,
+            self.weight,
+            self.padding_idx,
+            self.max_norm,
+            self.norm_type,
+            self.scale_grad_by_freq,
+            self.sparse,
+        )
+
+
+@inherit_docstring(
+    short_description=(
+        "Computes a **unit-scaled** the cross entropy loss between input logits and"
+        " target."
+    )
+)
+class CrossEntropyLoss(nn.CrossEntropyLoss):
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
+        return U.cross_entropy(
+            input,
+            target,
+            weight=self.weight,
+            ignore_index=self.ignore_index,
+            reduction=self.reduction,
+            label_smoothing=self.label_smoothing,
+        )
+
+
 @format_docstring(binary_constraint_docstring)
 class MLP(nn.Module):
     """A **unit-scaled** implementation of an MLP layer.
