@@ -179,7 +179,7 @@ def layer_norm(
     return F.layer_norm(input, normalized_shape, weight, bias, eps)
 
 
-def residual_split(residual: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
+def residual_split(input: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
     """Splits a tensor into an `residual` and `skip` tensor, prior to being used
     in a residual layer, with a relative weighting `tau` applied to the residual branch.
     Should be used in conjunction with `residual_add`.
@@ -190,15 +190,15 @@ def residual_split(residual: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
     scales of the two branches, which in standard networks are typically not equal.
 
     Args:
-        residual (Tensor): the tensor to which the residual layer is to be applied.
+        input (Tensor): the tensor to which the residual layer is to be applied.
         tau (float, optional): the weighting of the residual branch relative to the skip
             connection. Defaults to 0.2.
 
     Returns:
         Tuple[Tensor, Tensor]: resulting tensors in the order: `residual, skip`.
     """
-    skip = residual * (1 - tau) ** 0.5
-    residual = scale_bwd(residual, tau**0.5)
+    residual = scale_bwd(input, tau**0.5)
+    skip = scale_bwd(input, (1 - tau) ** 0.5)
     return residual, skip
 
 
@@ -217,4 +217,5 @@ def residual_add(residual: Tensor, skip: Tensor, tau: float = 0.2) -> Tensor:
         Tensor: the result of the combined residual and skip tensors.
     """
     residual = scale_fwd(residual, tau**0.5)
+    skip = scale_fwd(skip, (1 - tau) ** 0.5)
     return residual + skip

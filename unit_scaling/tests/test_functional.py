@@ -278,5 +278,4 @@ def test_residual() -> None:
         retain_grad(skip)
         unit_backward(output)
 
-        assert_not_unit_scaled(skip)
         assert_unit_scaled(residual, output, residual.grad, skip.grad, input.grad)

@@ -183,7 +183,8 @@ class MHSA(nn.Module):
 
 
 class TransformerLayer(nn.Module):
-    """A **unit-scaled** implementation of a transformer layer.
+    """A **unit-scaled** implementation of a PreNorm
+    (see https://arxiv.org/abs/2002.04745) transformer layer.
 
     Args:
         hidden_size (int): the hidden dimension size of the input.
