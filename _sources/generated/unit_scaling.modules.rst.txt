@@ -25,10 +25,12 @@ unit\_scaling.modules
    
       Dropout
       GELU
+      LayerNorm
       Linear
       MHSA
       MLP
       Softmax
+      TransformerLayer
    
    
 

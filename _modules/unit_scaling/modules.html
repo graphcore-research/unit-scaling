@@ -169,14 +169,25 @@
         <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="LayerNorm"><a class="viewcode-back" href="../../generated/unit_scaling.modules.LayerNorm.html#unit_scaling.modules.LayerNorm">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Applies a **unit-scaled** Layer Normalization over a mini-batch of inputs.&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="k">class</span> <span class="nc">LayerNorm</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">layer_norm</span><span class="p">(</span>
+            <span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalized_shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span>
+        <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="MLP"><a class="viewcode-back" href="../../generated/unit_scaling.modules.MLP.html#unit_scaling.modules.MLP">[docs]</a><span class="nd">@format_docstring</span><span class="p">(</span><span class="n">binary_constraint_docstring</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">MLP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of an MLP layer.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        hidden_size (int): the hidden dimension size of the input.</span>
-<span class="sd">        act_fn (nn.Module): the activation function module.</span>
-<span class="sd">            Defaults to `GELU()`.</span>
+<span class="sd">        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.</span>
 <span class="sd">        expansion_factor (int): the factor by which the MLP&#39;s intermediate size</span>
 <span class="sd">            increases relative to `hidden_size`.</span>
 <span class="sd">        {0}</span>
@@ -236,10 +247,56 @@
         <span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">einops</span><span class="o">.</span><span class="n">rearrange</span><span class="p">(</span><span class="n">qkv</span><span class="p">,</span> <span class="s2">&quot;b s (d z h) -&gt; z b h s d&quot;</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">heads</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
         <span class="n">qk</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span>
         <span class="n">qk</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">qk</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span>
-        <span class="n">qk</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">qk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout_p</span><span class="p">)</span>
+        <span class="n">qk</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">qk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout_p</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">)</span>
         <span class="n">qkv</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">qk</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span>
         <span class="n">qkv</span> <span class="o">=</span> <span class="n">einops</span><span class="o">.</span><span class="n">rearrange</span><span class="p">(</span><span class="n">qkv</span><span class="p">,</span> <span class="s2">&quot;b h s d -&gt; b s (h d)&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_o</span><span class="p">(</span><span class="n">qkv</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
+
+
+<div class="viewcode-block" id="TransformerLayer"><a class="viewcode-back" href="../../generated/unit_scaling.modules.TransformerLayer.html#unit_scaling.modules.TransformerLayer">[docs]</a><span class="k">class</span> <span class="nc">TransformerLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of a PreNorm</span>
+<span class="sd">    (see https://arxiv.org/abs/2002.04745) transformer layer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        hidden_size (int): the hidden dimension size of the input.</span>
+<span class="sd">        heads (int): the number of attention heads.</span>
+<span class="sd">        dropout_p (float, optional): the probability of the post-softmax dropout.</span>
+<span class="sd">            Defaults to 0.1.</span>
+<span class="sd">        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.</span>
+<span class="sd">        tau (float, optional): the weighting of the residual branch relative to the skip</span>
+<span class="sd">            connection. Defaults to 0.2.</span>
+<span class="sd">        {0}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">heads</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dropout_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">act_fn</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span> <span class="o">=</span> <span class="n">GELU</span><span class="p">(),</span>
+        <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VariadicConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmean</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout_p</span> <span class="o">=</span> <span class="n">dropout_p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mhsa_layer_norm</span> <span class="o">=</span> <span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mhsa</span> <span class="o">=</span> <span class="n">MHSA</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">heads</span><span class="p">,</span> <span class="n">dropout_p</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mlp_layer_norm</span> <span class="o">=</span> <span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">act_fn</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="nb">input</span><span class="p">,</span> <span class="n">skip</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">residual_split</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mhsa_layer_norm</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mhsa</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout_p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">residual_add</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">skip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span>
+
+        <span class="nb">input</span><span class="p">,</span> <span class="n">skip</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">residual_split</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp_layer_norm</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout_p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">residual_add</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">skip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

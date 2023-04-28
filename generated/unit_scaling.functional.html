@@ -49,8 +49,11 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">unit_scaling.functional</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">unit_scaling.functional.dropout</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">unit_scaling.functional.gelu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">unit_scaling.functional.layer_norm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">unit_scaling.functional.linear</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">unit_scaling.functional.matmul</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">unit_scaling.functional.residual_split</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">unit_scaling.functional.scale_elementwise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">unit_scaling.functional.softmax</a></li>
 </ul>
@@ -99,16 +102,25 @@
 <tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.gelu.html#unit_scaling.functional.gelu" title="unit_scaling.functional.gelu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gelu</span></code></a>(input[, constraint])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> GELU function.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.linear.html#unit_scaling.functional.linear" title="unit_scaling.functional.linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linear</span></code></a>(input, weight, bias[, constraint])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.layer_norm.html#unit_scaling.functional.layer_norm" title="unit_scaling.functional.layer_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">layer_norm</span></code></a>(input, normalized_shape[, ...])</p></td>
+<td><p>Applies a <strong>unit-scaled</strong> Layer Normalization for last certain number of dimensions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.linear.html#unit_scaling.functional.linear" title="unit_scaling.functional.linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linear</span></code></a>(input, weight, bias[, constraint])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> linear transformation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.matmul.html#unit_scaling.functional.matmul" title="unit_scaling.functional.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(left, right[, constraint])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.matmul.html#unit_scaling.functional.matmul" title="unit_scaling.functional.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(left, right[, constraint])</p></td>
 <td><p>A <strong>unit-scaled</strong> matrix product of two tensors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html#unit_scaling.functional.scale_elementwise" title="unit_scaling.functional.scale_elementwise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_elementwise</span></code></a>(f, output_scale, ...[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add" title="unit_scaling.functional.residual_add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual_add</span></code></a>(residual, skip[, tau])</p></td>
+<td><p>Adds a residual connection and skip connection together, with a relative weighting <cite>tau</cite> applied to the residual branch.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split" title="unit_scaling.functional.residual_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual_split</span></code></a>(input[, tau])</p></td>
+<td><p>Splits a tensor into an <cite>residual</cite> and <cite>skip</cite> tensor, prior to being used in a residual layer, with a relative weighting <cite>tau</cite> applied to the residual branch.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html#unit_scaling.functional.scale_elementwise" title="unit_scaling.functional.scale_elementwise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_elementwise</span></code></a>(f, output_scale, ...[, ...])</p></td>
 <td><p>Transforms an element-wise function into a scaled version.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.softmax.html#unit_scaling.functional.softmax" title="unit_scaling.functional.softmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">softmax</span></code></a>(input[, dim, dtype, constraint])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.softmax.html#unit_scaling.functional.softmax" title="unit_scaling.functional.softmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">softmax</span></code></a>(input[, dim, dtype, constraint])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> softmax function.</p></td>
 </tr>
 </tbody>

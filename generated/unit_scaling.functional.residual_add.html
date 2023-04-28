@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>unit_scaling.functional.gelu &mdash; unit-scaling  documentation</title>
+  <title>unit_scaling.functional.residual_add &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,12 +17,11 @@
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="unit_scaling.functional.layer_norm" href="unit_scaling.functional.layer_norm.html" />
-    <link rel="prev" title="unit_scaling.functional.dropout" href="unit_scaling.functional.dropout.html" /> 
+    <link rel="next" title="unit_scaling.functional.residual_split" href="unit_scaling.functional.residual_split.html" />
+    <link rel="prev" title="unit_scaling.functional.matmul" href="unit_scaling.functional.matmul.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,14 +48,14 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">unit_scaling.functional.dropout</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.functional.gelu</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.gelu"><code class="docutils literal notranslate"><span class="pre">gelu()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">unit_scaling.functional.gelu</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">unit_scaling.functional.layer_norm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">unit_scaling.functional.linear</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">unit_scaling.functional.matmul</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.functional.residual_add</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.residual_add"><code class="docutils literal notranslate"><span class="pre">residual_add()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">unit_scaling.functional.residual_split</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">unit_scaling.functional.scale_elementwise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">unit_scaling.functional.softmax</a></li>
@@ -85,9 +84,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.html">unit_scaling</a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.functional.html">unit_scaling.functional</a></li>
-      <li class="breadcrumb-item active">unit_scaling.functional.gelu</li>
+      <li class="breadcrumb-item active">unit_scaling.functional.residual_add</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/unit_scaling.functional.gelu.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/unit_scaling.functional.residual_add.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -95,26 +94,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="unit-scaling-functional-gelu">
-<h1>unit_scaling.functional.gelu<a class="headerlink" href="#unit-scaling-functional-gelu" title="Permalink to this heading"></a></h1>
+  <section id="unit-scaling-functional-residual-add">
+<h1>unit_scaling.functional.residual_add<a class="headerlink" href="#unit-scaling-functional-residual-add" title="Permalink to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="unit_scaling.functional.gelu">
-<span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">gelu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">input:</span> <span class="pre">~torch.Tensor,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[float,</span> <span class="pre">float],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#gelu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.gelu" title="Permalink to this definition"></a></dt>
-<dd><p>Applies a <strong>unit-scaled</strong> GELU function.</p>
-<p>When the approximate argument is ‘none’, it applies element-wise the function
-<span class="math notranslate nohighlight">\(\text{GELU}(x) = x * \Phi(x)\)</span></p>
-<p>where <span class="math notranslate nohighlight">\(\Phi(x)\)</span> is the Cumulative Distribution Function for Gaussian Distribution.</p>
-<dl class="simple">
-<dt>When the approximate argument is ‘tanh’, Gelu is estimated with:</dt><dd><dl class="field-list simple">
-<dt class="field-odd">math:<span class="colon">:</span></dt>
-<dd class="field-odd"><p>text{GELU}(x) = 0.5 * x * (1 + text{Tanh}(sqrt(2 / pi) * (x + 0.044715 * x^3)))</p>
+<dt class="sig sig-object py" id="unit_scaling.functional.residual_add">
+<span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">residual_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residual</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#residual_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.residual_add" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a residual connection and skip connection together, with a relative
+weighting <cite>tau</cite> applied to the residual branch. Should be used in conjunction with
+<cite>residual_split</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>residual</strong> (<em>Tensor</em>) – the tensor coming out of the residual connection.</p></li>
+<li><p><strong>skip</strong> (<em>Tensor</em>) – the tensor coming out of the skip connection.</p></li>
+<li><p><strong>tau</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – the weighting of the residual branch relative to the skip
+connection. Defaults to 0.2.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the result of the combined residual and skip tensors.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
 </dd>
 </dl>
-</dd>
-</dl>
-<p>See <a class="reference external" href="https://arxiv.org/abs/1606.08415">Gaussian Error Linear Units (GELUs)</a>.
-:param constraint: function whichtakes <cite>output_scale</cite> and <cite>grad_input_scale</cite> and returns a single ‘constrained’ scale (usually necessary for valid gradients). If <cite>None</cite> is provided, no constraint will be applied. Defaults to <cite>gmean</cite>.
-:type constraint: Optional[BinaryConstraint]?</p>
 </dd></dl>
 
 </section>
@@ -123,8 +126,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.functional.dropout.html" class="btn btn-neutral float-left" title="unit_scaling.functional.dropout" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.functional.layer_norm.html" class="btn btn-neutral float-right" title="unit_scaling.functional.layer_norm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.functional.matmul.html" class="btn btn-neutral float-left" title="unit_scaling.functional.matmul" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.functional.residual_split.html" class="btn btn-neutral float-right" title="unit_scaling.functional.residual_split" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

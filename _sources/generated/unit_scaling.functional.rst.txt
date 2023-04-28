@@ -20,8 +20,11 @@ unit\_scaling.functional
    
       dropout
       gelu
+      layer_norm
       linear
       matmul
+      residual_add
+      residual_split
       scale_elementwise
       softmax
    
