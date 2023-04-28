@@ -64,7 +64,7 @@ def forward(self, input : torch.Tensor) -> torch.Tensor:
     transpose = getitem_1.transpose(-1, -2);  (-> 0.773, <- 0.34)
     matmul = U.matmul(getitem, transpose, constraint = gmean);  (-> 0.376, <- 0.344)
     softmax = U.softmax(matmul, dim = -1, constraint = gmean);  (-> 0.264, <- 0.477)
-    dropout = U.dropout(softmax, 0.1);  (-> 0.34, <- 0.477)
+    dropout = U.dropout(softmax, 0.1, training = True);  (-> 0.34, <- 0.477)
     matmul_1 = U.matmul(dropout, getitem_2, constraint = gmean);  (-> 0.739, <- 1.0)
     rearrange_1 = einops_einops_rearrange(matmul_1, 'b h s d -> b s (h d)');  (-> 0.739, <- 1.0)
     linear_o_weight = self.linear_o.weight;  (-> 1.0, <- 0.73)

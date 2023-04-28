@@ -98,14 +98,25 @@ class Linear(nn.Linear):
         return U.linear(input, self.weight, self.bias, self.constraint)
 
 
+@inherit_docstring(
+    short_description=(
+        "Applies a **unit-scaled** Layer Normalization over a mini-batch of inputs."
+    ),
+)
+class LayerNorm(nn.LayerNorm):
+    def forward(self, input: Tensor) -> Tensor:
+        return U.layer_norm(
+            input, self.normalized_shape, self.weight, self.bias, self.eps
+        )
+
+
 @format_docstring(binary_constraint_docstring)
 class MLP(nn.Module):
     """A **unit-scaled** implementation of an MLP layer.
 
     Args:
         hidden_size (int): the hidden dimension size of the input.
-        act_fn (nn.Module): the activation function module.
-            Defaults to `GELU()`.
+        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.
         expansion_factor (int): the factor by which the MLP's intermediate size
             increases relative to `hidden_size`.
         {0}
@@ -165,7 +176,53 @@ class MHSA(nn.Module):
         q, k, v = einops.rearrange(qkv, "b s (d z h) -> z b h s d", h=self.heads, z=3)
         qk = U.matmul(q, k.transpose(-1, -2), constraint=self.constraint)
         qk = U.softmax(qk, dim=-1, constraint=self.constraint)
-        qk = U.dropout(qk, self.dropout_p)
+        qk = U.dropout(qk, self.dropout_p, training=self.training)
         qkv = U.matmul(qk, v, constraint=self.constraint)
         qkv = einops.rearrange(qkv, "b h s d -> b s (h d)")
         return self.linear_o(qkv)  # type: ignore
+
+
+class TransformerLayer(nn.Module):
+    """A **unit-scaled** implementation of a PreNorm
+    (see https://arxiv.org/abs/2002.04745) transformer layer.
+
+    Args:
+        hidden_size (int): the hidden dimension size of the input.
+        heads (int): the number of attention heads.
+        dropout_p (float, optional): the probability of the post-softmax dropout.
+            Defaults to 0.1.
+        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.
+        tau (float, optional): the weighting of the residual branch relative to the skip
+            connection. Defaults to 0.2.
+        {0}
+    """
+
+    def __init__(
+        self,
+        hidden_size: int,
+        heads: int,
+        dropout_p: float = 0.1,
+        act_fn: nn.Module = GELU(),
+        tau: float = 0.2,
+        constraint: Optional[VariadicConstraint] = gmean,
+    ) -> None:
+        super().__init__()
+        self.dropout_p = dropout_p
+        self.tau = tau
+        self.mhsa_layer_norm = LayerNorm(hidden_size)
+        self.mhsa = MHSA(hidden_size, heads, dropout_p, constraint=constraint)
+        self.mlp_layer_norm = LayerNorm(hidden_size)
+        self.mlp = MLP(hidden_size, act_fn, constraint=constraint)
+
+    def forward(self, input: Tensor) -> Tensor:
+        input, skip = U.residual_split(input, self.tau)
+        input = self.mhsa_layer_norm(input)
+        input = self.mhsa(input)
+        input = U.dropout(input, self.dropout_p, self.training)
+        input = U.residual_add(input, skip, self.tau)
+
+        input, skip = U.residual_split(input, self.tau)
+        input = self.mlp_layer_norm(input)
+        input = self.mlp(input)
+        input = U.dropout(input, self.dropout_p, self.training)
+        return U.residual_add(input, skip, self.tau)

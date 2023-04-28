@@ -2,7 +2,8 @@
 
 """Unit-scaled versions of common `torch.nn.functional` functions."""
 
-from typing import Any, Callable, Optional
+from math import prod
+from typing import Any, Callable, Optional, Sequence, Tuple
 
 import torch
 import torch.nn.functional as F
@@ -152,3 +153,69 @@ def linear(
     bias = scale_bwd(bias, grad_bias_scale) if bias is not None else None
     output = F.linear(input, weight, bias)
     return scale_fwd(output, output_scale)
+
+
+@docstring_from(
+    F.layer_norm,
+    short_description=(
+        "Applies a **unit-scaled** Layer Normalization for last certain number of"
+        " dimensions."
+    ),
+)
+def layer_norm(
+    input: Tensor,
+    normalized_shape: Sequence[int],
+    weight: Optional[Tensor] = None,
+    bias: Optional[Tensor] = None,
+    eps: float = 1e-5,
+) -> Tensor:
+    grad_weight_scale = grad_bias_scale = (
+        prod(normalized_shape) / input.numel()
+    ) ** 0.5
+    if weight is not None:
+        weight = scale_bwd(weight, grad_weight_scale)
+    if bias is not None:
+        bias = scale_bwd(bias, grad_bias_scale)
+    return F.layer_norm(input, normalized_shape, weight, bias, eps)
+
+
+def residual_split(input: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
+    """Splits a tensor into an `residual` and `skip` tensor, prior to being used
+    in a residual layer, with a relative weighting `tau` applied to the residual branch.
+    Should be used in conjunction with `residual_add`.
+
+    This is necessary as unit scaling delays the residual branch scaling in the backward
+    pass such that residual gradients are still unit-scaled. The need for a relative
+    weighting between the two branches is a result of unit-scaling normalising the
+    scales of the two branches, which in standard networks are typically not equal.
+
+    Args:
+        input (Tensor): the tensor to which the residual layer is to be applied.
+        tau (float, optional): the weighting of the residual branch relative to the skip
+            connection. Defaults to 0.2.
+
+    Returns:
+        Tuple[Tensor, Tensor]: resulting tensors in the order: `residual, skip`.
+    """
+    residual = scale_bwd(input, tau**0.5)
+    skip = scale_bwd(input, (1 - tau) ** 0.5)
+    return residual, skip
+
+
+def residual_add(residual: Tensor, skip: Tensor, tau: float = 0.2) -> Tensor:
+    """Adds a residual connection and skip connection together, with a relative
+    weighting `tau` applied to the residual branch. Should be used in conjunction with
+    `residual_split`.
+
+    Args:
+        residual (Tensor): the tensor coming out of the residual connection.
+        skip (Tensor): the tensor coming out of the skip connection.
+        tau (float, optional): the weighting of the residual branch relative to the skip
+            connection. Defaults to 0.2.
+
+    Returns:
+        Tensor: the result of the combined residual and skip tensors.
+    """
+    residual = scale_fwd(residual, tau**0.5)
+    skip = scale_fwd(skip, (1 - tau) ** 0.5)
+    return residual + skip

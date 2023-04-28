@@ -1,7 +1,7 @@
 # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 import torch
 
-from unit_scaling.modules import MHSA, MLP, Linear
+from unit_scaling.modules import MHSA, MLP, Linear, TransformerLayer
 from unit_scaling.utils import analyse_module
 
 print("=== Unit-scaled Linear ===\n")
@@ -12,9 +12,7 @@ out_size = 2**10
 input = torch.randn(batch_size, hidden_size).requires_grad_()
 backward = torch.randn(batch_size, out_size)
 
-annotated_code = analyse_module(
-    Linear(hidden_size, out_size, bias=False), input, backward
-)
+annotated_code = analyse_module(Linear(hidden_size, out_size), input, backward)
 print(annotated_code)
 
 print("=== Unit-scaled MLP ===\n")
@@ -37,4 +35,16 @@ input = torch.randn(batch_size, seq_len, hidden_size).requires_grad_()
 backward = torch.randn(batch_size, seq_len, hidden_size)
 
 annotated_code = analyse_module(MHSA(hidden_size, heads), input, backward)
+print(annotated_code)
+
+print("=== Unit-scaled Transformer Layer ===\n")
+
+batch_size = 2**8
+seq_len = 2**6
+hidden_size = 2**6
+heads = 4
+input = torch.randn(batch_size, seq_len, hidden_size).requires_grad_()
+backward = torch.randn(batch_size, seq_len, hidden_size)
+
+annotated_code = analyse_module(TransformerLayer(hidden_size, heads), input, backward)
 print(annotated_code)
