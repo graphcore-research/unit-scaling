@@ -72,11 +72,11 @@ def gelu(
 )
 def softmax(
     input: Tensor,
-    dim: Optional[int] = None,
+    dim: int,
     dtype: Optional[torch.dtype] = None,
     constraint: Optional[BinaryConstraint] = gmean,
 ) -> Tensor:
-    dim_size = input.shape[dim] if dim is not None else input.numel()
+    dim_size = input.shape[dim]
     # Scale factors determined empirically, assuming unit-scaled & large dim_size
     output_scale = dim_size / 1.31
     grad_input_scale = dim_size / 1.65
@@ -87,7 +87,9 @@ def softmax(
 
 
 @docstring_from(
-    F.dropout, short_description="Applies a **unit-scaled** dropout function."
+    F.dropout,
+    short_description="Applies a **unit-scaled** dropout function.",
+    unsupported_args=["inplace"],
 )
 def dropout(
     input: Tensor, p: float = 0.5, training: bool = True, inplace: bool = False
@@ -118,9 +120,11 @@ def matmul(
     right_grad_scale = left_size**-0.5
 
     if constraint:
-        output_scale = left_grad_scale = right_grad_scale = constraint(
-            output_scale, left_grad_scale, right_grad_scale
-        )
+        scale = constraint(output_scale, left_grad_scale, right_grad_scale)
+        if isinstance(scale, Sequence):
+            output_scale, left_grad_scale, right_grad_scale = scale  # type: ignore
+        else:
+            output_scale = left_grad_scale = right_grad_scale = scale
 
     left = scale_bwd(left, left_grad_scale)
     right = scale_bwd(right, right_grad_scale)
@@ -227,6 +231,7 @@ def residual_add(residual: Tensor, skip: Tensor, tau: float = 0.2) -> Tensor:
         "A **unit-scaled** lookup table that looks up embeddings in a fixed dictionary"
         "and size."
     ),
+    unsupported_args=["scale_grad_by_freq", "sparse"],
 )
 def embedding(
     input: Tensor,
@@ -250,6 +255,7 @@ def embedding(
         "Computes a **unit-scaled** the cross entropy loss between input logits and"
         " target."
     ),
+    unsupported_args=["weight", "size_average", "reduce", "label_smoothing"],
 )
 def cross_entropy(
     input: Tensor,
@@ -263,11 +269,13 @@ def cross_entropy(
 ) -> Tensor:
     if len(input.shape) == 2:
         batch_size, vocab_size = input.shape
-    else:
-        assert (
-            len(input.shape) == 1
-        ), "cross_entropy input shape must be (vocab_size,) or (batch_size, vocab_size)"
+    elif len(input.shape) == 1:
         batch_size, vocab_size = 1, input.shape[0]
+    else:
+        assert False, (
+            f"cross_entropy input shape is {input.shape}, but should be either"
+            " (vocab_size,) or (batch_size, vocab_size)"
+        )
     input = scale_bwd(input, vocab_size / (vocab_size - 1) ** 0.5)
     loss = F.cross_entropy(
         input,
@@ -281,5 +289,4 @@ def cross_entropy(
     )
     if reduction == "mean":
         return scale_fwd(loss, 1 / batch_size)
-    assert reduction == "sum", "cross_entropy reduction must be either 'sum' or 'mean'."
     return loss

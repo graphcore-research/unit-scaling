@@ -41,7 +41,7 @@ def test_gelu() -> None:
 
 def test_softmax() -> None:
     input = unit_normal(2**14)
-    model = Softmax()
+    model = Softmax(dim=0)
     output = model(input)
 
     unit_backward(output)
@@ -59,6 +59,9 @@ def test_dropout() -> None:
 
     combined_std = output.std().detach() * input.grad.std()  # type: ignore
     assert combined_std == pytest.approx(1, abs=0.1)
+
+    with pytest.raises(ValueError):
+        Dropout(0.5, inplace=True)
 
 
 def test_linear() -> None:
@@ -105,6 +108,11 @@ def test_embedding() -> None:
 
     assert_unit_scaled(model.weight.grad)
 
+    with pytest.raises(ValueError):
+        Embedding(num_embeddings, embedding_dim, scale_grad_by_freq=True)
+    with pytest.raises(ValueError):
+        Embedding(num_embeddings, embedding_dim, sparse=True)
+
 
 def test_cross_entropy_loss() -> None:
     num_tokens, vocab_sz = 2**12, 2**8
@@ -115,6 +123,11 @@ def test_cross_entropy_loss() -> None:
     loss.backward()
 
     assert_unit_scaled(input.grad)
+
+    with pytest.raises(ValueError):
+        CrossEntropyLoss(weight=unit_normal(vocab_sz))
+    with pytest.raises(ValueError):
+        CrossEntropyLoss(label_smoothing=0.5)
 
 
 def test_mlp() -> None:
@@ -139,7 +152,7 @@ def test_mlp() -> None:
 def test_mhsa() -> None:
     batch_sz, seq_len, hidden_dim = 2**8, 2**6, 2**6
     input = unit_normal(batch_sz, seq_len, hidden_dim)
-    model = MHSA(hidden_dim, heads=8)
+    model = MHSA(hidden_dim, heads=8, dropout_p=0.1)
     output = model(input)
 
     assert_unit_scaled(model.linear_qkv.weight, model.linear_o.weight)
@@ -157,7 +170,7 @@ def test_mhsa() -> None:
 def test_transformer_layer() -> None:
     batch_sz, seq_len, hidden_dim, heads = 2**8, 2**6, 2**6, 8
     input = unit_normal(batch_sz, seq_len, hidden_dim)
-    model = TransformerLayer(hidden_dim, heads=heads)
+    model = TransformerLayer(hidden_dim, heads=heads, dropout_p=0.1)
     output = model(input)
 
     assert output.shape == torch.Size([batch_sz, seq_len, hidden_dim])
@@ -179,7 +192,7 @@ def test_transformer_decoder() -> None:
 
     input_idxs = torch.randint(low=0, high=vocab_size, size=(batch_size, seq_len))
     labels = torch.roll(input_idxs, -1, 1)
-    model = TransformerDecoder(hidden_size, vocab_size, layers, heads)
+    model = TransformerDecoder(hidden_size, vocab_size, layers, heads, dropout_p=0.1)
     loss = model(input_idxs, labels)
 
     assert loss.shape == torch.Size([])
@@ -188,11 +201,9 @@ def test_transformer_decoder() -> None:
     SGD(model.parameters(), lr=1).step()
 
     for name, p in model.named_parameters():
-        if "layer_norm.weight" in name:
-            threshold = 5.0
-        elif "layer_norm.bias" in name:
+        if "layer_norm.bias" in name:
             threshold = 20.0
         else:
-            threshold = 2.5
+            threshold = 5.0
         assert p.grad is not None
-        assert p.grad.std().detach() == pytest.approx(1, rel=threshold), name
+        assert 1 / threshold <= p.grad.std().detach() <= threshold, name

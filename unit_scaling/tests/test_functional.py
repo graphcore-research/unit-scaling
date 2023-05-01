@@ -1,5 +1,6 @@
 # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 
+from typing import Tuple
 
 import pytest
 import torch.nn.functional as F
@@ -118,7 +119,7 @@ def test_gelu_scale_for_grad_input() -> None:
 
 def test_softmax_no_constraint() -> None:
     input = unit_normal(2**12)
-    output = softmax(input, constraint=None)
+    output = softmax(input, dim=0, constraint=None)
     unit_backward(output)
 
     assert_unit_scaled(output, input.grad)
@@ -126,7 +127,7 @@ def test_softmax_no_constraint() -> None:
 
 def test_softmax_scale_for_output() -> None:
     input = unit_normal(2**12)
-    output = softmax(input, constraint=to_output_scale)
+    output = softmax(input, dim=0, constraint=to_output_scale)
     unit_backward(output)
 
     assert_unit_scaled(output)
@@ -135,7 +136,7 @@ def test_softmax_scale_for_output() -> None:
 
 def test_softmax_scale_for_grad_input() -> None:
     input = unit_normal(2**12)
-    output = softmax(input, constraint=to_grad_input_scale)
+    output = softmax(input, dim=0, constraint=to_grad_input_scale)
     unit_backward(output)
 
     assert_unit_scaled(input.grad)
@@ -163,6 +164,9 @@ def test_dropout() -> None:
         unit_backward(output)
 
         assert_unit_scaled(output, input.grad)
+
+    with pytest.raises(ValueError):
+        dropout(unit_normal(2**20), 0.5, inplace=True)
 
 
 # --- test matmul() ---
@@ -205,6 +209,25 @@ def test_matmul_scale_for_grad_right() -> None:
 
     assert_unit_scaled(right.grad)
     assert_not_unit_scaled(output, left.grad)
+
+
+def test_matmul_custom_constraint() -> None:
+    def constrain_grad_left(
+        output_scale: float, left_grad_scale: float, right_grad_scale: float
+    ) -> Tuple[float, float, float]:
+        output_scale = left_grad_scale = gmean(output_scale, left_grad_scale)
+        return output_scale, left_grad_scale, right_grad_scale
+
+    left = unit_normal(2**8, 2**10)
+    right = unit_normal(2**10, 2**12)
+    output = matmul(left, right, constraint=constrain_grad_left)
+    unit_backward(output)
+
+    assert_unit_scaled(right.grad)
+    assert_not_unit_scaled(output, left.grad)
+
+    combined_out_left_std = output.std().detach() * left.grad.std()  # type: ignore
+    assert combined_out_left_std == pytest.approx(1, abs=0.1)
 
 
 # --- test linear() ---
@@ -296,6 +319,11 @@ def test_embedding() -> None:
 
     assert_unit_scaled(output, embedding_table.grad)
 
+    with pytest.raises(ValueError):
+        embedding(input_idxs, embedding_table, scale_grad_by_freq=True)
+    with pytest.raises(ValueError):
+        embedding(input_idxs, embedding_table, sparse=True)
+
 
 # --- test cross_entropy() ---
 
@@ -313,3 +341,10 @@ def test_cross_entropy() -> None:
 
             assert loss == standard_loss
             assert_unit_scaled(input.grad)
+
+    input = unit_normal(2**12, 2**8)
+    labels = randint(low=0, high=vocab_sz, size=(num_tokens,))
+    with pytest.raises(ValueError):
+        cross_entropy(input, labels, weight=unit_normal(vocab_sz))
+    with pytest.raises(ValueError):
+        cross_entropy(input, labels, label_smoothing=0.5)
