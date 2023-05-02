@@ -8,6 +8,7 @@ import einops
 from torch import Tensor, nn
 
 from . import functional as U
+from ._internal_utils import generate__all__
 from .constraints import BinaryConstraint, VariadicConstraint, gmean
 from .docs import (
     binary_constraint_docstring,
@@ -135,8 +136,7 @@ class Embedding(nn.Embedding):
 
 @inherit_docstring(
     short_description=(
-        "Computes a **unit-scaled** the cross entropy loss between input logits and"
-        " target."
+        "Computes a **unit-scaled** cross entropy loss between input logits and target."
     ),
     unsupported_args=["weight", "size_average", "reduce", "label_smoothing"],
 )
@@ -307,6 +307,7 @@ class TransformerDecoder(nn.Module):
     ) -> None:
         super().__init__()
         self.embedding = Embedding(vocab_size, hidden_size)
+        self.dropout_p = dropout_p
         self.initial_layer_norm = LayerNorm(hidden_size)
         self.transformer_layers = nn.Sequential(
             *(
@@ -318,8 +319,12 @@ class TransformerDecoder(nn.Module):
 
     def forward(self, input_ids: Tensor, labels: Tensor) -> Tensor:
         input = self.embedding(input_ids)
+        input = U.dropout(input, self.dropout_p, self.training)
         input = self.initial_layer_norm(input)
         input = self.transformer_layers(input)
         input = self.final_layer_norm(input)
         input = U.linear(input, self.embedding.weight, bias=None, constraint=None)
         return U.cross_entropy(input.flatten(end_dim=-2), labels.flatten())
+
+
+__all__ = generate__all__(__name__)

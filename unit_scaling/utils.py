@@ -19,6 +19,7 @@ from pygments.lexers import PythonLexer
 from torch import Tensor, fx, nn
 
 from . import functional
+from ._internal_utils import generate__all__
 
 
 @dataclass
@@ -302,3 +303,6 @@ def analyse_module(
         inputs = (inputs,)
     scales = _record_scales(fx_graph_module, inputs, backward)
     return _annotate(fx_graph_module.code, scales, syntax_highlight=syntax_highlight)
+
+
+__all__ = generate__all__(__name__)

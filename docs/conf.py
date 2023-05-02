@@ -34,6 +34,8 @@ extensions = [
 ]
 
 autosummary_generate = True
+autosummary_imported_members = True
+autosummary_ignore_module_all = False
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
 

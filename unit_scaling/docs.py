@@ -121,7 +121,8 @@ def inherit_docstring(
             add_args=add_args,
             unsupported_args=unsupported_args,
         )
-        return _validate(source, unsupported_args)  # type: ignore
+        source.__init__ = _validate(source.__init__, unsupported_args)  # type: ignore
+        return source
 
     return decorator
 

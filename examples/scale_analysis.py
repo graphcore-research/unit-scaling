@@ -1,7 +1,7 @@
 # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 import torch
 
-from unit_scaling.modules import MHSA, MLP, Linear, TransformerDecoder, TransformerLayer
+import unit_scaling as uu
 from unit_scaling.utils import analyse_module
 
 print("=== Unit-scaled Linear ===\n")
@@ -12,7 +12,7 @@ out_size = 2**10
 input = torch.randn(batch_size, hidden_size).requires_grad_()
 backward = torch.randn(batch_size, out_size)
 
-annotated_code = analyse_module(Linear(hidden_size, out_size), input, backward)
+annotated_code = analyse_module(uu.Linear(hidden_size, out_size), input, backward)
 print(annotated_code)
 
 print("=== Unit-scaled MLP ===\n")
@@ -22,7 +22,7 @@ hidden_size = 2**10
 input = torch.randn(batch_size, hidden_size).requires_grad_()
 backward = torch.randn(batch_size, hidden_size)
 
-annotated_code = analyse_module(MLP(hidden_size), input, backward)
+annotated_code = analyse_module(uu.MLP(hidden_size), input, backward)
 print(annotated_code)
 
 print("=== Unit-scaled MHSA ===\n")
@@ -35,7 +35,7 @@ dropout_p = 0.1
 input = torch.randn(batch_size, seq_len, hidden_size).requires_grad_()
 backward = torch.randn(batch_size, seq_len, hidden_size)
 
-annotated_code = analyse_module(MHSA(hidden_size, heads, dropout_p), input, backward)
+annotated_code = analyse_module(uu.MHSA(hidden_size, heads, dropout_p), input, backward)
 print(annotated_code)
 
 print("=== Unit-scaled Transformer Layer ===\n")
@@ -49,7 +49,7 @@ input = torch.randn(batch_size, seq_len, hidden_size).requires_grad_()
 backward = torch.randn(batch_size, seq_len, hidden_size)
 
 annotated_code = analyse_module(
-    TransformerLayer(hidden_size, heads, dropout_p), input, backward
+    uu.TransformerLayer(hidden_size, heads, dropout_p), input, backward
 )
 print(annotated_code)
 
@@ -69,7 +69,7 @@ labels = torch.roll(seq, -1, 1)[:, 1:]
 backward = torch.randn(batch_size, seq_len, hidden_size)
 
 annotated_code = analyse_module(
-    TransformerDecoder(hidden_size, vocab_size, layers, heads, dropout_p),
+    uu.TransformerDecoder(hidden_size, vocab_size, layers, heads, dropout_p),
     (input_idxs, labels),
 )
 print(annotated_code)

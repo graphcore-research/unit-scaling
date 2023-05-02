@@ -4,7 +4,7 @@ import re
 
 import torch
 
-from ..modules import MHSA, MLP
+from .._modules import MHSA, MLP
 from ..utils import analyse_module
 
 
