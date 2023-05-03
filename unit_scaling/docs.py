@@ -36,7 +36,6 @@ def _validate(
 
     for arg in unsupported_args:
         if arg not in default_kwargs:
-            print(default_kwargs, argspec)
             raise ValueError(f"unsupported arg '{arg}' is not valid.")
         if default_kwargs[arg] is ...:
             raise ValueError(f"unsupported arg '{arg}' has no default value")
