@@ -1,9 +1,10 @@
 # Unit Scaling
 
-A library for unit scaling in PyTorch.
-
-Based on the paper
+A library for unit scaling in PyTorch, based on the paper
 [Unit Scaling: Out-of-the-Box Low-Precision Training](https://arxiv.org/abs/2303.11257).
+
+Documentation can be found at
+https://graphcore-research.github.io/unit-scaling/index.html.
 
 ## Development
 
@@ -13,11 +14,7 @@ For users who wish to develop using this codebase, the following setup is requir
 
 ```bash
 python3 -m venv .venv
-# Add to `.venv/bin/activate`: `source /PATH_TO_POPLAR_SDK/enable` (If running on IPU) 
 source .venv/bin/activate
-
-# pip install wheel  # (If running on IPU)
-# pip install $POPLAR_SDK_ENABLED/../poptorch-*.whl  # (If running on IPU) 
 pip install -r requirements-dev.txt
 ```
 
