@@ -18,7 +18,9 @@ unit\_scaling.functional
    .. autosummary::
       :toctree:
    
+      cross_entropy
       dropout
+      embedding
       gelu
       layer_norm
       linear

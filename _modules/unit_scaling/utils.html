@@ -145,7 +145,7 @@
 
 <div class="viewcode-block" id="ScaleTrackingInterpreter.run_node"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.run_node">[docs]</a>    <span class="k">def</span> <span class="nf">run_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">run_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">)</span> <span class="ow">and</span> <span class="n">out</span><span class="o">.</span><span class="n">is_floating_point</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ScalePair</span><span class="p">()</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">ScaleTracker</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">out</span></div>
@@ -171,8 +171,8 @@
 
 <span class="k">def</span> <span class="nf">_record_scales</span><span class="p">(</span>
     <span class="n">fx_graph_module</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">GraphModule</span><span class="p">,</span>
-    <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
-    <span class="n">backward</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="n">backward</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScaleDict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Given a `torch.fx.GraphModule`, and dummy tensors to feed into the forward and</span>
 <span class="sd">    backward passes, returns a dictionary of the scales (standard deviations) of every</span>
@@ -180,15 +180,15 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        fx_graph_module (fx.GraphModule): the module to record.</span>
-<span class="sd">        input (Tensor): fed into the forward pass for analysis.</span>
-<span class="sd">        backward (Tensor): fed into the output&#39;s `.backward()`  method for</span>
-<span class="sd">            analysis.</span>
+<span class="sd">        input (Tuple[Tensor, ...]): fed into the forward pass for analysis.</span>
+<span class="sd">        backward (Tensor, optional): fed into the output&#39;s `.backward()`  method for</span>
+<span class="sd">            analysis. Defaults to `None`, equivalent to calling plain `.backward()`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        ScaleDict: An ordered dictionary with `ScalePair`s for each intermediate tensor.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tracking_module</span> <span class="o">=</span> <span class="n">ScaleTrackingInterpreter</span><span class="p">(</span><span class="n">fx_graph_module</span><span class="p">)</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">tracking_module</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">tracking_module</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">*</span><span class="n">inputs</span><span class="p">)</span>
     <span class="n">out</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">backward</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tracking_module</span><span class="o">.</span><span class="n">scales</span>
 
@@ -300,8 +300,8 @@
 
 <div class="viewcode-block" id="analyse_module"><a class="viewcode-back" href="../../generated/unit_scaling.utils.analyse_module.html#unit_scaling.utils.analyse_module">[docs]</a><span class="k">def</span> <span class="nf">analyse_module</span><span class="p">(</span>
     <span class="n">module</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
-    <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
-    <span class="n">backward</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]],</span>
+    <span class="n">backward</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">recurse_modules</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">syntax_highlight</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">autowrap_modules</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ModuleType</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">math</span><span class="p">,</span> <span class="n">einops</span><span class="p">,</span> <span class="n">functional</span><span class="p">),</span>
@@ -313,8 +313,10 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        module (nn.Module): the module to analyse.</span>
-<span class="sd">        input (Tensor): fed into the forward pass for analysis.</span>
-<span class="sd">        backward (Tensor): fed into the output&#39;s `.backward()` method for analysis.</span>
+<span class="sd">        inputs (Union[Tensor, Tuple[Tensor, ...]]): fed into the forward pass for</span>
+<span class="sd">            analysis.</span>
+<span class="sd">        backward (Tensor, optional): fed into the output&#39;s `.backward()` method for</span>
+<span class="sd">            analysis. Defaults to `None`, equivalent to calling plain `.backward()`.</span>
 <span class="sd">        recurse_modules (bool, optional): toggles recursive behavour. Defaults to True.</span>
 <span class="sd">        syntax_highlight (bool, optional): Defaults to True.</span>
 <span class="sd">        autowrap_modules (Tuple[ModuleType]): defaults to</span>
@@ -367,7 +369,9 @@
     <span class="n">fx_graph</span> <span class="o">=</span> <span class="n">tracer</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
     <span class="n">fx_graph_module</span> <span class="o">=</span> <span class="n">fx</span><span class="o">.</span><span class="n">GraphModule</span><span class="p">(</span><span class="n">tracer</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">fx_graph</span><span class="p">)</span>
 
-    <span class="n">scales</span> <span class="o">=</span> <span class="n">_record_scales</span><span class="p">(</span><span class="n">fx_graph_module</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">backward</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,)</span>
+    <span class="n">scales</span> <span class="o">=</span> <span class="n">_record_scales</span><span class="p">(</span><span class="n">fx_graph_module</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">backward</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_annotate</span><span class="p">(</span><span class="n">fx_graph_module</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">scales</span><span class="p">,</span> <span class="n">syntax_highlight</span><span class="o">=</span><span class="n">syntax_highlight</span><span class="p">)</span></div>
 </pre></div>
 

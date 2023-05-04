@@ -88,7 +88,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="GELU"><a class="viewcode-back" href="../../generated/unit_scaling.modules.GELU.html#unit_scaling.modules.GELU">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** Gaussian Error Linear Units function:&quot;</span><span class="p">,</span>
     <span class="n">add_args</span><span class="o">=</span><span class="p">[</span><span class="n">binary_constraint_docstring</span><span class="p">],</span>
 <span class="p">)</span>
@@ -102,10 +102,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="n">constraint</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">gelu</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">gelu</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
 
-<div class="viewcode-block" id="Softmax"><a class="viewcode-back" href="../../generated/unit_scaling.modules.Softmax.html#unit_scaling.modules.Softmax">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;Applies a **unit-scaled** Softmax function to an n-dimensional input Tensor.&quot;</span>
         <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
@@ -122,26 +122,29 @@
 <span class="k">class</span> <span class="nc">Softmax</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BinaryConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmean</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="n">constraint</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Dropout"><a class="viewcode-back" href="../../generated/unit_scaling.modules.Dropout.html#unit_scaling.modules.Dropout">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span><span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;A **unit-scaled** implementation of Dropout.&quot;</span><span class="p">)</span>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;A **unit-scaled** implementation of Dropout.&quot;</span><span class="p">,</span>
+    <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;inplace&quot;</span><span class="p">],</span>
+<span class="p">)</span>
 <span class="k">class</span> <span class="nc">Dropout</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">inplace</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Linear"><a class="viewcode-back" href="../../generated/unit_scaling.modules.Linear.html#unit_scaling.modules.Linear">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;Applies a **unit-scaled** linear transformation to the incoming data.&quot;</span>
     <span class="p">),</span>
@@ -166,10 +169,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="LayerNorm"><a class="viewcode-back" href="../../generated/unit_scaling.modules.LayerNorm.html#unit_scaling.modules.LayerNorm">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;Applies a **unit-scaled** Layer Normalization over a mini-batch of inputs.&quot;</span>
     <span class="p">),</span>
@@ -178,7 +181,46 @@
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">layer_norm</span><span class="p">(</span>
             <span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalized_shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;A **unit-scaled** lookup table that looks up embeddings in a fixed dictionary&quot;</span>
+        <span class="s2">&quot; and size.&quot;</span>
+    <span class="p">),</span>
+    <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;scale_grad_by_freq&quot;</span><span class="p">,</span> <span class="s2">&quot;sparse&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="k">class</span> <span class="nc">Embedding</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span>
+            <span class="nb">input</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">padding_idx</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_norm</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">norm_type</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale_grad_by_freq</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparse</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Computes a **unit-scaled** the cross entropy loss between input logits and&quot;</span>
+        <span class="s2">&quot; target.&quot;</span>
+    <span class="p">),</span>
+    <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;size_average&quot;</span><span class="p">,</span> <span class="s2">&quot;reduce&quot;</span><span class="p">,</span> <span class="s2">&quot;label_smoothing&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="k">class</span> <span class="nc">CrossEntropyLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span>
+            <span class="nb">input</span><span class="p">,</span>
+            <span class="n">target</span><span class="p">,</span>
+            <span class="n">weight</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span>
+            <span class="n">ignore_index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ignore_index</span><span class="p">,</span>
+            <span class="n">reduction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reduction</span><span class="p">,</span>
+            <span class="n">label_smoothing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">label_smoothing</span><span class="p">,</span>
+        <span class="p">)</span>
 
 
 <div class="viewcode-block" id="MLP"><a class="viewcode-back" href="../../generated/unit_scaling.modules.MLP.html#unit_scaling.modules.MLP">[docs]</a><span class="nd">@format_docstring</span><span class="p">(</span><span class="n">binary_constraint_docstring</span><span class="p">)</span>
@@ -216,11 +258,12 @@
 <span class="k">class</span> <span class="nc">MHSA</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of a multi-head self-attention layer.</span>
 
+<span class="sd">    Warning: using `constraint=None` here will likely give incorrect gradients.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        hidden_size (int): the hidden dimension size of the input.</span>
 <span class="sd">        heads (int): the number of attention heads.</span>
 <span class="sd">        dropout_p (float, optional): the probability of the post-softmax dropout.</span>
-<span class="sd">            Defaults to 0.1.</span>
 <span class="sd">        {0}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -228,7 +271,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">heads</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">dropout_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">dropout_p</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VariadicConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmean</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -243,8 +286,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="n">constraint</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-        <span class="n">qkv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_qkv</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
-        <span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">einops</span><span class="o">.</span><span class="n">rearrange</span><span class="p">(</span><span class="n">qkv</span><span class="p">,</span> <span class="s2">&quot;b s (d z h) -&gt; z b h s d&quot;</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">heads</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">q_k_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_qkv</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">einops</span><span class="o">.</span><span class="n">rearrange</span><span class="p">(</span><span class="n">q_k_v</span><span class="p">,</span> <span class="s2">&quot;b s (z h d) -&gt; z b h s d&quot;</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">heads</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
         <span class="n">qk</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span>
         <span class="n">qk</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">qk</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span>
         <span class="n">qk</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">qk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout_p</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">)</span>
@@ -253,15 +296,17 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_o</span><span class="p">(</span><span class="n">qkv</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
 
 
-<div class="viewcode-block" id="TransformerLayer"><a class="viewcode-back" href="../../generated/unit_scaling.modules.TransformerLayer.html#unit_scaling.modules.TransformerLayer">[docs]</a><span class="k">class</span> <span class="nc">TransformerLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="TransformerLayer"><a class="viewcode-back" href="../../generated/unit_scaling.modules.TransformerLayer.html#unit_scaling.modules.TransformerLayer">[docs]</a><span class="nd">@format_docstring</span><span class="p">(</span><span class="n">variadic_constraint_docstring</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TransformerLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of a PreNorm</span>
 <span class="sd">    (see https://arxiv.org/abs/2002.04745) transformer layer.</span>
+
+<span class="sd">    Warning: using `constraint=None` here will likely give incorrect gradients.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        hidden_size (int): the hidden dimension size of the input.</span>
 <span class="sd">        heads (int): the number of attention heads.</span>
 <span class="sd">        dropout_p (float, optional): the probability of the post-softmax dropout.</span>
-<span class="sd">            Defaults to 0.1.</span>
 <span class="sd">        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.</span>
 <span class="sd">        tau (float, optional): the weighting of the residual branch relative to the skip</span>
 <span class="sd">            connection. Defaults to 0.2.</span>
@@ -272,7 +317,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">heads</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">dropout_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">dropout_p</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">act_fn</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span> <span class="o">=</span> <span class="n">GELU</span><span class="p">(),</span>
         <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
         <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VariadicConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmean</span><span class="p">,</span>
@@ -297,6 +342,58 @@
         <span class="nb">input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="nb">input</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout_p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">residual_add</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">skip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TransformerDecoder"><a class="viewcode-back" href="../../generated/unit_scaling.modules.TransformerDecoder.html#unit_scaling.modules.TransformerDecoder">[docs]</a><span class="nd">@format_docstring</span><span class="p">(</span><span class="n">variadic_constraint_docstring</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TransformerDecoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of a decoder-type transformer.</span>
+
+<span class="sd">    Note: this class is currently just for demonstrating scaling and lacks key</span>
+<span class="sd">    functionality (e.g. causal masking, positional embeddings, usage for inference).</span>
+
+<span class="sd">    Warning: using `constraint=None` here will likely give incorrect gradients.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        hidden_size (int): the hidden dimension size of the input.</span>
+<span class="sd">        vocab_size (int): the number of tokens in the vocabulary.</span>
+<span class="sd">        layers (int): the number of transformer layers.</span>
+<span class="sd">        heads (int): the number of attention heads.</span>
+<span class="sd">        dropout_p (float, optional): the probability of the post-softmax dropout.</span>
+<span class="sd">        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.</span>
+<span class="sd">        tau (float, optional): the weighting of the residual branch relative to the skip</span>
+<span class="sd">            connection. Defaults to 0.2.</span>
+<span class="sd">        {0}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">vocab_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">layers</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">heads</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dropout_p</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">act_fn</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span> <span class="o">=</span> <span class="n">GELU</span><span class="p">(),</span>
+        <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VariadicConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmean</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="n">vocab_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_layer_norm</span> <span class="o">=</span> <span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformer_layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">(</span>
+                <span class="n">TransformerLayer</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">heads</span><span class="p">,</span> <span class="n">dropout_p</span><span class="p">,</span> <span class="n">act_fn</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">constraint</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_layer_norm</span> <span class="o">=</span> <span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_layer_norm</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_layers</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_layer_norm</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">end_dim</span><span class="o">=-</span><span class="mi">2</span><span class="p">),</span> <span class="n">labels</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span></div>
 </pre></div>
 
            </div>

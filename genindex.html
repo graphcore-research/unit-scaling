@@ -75,6 +75,7 @@
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
@@ -88,7 +89,6 @@
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
- | <a href="#W"><strong>W</strong></a>
  
 </div>
 <h2 id="A">A</h2>
@@ -109,14 +109,6 @@
       <li><a href="generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker.backward">backward() (unit_scaling.utils.ScaleTracker static method)</a>
 </li>
   </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/unit_scaling.modules.LayerNorm.html#unit_scaling.modules.LayerNorm.bias">bias (unit_scaling.modules.LayerNorm attribute)</a>
-
-      <ul>
-        <li><a href="generated/unit_scaling.modules.Linear.html#unit_scaling.modules.Linear.bias">(unit_scaling.modules.Linear attribute)</a>
-</li>
-      </ul></li>
-  </ul></td>
 </tr></table>
 
 <h2 id="C">C</h2>
@@ -124,11 +116,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.call_function">call_function() (unit_scaling.utils.ScaleTrackingInterpreter method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.call_method">call_method() (unit_scaling.utils.ScaleTrackingInterpreter method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.call_module">call_module() (unit_scaling.utils.ScaleTrackingInterpreter method)</a>
+</li>
+      <li><a href="generated/unit_scaling.functional.cross_entropy.html#unit_scaling.functional.cross_entropy">cross_entropy() (in module unit_scaling.functional)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -136,11 +130,15 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/unit_scaling.modules.Dropout.html#unit_scaling.modules.Dropout">Dropout (class in unit_scaling.modules)</a>
+      <li><a href="generated/unit_scaling.functional.dropout.html#unit_scaling.functional.dropout">dropout() (in module unit_scaling.functional)</a>
 </li>
   </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/unit_scaling.functional.dropout.html#unit_scaling.functional.dropout">dropout() (in module unit_scaling.functional)</a>
+      <li><a href="generated/unit_scaling.functional.embedding.html#unit_scaling.functional.embedding">embedding() (in module unit_scaling.functional)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -160,8 +158,6 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/unit_scaling.modules.GELU.html#unit_scaling.modules.GELU">GELU (class in unit_scaling.modules)</a>
-</li>
       <li><a href="generated/unit_scaling.functional.gelu.html#unit_scaling.functional.gelu">gelu() (in module unit_scaling.functional)</a>
 </li>
   </ul></td>
@@ -194,12 +190,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.functional.layer_norm.html#unit_scaling.functional.layer_norm">layer_norm() (in module unit_scaling.functional)</a>
 </li>
-      <li><a href="generated/unit_scaling.modules.LayerNorm.html#unit_scaling.modules.LayerNorm">LayerNorm (class in unit_scaling.modules)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/unit_scaling.modules.Linear.html#unit_scaling.modules.Linear">Linear (class in unit_scaling.modules)</a>
-</li>
       <li><a href="generated/unit_scaling.functional.linear.html#unit_scaling.functional.linear">linear() (in module unit_scaling.functional)</a>
 </li>
   </ul></td>
@@ -297,8 +289,6 @@
 </li>
       <li><a href="generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker.set_materialize_grads">set_materialize_grads() (unit_scaling.utils.ScaleTracker method)</a>
 </li>
-      <li><a href="generated/unit_scaling.modules.Softmax.html#unit_scaling.modules.Softmax">Softmax (class in unit_scaling.modules)</a>
-</li>
       <li><a href="generated/unit_scaling.functional.softmax.html#unit_scaling.functional.softmax">softmax() (in module unit_scaling.functional)</a>
 </li>
   </ul></td>
@@ -311,11 +301,13 @@
 </li>
       <li><a href="generated/unit_scaling.constraints.to_left_grad_scale.html#unit_scaling.constraints.to_left_grad_scale">to_left_grad_scale() (in module unit_scaling.constraints)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.constraints.to_output_scale.html#unit_scaling.constraints.to_output_scale">to_output_scale() (in module unit_scaling.constraints)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.constraints.to_right_grad_scale.html#unit_scaling.constraints.to_right_grad_scale">to_right_grad_scale() (in module unit_scaling.constraints)</a>
+</li>
+      <li><a href="generated/unit_scaling.modules.TransformerDecoder.html#unit_scaling.modules.TransformerDecoder">TransformerDecoder (class in unit_scaling.modules)</a>
 </li>
       <li><a href="generated/unit_scaling.modules.TransformerLayer.html#unit_scaling.modules.TransformerLayer">TransformerLayer (class in unit_scaling.modules)</a>
 </li>
@@ -377,18 +369,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker.vjp">vjp() (unit_scaling.utils.ScaleTracker static method)</a>
 </li>
-  </ul></td>
-</tr></table>
-
-<h2 id="W">W</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/unit_scaling.modules.LayerNorm.html#unit_scaling.modules.LayerNorm.weight">weight (unit_scaling.modules.LayerNorm attribute)</a>
-
-      <ul>
-        <li><a href="generated/unit_scaling.modules.Linear.html#unit_scaling.modules.Linear.weight">(unit_scaling.modules.Linear attribute)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 

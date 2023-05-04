@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>unit_scaling.modules.Softmax &mdash; unit-scaling  documentation</title>
+  <title>unit_scaling.modules.TransformerDecoder &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,7 +17,6 @@
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -49,14 +48,10 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.modules.html">unit_scaling.modules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.Dropout.html">unit_scaling.modules.Dropout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.GELU.html">unit_scaling.modules.GELU</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.LayerNorm.html">unit_scaling.modules.LayerNorm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.Linear.html">unit_scaling.modules.Linear</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.MHSA.html">unit_scaling.modules.MHSA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.MLP.html">unit_scaling.modules.MLP</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.modules.Softmax</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.modules.Softmax"><code class="docutils literal notranslate"><span class="pre">Softmax</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.modules.TransformerDecoder</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.modules.TransformerDecoder"><code class="docutils literal notranslate"><span class="pre">TransformerDecoder</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.modules.TransformerLayer.html">unit_scaling.modules.TransformerLayer</a></li>
@@ -84,9 +79,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.html">unit_scaling</a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.modules.html">unit_scaling.modules</a></li>
-      <li class="breadcrumb-item active">unit_scaling.modules.Softmax</li>
+      <li class="breadcrumb-item active">unit_scaling.modules.TransformerDecoder</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/unit_scaling.modules.Softmax.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/unit_scaling.modules.TransformerDecoder.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -94,51 +89,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="unit-scaling-modules-softmax">
-<h1>unit_scaling.modules.Softmax<a class="headerlink" href="#unit-scaling-modules-softmax" title="Permalink to this heading"></a></h1>
+  <section id="unit-scaling-modules-transformerdecoder">
+<h1>unit_scaling.modules.TransformerDecoder<a class="headerlink" href="#unit-scaling-modules-transformerdecoder" title="Permalink to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="unit_scaling.modules.Softmax">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.modules.</span></span><span class="sig-name descname"><span class="pre">Softmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dim:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[float,</span> <span class="pre">float],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/modules.html#Softmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.modules.Softmax" title="Permalink to this definition"></a></dt>
-<dd><p>Applies a <strong>unit-scaled</strong> Softmax function to an n-dimensional input Tensor.</p>
-<p>The standard softmax rescales values so that the elements of the n-dimensional output Tensor lie in the range [0,1] and sum to 1. Unit scaling multiplies by n, meaning the output Tensor lies in the range [0,n].</p>
-<p>The docs below are from the standard <cite>nn.Softmax</cite> implementation. Values therein (e.g. [0,1] ranges) should be adjusted accordingly.
-rescaling them so that the elements of the n-dimensional output Tensor
-lie in the range [0,1] and sum to 1.</p>
-<p>Softmax is defined as:</p>
-<div class="math notranslate nohighlight">
-\[\text{Softmax}(x_{i}) = \frac{\exp(x_i)}{\sum_j \exp(x_j)}\]</div>
-<p>When the input Tensor is a sparse tensor then the unspecifed
-values are treated as <code class="docutils literal notranslate"><span class="pre">-inf</span></code>.</p>
+<dt class="sig sig-object py" id="unit_scaling.modules.TransformerDecoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.modules.</span></span><span class="sig-name descname"><span class="pre">TransformerDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hidden_size:</span> <span class="pre">int,</span> <span class="pre">vocab_size:</span> <span class="pre">int,</span> <span class="pre">layers:</span> <span class="pre">int,</span> <span class="pre">heads:</span> <span class="pre">int,</span> <span class="pre">dropout_p:</span> <span class="pre">float,</span> <span class="pre">act_fn:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">=</span> <span class="pre">GELU(approximate='none'),</span> <span class="pre">tau:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.2,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[...],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/modules.html#TransformerDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.modules.TransformerDecoder" title="Permalink to this definition"></a></dt>
+<dd><p>A <strong>unit-scaled</strong> implementation of a decoder-type transformer.</p>
+<p>Note: this class is currently just for demonstrating scaling and lacks key
+functionality (e.g. causal masking, positional embeddings, usage for inference).</p>
+<p>Warning: using <cite>constraint=None</cite> here will likely give incorrect gradients.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – A dimension along which Softmax will be computed (so every slice
-along dim will sum to 1).</p></li>
-<li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><em>BinaryConstraint</em><em>]</em><em>?</em>) – function whichtakes <cite>output_scale</cite> and <cite>grad_input_scale</cite> and returns a single ‘constrained’ scale (usually necessary for valid gradients). If <cite>None</cite> is provided, no constraint will be applied. Defaults to <cite>gmean</cite>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>a Tensor of the same dimension and shape as the input with</dt><dd><p>values in the range [0, 1]</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Shape:</dt><dd><ul class="simple">
-<li><p>Input: <span class="math notranslate nohighlight">\((*)\)</span> where <cite>*</cite> means, any number of additional
-dimensions</p></li>
-<li><p>Output: <span class="math notranslate nohighlight">\((*)\)</span>, same shape as the input</p></li>
+<li><p><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – the hidden dimension size of the input.</p></li>
+<li><p><strong>vocab_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – the number of tokens in the vocabulary.</p></li>
+<li><p><strong>layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – the number of transformer layers.</p></li>
+<li><p><strong>heads</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – the number of attention heads.</p></li>
+<li><p><strong>dropout_p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – the probability of the post-softmax dropout.</p></li>
+<li><p><strong>act_fn</strong> (<em>nn.Module</em>) – the activation function module. Defaults to <cite>GELU()</cite>.</p></li>
+<li><p><strong>tau</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – the weighting of the residual branch relative to the skip
+connection. Defaults to 0.2.</p></li>
+<li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><em>Callable</em><em>[</em><em>...</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>]</em><em>]</em><em>, </em><em>optional</em>) – function which takes any number of output/grad-input scales and returns a single ‘constrained’ scale. If <cite>None</cite> is provided, no constraint will be applied. Defaults to <cite>gmean</cite>.</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </section>

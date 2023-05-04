@@ -23,13 +23,9 @@ unit\_scaling.modules
       :toctree:
       :template: custom-class-template.rst
    
-      Dropout
-      GELU
-      LayerNorm
-      Linear
       MHSA
       MLP
-      Softmax
+      TransformerDecoder
       TransformerLayer
    
    

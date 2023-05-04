@@ -2,12 +2,12 @@
    # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
    # Copyright (c) 2007-2023 by the Sphinx team. All rights reserved.
 
-unit\_scaling.modules.Linear
-============================
+unit\_scaling.modules.TransformerDecoder
+========================================
 
 .. currentmodule:: unit_scaling.modules
 
-.. autoclass:: Linear
+.. autoclass:: TransformerDecoder
    :members:
    :inherited-members: Module
    :exclude-members: extra_repr, forward

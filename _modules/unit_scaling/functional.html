@@ -143,11 +143,11 @@
 <span class="p">)</span>
 <span class="k">def</span> <span class="nf">softmax</span><span class="p">(</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
-    <span class="n">dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BinaryConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmean</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-    <span class="n">dim_size</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="k">if</span> <span class="n">dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">input</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+    <span class="n">dim_size</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span>
     <span class="c1"># Scale factors determined empirically, assuming unit-scaled &amp; large dim_size</span>
     <span class="n">output_scale</span> <span class="o">=</span> <span class="n">dim_size</span> <span class="o">/</span> <span class="mf">1.31</span>
     <span class="n">grad_input_scale</span> <span class="o">=</span> <span class="n">dim_size</span> <span class="o">/</span> <span class="mf">1.65</span>
@@ -158,7 +158,9 @@
 
 
 <div class="viewcode-block" id="dropout"><a class="viewcode-back" href="../../generated/unit_scaling.functional.dropout.html#unit_scaling.functional.dropout">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
-    <span class="n">F</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span> <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** dropout function.&quot;</span>
+    <span class="n">F</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** dropout function.&quot;</span><span class="p">,</span>
+    <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;inplace&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="k">def</span> <span class="nf">dropout</span><span class="p">(</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">training</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -189,9 +191,11 @@
     <span class="n">right_grad_scale</span> <span class="o">=</span> <span class="n">left_size</span><span class="o">**-</span><span class="mf">0.5</span>
 
     <span class="k">if</span> <span class="n">constraint</span><span class="p">:</span>
-        <span class="n">output_scale</span> <span class="o">=</span> <span class="n">left_grad_scale</span> <span class="o">=</span> <span class="n">right_grad_scale</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">(</span>
-            <span class="n">output_scale</span><span class="p">,</span> <span class="n">left_grad_scale</span><span class="p">,</span> <span class="n">right_grad_scale</span>
-        <span class="p">)</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">(</span><span class="n">output_scale</span><span class="p">,</span> <span class="n">left_grad_scale</span><span class="p">,</span> <span class="n">right_grad_scale</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+            <span class="n">output_scale</span><span class="p">,</span> <span class="n">left_grad_scale</span><span class="p">,</span> <span class="n">right_grad_scale</span> <span class="o">=</span> <span class="n">scale</span>  <span class="c1"># type: ignore</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">output_scale</span> <span class="o">=</span> <span class="n">left_grad_scale</span> <span class="o">=</span> <span class="n">right_grad_scale</span> <span class="o">=</span> <span class="n">scale</span>
 
     <span class="n">left</span> <span class="o">=</span> <span class="n">scale_bwd</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">left_grad_scale</span><span class="p">)</span>
     <span class="n">right</span> <span class="o">=</span> <span class="n">scale_bwd</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">right_grad_scale</span><span class="p">)</span>
@@ -290,6 +294,73 @@
     <span class="n">residual</span> <span class="o">=</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">tau</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span>
     <span class="n">skip</span> <span class="o">=</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">skip</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">residual</span> <span class="o">+</span> <span class="n">skip</span></div>
+
+
+<div class="viewcode-block" id="embedding"><a class="viewcode-back" href="../../generated/unit_scaling.functional.embedding.html#unit_scaling.functional.embedding">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+    <span class="n">F</span><span class="o">.</span><span class="n">embedding</span><span class="p">,</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;A **unit-scaled** lookup table that looks up embeddings in a fixed dictionary&quot;</span>
+        <span class="s2">&quot;and size.&quot;</span>
+    <span class="p">),</span>
+    <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;scale_grad_by_freq&quot;</span><span class="p">,</span> <span class="s2">&quot;sparse&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">embedding</span><span class="p">(</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">padding_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_norm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">norm_type</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">scale_grad_by_freq</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">sparse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">prod</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="n">scale_bwd</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="p">(</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span>
+        <span class="nb">input</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">padding_idx</span><span class="p">,</span> <span class="n">max_norm</span><span class="p">,</span> <span class="n">norm_type</span><span class="p">,</span> <span class="n">scale_grad_by_freq</span><span class="p">,</span> <span class="n">sparse</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cross_entropy"><a class="viewcode-back" href="../../generated/unit_scaling.functional.cross_entropy.html#unit_scaling.functional.cross_entropy">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+    <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">,</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Computes a **unit-scaled** the cross entropy loss between input logits and&quot;</span>
+        <span class="s2">&quot; target.&quot;</span>
+    <span class="p">),</span>
+    <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;size_average&quot;</span><span class="p">,</span> <span class="s2">&quot;reduce&quot;</span><span class="p">,</span> <span class="s2">&quot;label_smoothing&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">cross_entropy</span><span class="p">(</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">size_average</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">reduction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="n">label_smoothing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">batch_size</span><span class="p">,</span> <span class="n">vocab_size</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">batch_size</span><span class="p">,</span> <span class="n">vocab_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;cross_entropy input shape is </span><span class="si">{</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, but should be either&quot;</span>
+            <span class="s2">&quot; (vocab_size,) or (batch_size, vocab_size)&quot;</span>
+        <span class="p">)</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">scale_bwd</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">vocab_size</span> <span class="o">/</span> <span class="p">(</span><span class="n">vocab_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span>
+        <span class="nb">input</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">,</span>
+        <span class="n">weight</span><span class="p">,</span>
+        <span class="n">size_average</span><span class="p">,</span>
+        <span class="n">ignore_index</span><span class="p">,</span>
+        <span class="n">reduce</span><span class="p">,</span>
+        <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
+        <span class="n">label_smoothing</span><span class="o">=</span><span class="n">label_smoothing</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">reduction</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">loss</span></div>
 </pre></div>
 
            </div>
