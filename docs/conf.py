@@ -31,9 +31,12 @@ extensions = [
     "sphinx.ext.napoleon",  # support for google-style docstrings
     "myst_parser",  # support for including markdown files in .rst files (e.g. readme)
     "sphinx.ext.viewcode",  # adds source code to docs
+    "sphinx.ext.autosectionlabel",  # links to sections in the same document
 ]
 
 autosummary_generate = True
+autosummary_imported_members = True
+autosummary_ignore_module_all = False
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
 

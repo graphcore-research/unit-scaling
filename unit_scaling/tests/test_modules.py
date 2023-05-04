@@ -5,7 +5,7 @@ import torch
 from torch import randint
 from torch.optim import SGD
 
-from ..modules import (
+from .._modules import (
     GELU,
     MHSA,
     MLP,

@@ -7,6 +7,8 @@ from typing import Tuple
 import torch
 from torch import Tensor, fx
 
+from ._internal_utils import generate__all__
+
 try:
     import poptorch
     import poptorch_experimental_addons as pea
@@ -77,3 +79,6 @@ def scale_bwd(input: Tensor, scale: float) -> Tensor:
         Tensor: unchanged in the forward pass, but with a scaled grad.
     """
     return _scale(input, bwd_scale=scale)
+
+
+__all__ = generate__all__(__name__)

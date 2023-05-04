@@ -9,6 +9,7 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor
 
+from ._internal_utils import generate__all__
 from .constraints import BinaryConstraint, TernaryConstraint, gmean
 from .docs import (
     binary_constraint_docstring,
@@ -290,3 +291,6 @@ def cross_entropy(
     if reduction == "mean":
         return scale_fwd(loss, 1 / batch_size)
     return loss
+
+
+__all__ = generate__all__(__name__)

@@ -7,6 +7,8 @@ Based on the paper
 
 ## Development
 
+For users who wish to develop using this codebase, the following setup is required:
+
 **First-time setup**:
 
 ```bash

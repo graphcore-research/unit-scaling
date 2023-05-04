@@ -36,7 +36,6 @@ def _validate(
 
     for arg in unsupported_args:
         if arg not in default_kwargs:
-            print(default_kwargs, argspec)
             raise ValueError(f"unsupported arg '{arg}' is not valid.")
         if default_kwargs[arg] is ...:
             raise ValueError(f"unsupported arg '{arg}' has no default value")
@@ -121,7 +120,8 @@ def inherit_docstring(
             add_args=add_args,
             unsupported_args=unsupported_args,
         )
-        return _validate(source, unsupported_args)  # type: ignore
+        source.__init__ = _validate(source.__init__, unsupported_args)  # type: ignore
+        return source
 
     return decorator
 
