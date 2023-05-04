@@ -222,7 +222,7 @@ class _DeepTracer(fx.Tracer):
         """Adds the `target_to_function` dict to the graph so the interpreter can use it
         downstream."""
         graph = super().trace(root, concrete_args)
-        if graph._tracer_extras is None:
+        if not hasattr(graph, "_tracer_extras") or graph._tracer_extras is None:
             graph._tracer_extras = {}
         graph._tracer_extras["target_to_function"] = self.target_to_function
         return graph  # type: ignore

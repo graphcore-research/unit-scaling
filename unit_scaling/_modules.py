@@ -25,10 +25,9 @@ from .docs import (
 class GELU(nn.GELU):
     def __init__(
         self,
-        approximate: str = "none",
         constraint: Optional[BinaryConstraint] = gmean,
     ) -> None:
-        super().__init__(approximate)
+        super().__init__()
         self.constraint = constraint
 
     def forward(self, input: Tensor) -> Tensor:
