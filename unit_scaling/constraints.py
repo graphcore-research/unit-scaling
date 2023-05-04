@@ -3,10 +3,12 @@
 """Common scale-constraints used in unit-scaled operations."""
 
 from math import pow, prod
-from typing import Callable
+from typing import Callable, Tuple, Union
 
 BinaryConstraint = Callable[[float, float], float]
-TernaryConstraint = Callable[[float, float, float], float]
+TernaryConstraint = Callable[
+    [float, float, float], Union[float, Tuple[float, float, float]]
+]
 VariadicConstraint = Callable[..., float]
 
 
