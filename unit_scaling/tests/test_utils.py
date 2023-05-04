@@ -49,7 +49,7 @@ def test_analyse_mhsa() -> None:
     backward = torch.randn(batch_size, seq_len, hidden_size)
 
     annotated_code = analyse_module(
-        MHSA(hidden_size, heads), input, backward, syntax_highlight=False
+        MHSA(hidden_size, heads, dropout_p=0.1), input, backward, syntax_highlight=False
     )
 
     expected_code = """
@@ -57,7 +57,7 @@ def forward(self, input : torch.Tensor) -> torch.Tensor:
     input_1 = input;  (-> 1.0, <- 0.819)
     linear_qkv_weight = self.linear_qkv.weight;  (-> 1.01, <- 0.681)
     linear = U.linear(input_1, linear_qkv_weight, None, gmean);  (-> 0.766, <- 0.631)
-    rearrange = einops_einops_rearrange(linear, 'b s (d z h) -> z b h s d', h = 4, z = 3);  (-> 0.766, <- 0.631)
+    rearrange = einops_einops_rearrange(linear, 'b s (z h d) -> z b h s d', h = 4, z = 3);  (-> 0.766, <- 0.631)
     getitem = rearrange[0];  (-> 0.774, <- 0.463)
     getitem_1 = rearrange[1];  (-> 0.773, <- 0.34)
     getitem_2 = rearrange[2];  (-> 0.752, <- 0.929)
