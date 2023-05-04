@@ -72,11 +72,11 @@ def gelu(
 )
 def softmax(
     input: Tensor,
-    dim: int,
+    dim: Optional[int] = None,
     dtype: Optional[torch.dtype] = None,
     constraint: Optional[BinaryConstraint] = gmean,
 ) -> Tensor:
-    dim_size = input.shape[dim]
+    dim_size = input.shape[dim] if dim is not None else input.numel()
     # Scale factors determined empirically, assuming unit-scaled & large dim_size
     output_scale = dim_size / 1.31
     grad_input_scale = dim_size / 1.65
@@ -87,9 +87,7 @@ def softmax(
 
 
 @docstring_from(
-    F.dropout,
-    short_description="Applies a **unit-scaled** dropout function.",
-    unsupported_args=["inplace"],
+    F.dropout, short_description="Applies a **unit-scaled** dropout function."
 )
 def dropout(
     input: Tensor, p: float = 0.5, training: bool = True, inplace: bool = False
@@ -120,11 +118,9 @@ def matmul(
     right_grad_scale = left_size**-0.5
 
     if constraint:
-        scale = constraint(output_scale, left_grad_scale, right_grad_scale)
-        if isinstance(scale, Sequence):
-            output_scale, left_grad_scale, right_grad_scale = scale  # type: ignore
-        else:
-            output_scale = left_grad_scale = right_grad_scale = scale
+        output_scale = left_grad_scale = right_grad_scale = constraint(
+            output_scale, left_grad_scale, right_grad_scale
+        )
 
     left = scale_bwd(left, left_grad_scale)
     right = scale_bwd(right, right_grad_scale)
@@ -223,70 +219,3 @@ def residual_add(residual: Tensor, skip: Tensor, tau: float = 0.2) -> Tensor:
     residual = scale_fwd(residual, tau**0.5)
     skip = scale_fwd(skip, (1 - tau) ** 0.5)
     return residual + skip
-
-
-@docstring_from(
-    F.embedding,
-    short_description=(
-        "A **unit-scaled** lookup table that looks up embeddings in a fixed dictionary"
-        "and size."
-    ),
-    unsupported_args=["scale_grad_by_freq", "sparse"],
-)
-def embedding(
-    input: Tensor,
-    weight: Tensor,
-    padding_idx: Optional[int] = None,
-    max_norm: Optional[float] = None,
-    norm_type: float = 2.0,
-    scale_grad_by_freq: bool = False,
-    sparse: bool = False,
-) -> Tensor:
-    batch_size = prod(input.shape)
-    weight = scale_bwd(weight, (weight.shape[0] / batch_size) ** 0.5)
-    return F.embedding(
-        input, weight, padding_idx, max_norm, norm_type, scale_grad_by_freq, sparse
-    )
-
-
-@docstring_from(
-    F.cross_entropy,
-    short_description=(
-        "Computes a **unit-scaled** the cross entropy loss between input logits and"
-        " target."
-    ),
-    unsupported_args=["weight", "size_average", "reduce", "label_smoothing"],
-)
-def cross_entropy(
-    input: Tensor,
-    target: Tensor,
-    weight: Optional[Tensor] = None,
-    size_average: Optional[bool] = None,
-    ignore_index: int = -100,
-    reduce: Optional[bool] = None,
-    reduction: str = "mean",
-    label_smoothing: float = 0.0,
-) -> Tensor:
-    if len(input.shape) == 2:
-        batch_size, vocab_size = input.shape
-    elif len(input.shape) == 1:
-        batch_size, vocab_size = 1, input.shape[0]
-    else:
-        assert False, (
-            f"cross_entropy input shape is {input.shape}, but should be either"
-            " (vocab_size,) or (batch_size, vocab_size)"
-        )
-    input = scale_bwd(input, vocab_size / (vocab_size - 1) ** 0.5)
-    loss = F.cross_entropy(
-        input,
-        target,
-        weight,
-        size_average,
-        ignore_index,
-        reduce,
-        reduction="sum",
-        label_smoothing=label_smoothing,
-    )
-    if reduction == "mean":
-        return scale_fwd(loss, 1 / batch_size)
-    return loss
