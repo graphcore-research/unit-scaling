@@ -44,29 +44,43 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="unit_scaling.html">unit_scaling</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">unit_scaling.functional.cross_entropy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">unit_scaling.functional.dropout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">unit_scaling.functional.embedding</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.functional.gelu</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.gelu"><code class="docutils literal notranslate"><span class="pre">gelu()</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">Limitations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.html">unit_scaling</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.GELU.html">unit_scaling.GELU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MHSA.html">unit_scaling.MHSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MLP.html">unit_scaling.MLP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.CrossEntropyLoss.html">unit_scaling.CrossEntropyLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Dropout.html">unit_scaling.Dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Embedding.html">unit_scaling.Embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.LayerNorm.html">unit_scaling.LayerNorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Linear.html">unit_scaling.Linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Softmax.html">unit_scaling.Softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerDecoder.html">unit_scaling.TransformerDecoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerLayer.html">unit_scaling.TransformerLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">unit_scaling.functional.cross_entropy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.dropout.html">unit_scaling.functional.dropout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.embedding.html">unit_scaling.functional.embedding</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">unit_scaling.functional.gelu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">unit_scaling.functional.layer_norm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.linear.html">unit_scaling.functional.linear</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.matmul.html">unit_scaling.functional.matmul</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_add.html">unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_split.html">unit_scaling.functional.residual_split</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">unit_scaling.functional.scale_elementwise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.softmax.html">unit_scaling.functional.softmax</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">unit_scaling.functional.layer_norm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">unit_scaling.functional.linear</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">unit_scaling.functional.matmul</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">unit_scaling.functional.residual_add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">unit_scaling.functional.residual_split</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">unit_scaling.functional.scale_elementwise</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">unit_scaling.functional.softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.scale.html">unit_scaling.scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.html">unit_scaling.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.modules.html">unit_scaling.modules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">unit_scaling.scale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">unit_scaling.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -85,6 +99,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.html">unit_scaling</a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.functional.html">unit_scaling.functional</a></li>
       <li class="breadcrumb-item active">unit_scaling.functional.gelu</li>

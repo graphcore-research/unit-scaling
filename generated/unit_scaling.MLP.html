@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>unit_scaling.MLP &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="unit_scaling.CrossEntropyLoss" href="unit_scaling.CrossEntropyLoss.html" />
+    <link rel="prev" title="unit_scaling.MHSA" href="unit_scaling.MHSA.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">Limitations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.html">unit_scaling</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.GELU.html">unit_scaling.GELU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MHSA.html">unit_scaling.MHSA</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">unit_scaling.MLP</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.MLP"><code class="docutils literal notranslate"><span class="pre">MLP</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.CrossEntropyLoss.html">unit_scaling.CrossEntropyLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Dropout.html">unit_scaling.Dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Embedding.html">unit_scaling.Embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.LayerNorm.html">unit_scaling.LayerNorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Linear.html">unit_scaling.Linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Softmax.html">unit_scaling.Softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerDecoder.html">unit_scaling.TransformerDecoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerLayer.html">unit_scaling.TransformerLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.scale.html">unit_scaling.scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.html">unit_scaling.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.html">unit_scaling</a></li>
+      <li class="breadcrumb-item active">unit_scaling.MLP</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/unit_scaling.MLP.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="unit-scaling-mlp">
+<h1>unit_scaling.MLP<a class="headerlink" href="#unit-scaling-mlp" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="unit_scaling.MLP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.</span></span><span class="sig-name descname"><span class="pre">MLP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hidden_size:</span> <span class="pre">int,</span> <span class="pre">act_fn:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">=</span> <span class="pre">GELU(approximate='none'),</span> <span class="pre">expansion_factor:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[float,</span> <span class="pre">float],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/_modules.html#MLP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.MLP" title="Permalink to this definition"></a></dt>
+<dd><p>A <strong>unit-scaled</strong> implementation of an MLP layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – the hidden dimension size of the input.</p></li>
+<li><p><strong>act_fn</strong> (<em>nn.Module</em>) – the activation function module. Defaults to <cite>GELU()</cite>.</p></li>
+<li><p><strong>expansion_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – the factor by which the MLP’s intermediate size
+increases relative to <cite>hidden_size</cite>.</p></li>
+<li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><em>BinaryConstraint</em><em>]</em><em>, </em><em>optional</em>) – function whichtakes <cite>output_scale</cite> and <cite>grad_input_scale</cite> and returns a single ‘constrained’ scale (usually necessary for valid gradients). If <cite>None</cite> is provided, no constraint will be applied. Defaults to <cite>gmean</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unit_scaling.MHSA.html" class="btn btn-neutral float-left" title="unit_scaling.MHSA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.CrossEntropyLoss.html" class="btn btn-neutral float-right" title="unit_scaling.CrossEntropyLoss" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

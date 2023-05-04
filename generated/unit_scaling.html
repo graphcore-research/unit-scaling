@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="unit_scaling.constraints" href="unit_scaling.constraints.html" />
-    <link rel="prev" title="Unit Scaling" href="../index.html" /> 
+    <link rel="next" title="unit_scaling.GELU" href="unit_scaling.GELU.html" />
+    <link rel="prev" title="API Reference" href="../api_reference.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,13 +43,30 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">unit_scaling</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.modules.html">unit_scaling.modules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">unit_scaling.scale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">unit_scaling.utils</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">Limitations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">unit_scaling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.GELU.html">unit_scaling.GELU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MHSA.html">unit_scaling.MHSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MLP.html">unit_scaling.MLP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.CrossEntropyLoss.html">unit_scaling.CrossEntropyLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Dropout.html">unit_scaling.Dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Embedding.html">unit_scaling.Embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.LayerNorm.html">unit_scaling.LayerNorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Linear.html">unit_scaling.Linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Softmax.html">unit_scaling.Softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerDecoder.html">unit_scaling.TransformerDecoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerLayer.html">unit_scaling.TransformerLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.scale.html">unit_scaling.scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.html">unit_scaling.utils</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -68,6 +85,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html">API Reference</a></li>
       <li class="breadcrumb-item active">unit_scaling</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/generated/unit_scaling.rst.txt" rel="nofollow"> View page source</a>
@@ -80,6 +98,46 @@
              
   <section id="module-unit_scaling">
 <span id="unit-scaling"></span><h1>unit_scaling<a class="headerlink" href="#module-unit_scaling" title="Permalink to this heading"></a></h1>
+<p>A replacement for <cite>torch.nn</cite> with unit-scaled versions of various classes &amp;
+functions.</p>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.GELU.html#unit_scaling.GELU" title="unit_scaling.GELU"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GELU</span></code></a>(approximate, constraint, float], float]] =)</p></td>
+<td><p>Applies a <strong>unit-scaled</strong> Gaussian Error Linear Units function:</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.MHSA.html#unit_scaling.MHSA" title="unit_scaling.MHSA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MHSA</span></code></a>(hidden_size, heads, dropout_p, ...)</p></td>
+<td><p>A <strong>unit-scaled</strong> implementation of a multi-head self-attention layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.MLP.html#unit_scaling.MLP" title="unit_scaling.MLP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MLP</span></code></a>(hidden_size, act_fn, expansion_factor, ...)</p></td>
+<td><p>A <strong>unit-scaled</strong> implementation of an MLP layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.CrossEntropyLoss.html#unit_scaling.CrossEntropyLoss" title="unit_scaling.CrossEntropyLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CrossEntropyLoss</span></code></a>([weight, size_average, ...])</p></td>
+<td><p>Computes a <strong>unit-scaled</strong> cross entropy loss between input logits and target.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.Dropout.html#unit_scaling.Dropout" title="unit_scaling.Dropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dropout</span></code></a>([p, inplace])</p></td>
+<td><p>A <strong>unit-scaled</strong> implementation of Dropout.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.Embedding.html#unit_scaling.Embedding" title="unit_scaling.Embedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Embedding</span></code></a>(num_embeddings, embedding_dim[, ...])</p></td>
+<td><p>A <strong>unit-scaled</strong> lookup table that looks up embeddings in a fixed dictionary and size.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.LayerNorm.html#unit_scaling.LayerNorm" title="unit_scaling.LayerNorm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LayerNorm</span></code></a>(normalized_shape[, eps, ...])</p></td>
+<td><p>Applies a <strong>unit-scaled</strong> Layer Normalization over a mini-batch of inputs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.Linear.html#unit_scaling.Linear" title="unit_scaling.Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Linear</span></code></a>(in_features, out_features, bias, ...)</p></td>
+<td><p>Applies a <strong>unit-scaled</strong> linear transformation to the incoming data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.Softmax.html#unit_scaling.Softmax" title="unit_scaling.Softmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Softmax</span></code></a>(dim, constraint, float], float]] =)</p></td>
+<td><p>Applies a <strong>unit-scaled</strong> Softmax function to an n-dimensional input Tensor.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.TransformerDecoder.html#unit_scaling.TransformerDecoder" title="unit_scaling.TransformerDecoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformerDecoder</span></code></a>(hidden_size, vocab_size, ...)</p></td>
+<td><p>A <strong>unit-scaled</strong> implementation of a decoder-type transformer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.TransformerLayer.html#unit_scaling.TransformerLayer" title="unit_scaling.TransformerLayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformerLayer</span></code></a>(hidden_size, heads, ...)</p></td>
+<td><p>A <strong>unit-scaled</strong> implementation of a PreNorm (see <a class="reference external" href="https://arxiv.org/abs/2002.04745">https://arxiv.org/abs/2002.04745</a>) transformer layer.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Modules</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -89,13 +147,10 @@
 <tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.html#module-unit_scaling.functional" title="unit_scaling.functional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.functional</span></code></a></p></td>
 <td><p>Unit-scaled versions of common <cite>torch.nn.functional</cite> functions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.modules.html#module-unit_scaling.modules" title="unit_scaling.modules"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.modules</span></code></a></p></td>
-<td><p>Unit-scaled versions of common <cite>torch.nn</cite> modules.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.scale.html#module-unit_scaling.scale" title="unit_scaling.scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.scale</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.scale.html#module-unit_scaling.scale" title="unit_scaling.scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.scale</span></code></a></p></td>
 <td><p>Operations to enable different scaling factors in the forward and backward passes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.utils.html#module-unit_scaling.utils" title="unit_scaling.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.utils</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.utils.html#module-unit_scaling.utils" title="unit_scaling.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.utils</span></code></a></p></td>
 <td><p>Utility functions for developing unit-scaled models.</p></td>
 </tr>
 </tbody>
@@ -106,8 +161,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="Unit Scaling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.constraints.html" class="btn btn-neutral float-right" title="unit_scaling.constraints" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../api_reference.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.GELU.html" class="btn btn-neutral float-right" title="unit_scaling.GELU" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -17,6 +17,24 @@ unit\_scaling
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      GELU
+      MHSA
+      MLP
+      CrossEntropyLoss
+      Dropout
+      Embedding
+      LayerNorm
+      Linear
+      Softmax
+      TransformerDecoder
+      TransformerLayer
+   
    
 
    
@@ -38,9 +56,6 @@ unit\_scaling
    
    
       unit_scaling.functional
-   
-   
-      unit_scaling.modules
    
    
       unit_scaling.scale

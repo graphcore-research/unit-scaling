@@ -40,8 +40,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../generated/unit_scaling.html">unit_scaling</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -90,6 +94,7 @@
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">fx</span><span class="p">,</span> <span class="n">nn</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">functional</span>
+<span class="kn">from</span> <span class="nn">._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
 
 
 <div class="viewcode-block" id="ScalePair"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScalePair.html#unit_scaling.utils.ScalePair">[docs]</a><span class="nd">@dataclass</span>
@@ -373,6 +378,9 @@
         <span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,)</span>
     <span class="n">scales</span> <span class="o">=</span> <span class="n">_record_scales</span><span class="p">(</span><span class="n">fx_graph_module</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">backward</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_annotate</span><span class="p">(</span><span class="n">fx_graph_module</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">scales</span><span class="p">,</span> <span class="n">syntax_highlight</span><span class="o">=</span><span class="n">syntax_highlight</span><span class="p">)</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="n">generate__all__</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </pre></div>
 
            </div>

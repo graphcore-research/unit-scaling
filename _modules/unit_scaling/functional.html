@@ -40,8 +40,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../generated/unit_scaling.html">unit_scaling</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -80,6 +84,7 @@
 <span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
 
+<span class="kn">from</span> <span class="nn">._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
 <span class="kn">from</span> <span class="nn">.constraints</span> <span class="kn">import</span> <span class="n">BinaryConstraint</span><span class="p">,</span> <span class="n">TernaryConstraint</span><span class="p">,</span> <span class="n">gmean</span>
 <span class="kn">from</span> <span class="nn">.docs</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">binary_constraint_docstring</span><span class="p">,</span>
@@ -361,6 +366,9 @@
     <span class="k">if</span> <span class="n">reduction</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">loss</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="n">generate__all__</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </pre></div>
 
            </div>
