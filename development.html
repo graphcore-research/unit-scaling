@@ -81,19 +81,16 @@
              
   <section id="unit-scaling">
 <h1>Unit Scaling<a class="headerlink" href="#unit-scaling" title="Permalink to this heading"></a></h1>
-<p>A library for unit scaling in PyTorch.</p>
-<p>Based on the paper
+<p>A library for unit scaling in PyTorch, based on the paper
 <a class="reference external" href="https://arxiv.org/abs/2303.11257">Unit Scaling: Out-of-the-Box Low-Precision Training</a>.</p>
+<p>Documentation can be found at
+https://graphcore-research.github.io/unit-scaling/index.html.</p>
 <section id="development">
 <h2>Development<a class="headerlink" href="#development" title="Permalink to this heading"></a></h2>
 <p>For users who wish to develop using this codebase, the following setup is required:</p>
 <p><strong>First-time setup</strong>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
-<span class="c1"># Add to `.venv/bin/activate`: `source /PATH_TO_POPLAR_SDK/enable` (If running on IPU)</span>
 <span class="nb">source</span><span class="w"> </span>.venv/bin/activate
-
-<span class="c1"># pip install wheel  # (If running on IPU)</span>
-<span class="c1"># pip install $POPLAR_SDK_ENABLED/../poptorch-*.whl  # (If running on IPU)</span>
 pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-dev.txt
 </pre></div>
 </div>
