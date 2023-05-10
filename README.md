@@ -4,7 +4,12 @@ A library for unit scaling in PyTorch, based on the paper
 [Unit Scaling: Out-of-the-Box Low-Precision Training](https://arxiv.org/abs/2303.11257).
 
 Documentation can be found at
-https://graphcore-research.github.io/unit-scaling/index.html.
+https://graphcore-research.github.io/unit-scaling.
+
+**Warning:** this library is currently in its _alpha_ release. This means it is
+unoptimised and missing important functionality. We hope users still find the
+library valuable, but it should not be expected to work seamlessly. We are keen to
+help early users with any problems they encounter.
 
 ## Development
 
@@ -15,7 +20,7 @@ For users who wish to develop using this codebase, the following setup is requir
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements-dev.txt
+pip install -r requirements-dev.txt  # Or requirements-dev-ipu.txt for the ipu
 ```
 
 **Subsequent setup**:
