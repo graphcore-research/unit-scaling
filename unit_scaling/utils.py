@@ -9,7 +9,7 @@ import typing
 from collections import OrderedDict
 from dataclasses import dataclass
 from types import FunctionType, ModuleType
-from typing import Any, Callable, Dict, Iterator, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Iterator, Optional, Tuple, Union, cast
 
 import einops
 import torch
@@ -41,7 +41,7 @@ ScaleDict = typing.OrderedDict[str, ScalePair]
 
 class ScaleTracker(torch.autograd.Function):
     """Given a `nn.Tensor`, records its standard deviation in the forward and
-    backward pass in the supplied `Dict`."""
+    backward pass in the supplied `ScalePair`."""
 
     @staticmethod
     def forward(  # type:ignore[override]
@@ -60,6 +60,12 @@ class ScaleTracker(torch.autograd.Function):
         ctx.scale_tracker.backward = float(t.std())  # type: ignore
         return t, None, None
 
+    @staticmethod
+    def track(t: Tensor, scale_tracker: ScalePair) -> Tensor:
+        # Add typing information to `apply()` method from `torch.autograd.Function`
+        apply = cast(Callable[[Tensor, ScalePair], Tensor], ScaleTracker.apply)
+        return apply(t, scale_tracker)
+
 
 class ScaleTrackingInterpreter(fx.Interpreter):
     """Wraps an `fx.GraphModule` such than when executed it records the standard
@@ -76,8 +82,9 @@ class ScaleTrackingInterpreter(fx.Interpreter):
     def run_node(self, n: fx.Node) -> Any:
         out = super().run_node(n)
         if isinstance(out, Tensor) and out.is_floating_point():
-            self.scales[n.name] = ScalePair()
-            out = ScaleTracker.apply(out, self.scales[n.name])
+            scale_pair = ScalePair()
+            out = ScaleTracker.track(out, scale_pair)
+            self.scales[n.name] = scale_pair
         return out
 
     def call_function(
