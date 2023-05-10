@@ -1,6 +1,0 @@
-unit\_scaling.functional.gelu
-=============================
-
-.. currentmodule:: unit_scaling.functional
-
-.. autofunction:: gelu

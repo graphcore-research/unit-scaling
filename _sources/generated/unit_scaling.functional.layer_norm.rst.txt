@@ -1,6 +1,0 @@
-unit\_scaling.functional.layer\_norm
-====================================
-
-.. currentmodule:: unit_scaling.functional
-
-.. autofunction:: layer_norm

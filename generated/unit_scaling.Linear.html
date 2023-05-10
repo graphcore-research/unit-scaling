@@ -12,9 +12,6 @@
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -65,10 +62,6 @@
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.Softmax.html">unit_scaling.Softmax</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerDecoder.html">unit_scaling.TransformerDecoder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerLayer.html">unit_scaling.TransformerLayer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.scale.html">unit_scaling.scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.html">unit_scaling.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -105,7 +98,7 @@
 <h1>unit_scaling.Linear<a class="headerlink" href="#unit-scaling-linear" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="unit_scaling.Linear">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.</span></span><span class="sig-name descname"><span class="pre">Linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in_features:</span> <span class="pre">int,</span> <span class="pre">out_features:</span> <span class="pre">int,</span> <span class="pre">bias:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">device:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">dtype:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[float,</span> <span class="pre">float],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/_modules.html#Linear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.Linear" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.</span></span><span class="sig-name descname"><span class="pre">Linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in_features:</span> <span class="pre">int,</span> <span class="pre">out_features:</span> <span class="pre">int,</span> <span class="pre">bias:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">device:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">dtype:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Callable[[float,</span> <span class="pre">float],</span> <span class="pre">float]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/_modules.html#Linear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.Linear" title="Permalink to this definition"></a></dt>
 <dd><p>Applies a <strong>unit-scaled</strong> linear transformation to the incoming data.</p>
 <p>This module supports <span class="xref std std-ref">TensorFloat32</span>.</p>
 <p>On certain ROCm devices, when using float16 inputs this module will use <span class="xref std std-ref">different precision</span> for backward.</p>

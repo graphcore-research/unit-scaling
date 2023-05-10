@@ -1,6 +1,0 @@
-unit\_scaling.constraints.to\_grad\_input\_scale
-================================================
-
-.. currentmodule:: unit_scaling.constraints
-
-.. autofunction:: to_grad_input_scale

@@ -1,6 +1,0 @@
-unit\_scaling.constraints.hmean
-===============================
-
-.. currentmodule:: unit_scaling.constraints
-
-.. autofunction:: hmean

@@ -1,6 +1,0 @@
-unit\_scaling.functional.residual\_add
-======================================
-
-.. currentmodule:: unit_scaling.functional
-
-.. autofunction:: residual_add

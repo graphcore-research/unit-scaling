@@ -1,6 +1,0 @@
-unit\_scaling.constraints.gmean
-===============================
-
-.. currentmodule:: unit_scaling.constraints
-
-.. autofunction:: gmean

@@ -12,15 +12,11 @@
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="unit_scaling.constraints" href="unit_scaling.constraints.html" />
     <link rel="prev" title="unit_scaling.TransformerDecoder" href="unit_scaling.TransformerDecoder.html" /> 
 </head>
 
@@ -64,10 +60,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#unit_scaling.TransformerLayer"><code class="docutils literal notranslate"><span class="pre">TransformerLayer</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.scale.html">unit_scaling.scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.html">unit_scaling.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -104,7 +96,7 @@
 <h1>unit_scaling.TransformerLayer<a class="headerlink" href="#unit-scaling-transformerlayer" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="unit_scaling.TransformerLayer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.</span></span><span class="sig-name descname"><span class="pre">TransformerLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hidden_size:</span> <span class="pre">int,</span> <span class="pre">heads:</span> <span class="pre">int,</span> <span class="pre">dropout_p:</span> <span class="pre">float,</span> <span class="pre">act_fn:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">=</span> <span class="pre">GELU(approximate='none'),</span> <span class="pre">tau:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.2,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[...],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/_modules.html#TransformerLayer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.TransformerLayer" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.</span></span><span class="sig-name descname"><span class="pre">TransformerLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hidden_size:</span> <span class="pre">int,</span> <span class="pre">heads:</span> <span class="pre">int,</span> <span class="pre">dropout_p:</span> <span class="pre">float,</span> <span class="pre">act_fn:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">=</span> <span class="pre">GELU(approximate='none'),</span> <span class="pre">tau:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.2,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">float]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/_modules.html#TransformerLayer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.TransformerLayer" title="Permalink to this definition"></a></dt>
 <dd><p>A <strong>unit-scaled</strong> implementation of a PreNorm
 (see <a class="reference external" href="https://arxiv.org/abs/2002.04745">https://arxiv.org/abs/2002.04745</a>) transformer layer.</p>
 <p>Warning: using <cite>constraint=None</cite> here will likely give incorrect gradients.</p>
@@ -130,7 +122,6 @@ connection. Defaults to 0.2.</p></li>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="unit_scaling.TransformerDecoder.html" class="btn btn-neutral float-left" title="unit_scaling.TransformerDecoder" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.constraints.html" class="btn btn-neutral float-right" title="unit_scaling.constraints" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

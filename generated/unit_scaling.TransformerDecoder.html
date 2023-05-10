@@ -12,9 +12,6 @@
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -64,10 +61,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerLayer.html">unit_scaling.TransformerLayer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.html">unit_scaling.constraints</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.html">unit_scaling.functional</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.scale.html">unit_scaling.scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.html">unit_scaling.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -104,7 +97,7 @@
 <h1>unit_scaling.TransformerDecoder<a class="headerlink" href="#unit-scaling-transformerdecoder" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="unit_scaling.TransformerDecoder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.</span></span><span class="sig-name descname"><span class="pre">TransformerDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hidden_size:</span> <span class="pre">int,</span> <span class="pre">vocab_size:</span> <span class="pre">int,</span> <span class="pre">layers:</span> <span class="pre">int,</span> <span class="pre">heads:</span> <span class="pre">int,</span> <span class="pre">dropout_p:</span> <span class="pre">float,</span> <span class="pre">act_fn:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">=</span> <span class="pre">GELU(approximate='none'),</span> <span class="pre">tau:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.2,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Optional[~typing.Callable[[...],</span> <span class="pre">float]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/_modules.html#TransformerDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.TransformerDecoder" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.</span></span><span class="sig-name descname"><span class="pre">TransformerDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hidden_size:</span> <span class="pre">int,</span> <span class="pre">vocab_size:</span> <span class="pre">int,</span> <span class="pre">layers:</span> <span class="pre">int,</span> <span class="pre">heads:</span> <span class="pre">int,</span> <span class="pre">dropout_p:</span> <span class="pre">float,</span> <span class="pre">act_fn:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">=</span> <span class="pre">GELU(approximate='none'),</span> <span class="pre">tau:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.2,</span> <span class="pre">constraint:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">float]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/_modules.html#TransformerDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.TransformerDecoder" title="Permalink to this definition"></a></dt>
 <dd><p>A <strong>unit-scaled</strong> implementation of a decoder-type transformer.</p>
 <p>Note: this class is currently just for demonstrating scaling and lacks key
 functionality (e.g. causal masking, positional embeddings, usage for inference).</p>

@@ -43,25 +43,3 @@ unit\_scaling
 
 
 
-.. rubric:: Modules
-
-.. autosummary::
-   :toctree:
-   :template: custom-module-template.rst
-   :recursive:
-
-   
-      unit_scaling.constraints
-   
-   
-   
-      unit_scaling.functional
-   
-   
-      unit_scaling.scale
-   
-   
-   
-      unit_scaling.utils
-   
-

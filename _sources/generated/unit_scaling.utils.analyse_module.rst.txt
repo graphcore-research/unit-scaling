@@ -1,6 +1,0 @@
-unit\_scaling.utils.analyse\_module
-===================================
-
-.. currentmodule:: unit_scaling.utils
-
-.. autofunction:: analyse_module

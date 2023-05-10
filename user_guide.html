@@ -12,9 +12,6 @@
   <![endif]-->
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -310,7 +307,7 @@ correct for this. In practice users may be able to leave it at the default value
 without having to tune this as an additional hyperparameter.</p>
 <p>We also employ a trick to ensure that this scaling factor is delayed in the backward
 pass to keep values unit-scaled along the residual branch in both passes
-(see <a class="reference internal" href="generated/unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split" title="unit_scaling.functional.residual_split"><code class="xref py py-meth docutils literal notranslate"><span class="pre">unit_scaling.functional.residual_split()</span></code></a> for further details).
+(see <code class="xref py py-meth docutils literal notranslate"><span class="pre">unit_scaling.functional.residual_split()</span></code> for further details).
 A more comprehensive discussion of this feature can be found in the
 <a class="reference external" href="https://arxiv.org/abs/2303.11257">unit scaling paper</a>.</p>
 <p><strong>Constraints</strong></p>
@@ -333,7 +330,7 @@ using the provided constraint (if one is supplied). Constraining these values to
 the same for a linear layer is necessary to ensure valid gradients. This can cause
 deviations from exact unit-scale, but these tend not to be significant.</p>
 <p>The default value of <code class="code docutils literal notranslate"><span class="pre">constraint</span></code> is typically
-<a class="reference internal" href="generated/unit_scaling.constraints.gmean.html#unit_scaling.constraints.gmean" title="unit_scaling.constraints.gmean"><code class="xref py py-meth docutils literal notranslate"><span class="pre">unit_scaling.constraints.gmean()</span></code></a>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">unit_scaling.constraints.gmean()</span></code>
 (the geometric mean), representing a compromise between the forward and backward passes.
 Note that we don’t need to constrain the weight scale as this is allowed to
 differ from the output/input-grad scales.</p>

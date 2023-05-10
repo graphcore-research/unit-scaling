@@ -1,6 +1,0 @@
-unit\_scaling.constraints.amean
-===============================
-
-.. currentmodule:: unit_scaling.constraints
-
-.. autofunction:: amean
