@@ -1,11 +1,6 @@
 Limitations
 ===========
 
-**Warning:** this library is currently in its _alpha_ release. This means it is
-unoptimised and missing important functionality. We hope users still find the
-library valuable, but it should not be expected to work seamlessly. We are keen to
-help early users with any problems they encounter.
-
 :code:`unit-scaling` is currently still in early stages of development, and many
 important features have not yet been implement. The following is a list of some key
 missing functionality on the development roadmap:

@@ -1,8 +1,10 @@
-name: CI
+name: CI-IPU
 
 on:
-  push: { branches: ["main"] }
   pull_request:
+    branches:
+      - "**ipu**"
+      - "**poptorch**"
   workflow_dispatch:
 
 concurrency:
@@ -11,16 +13,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
+  ci-ipu:
     runs-on: ubuntu-latest
+    container: graphcore/pytorch:3.2.0-ubuntu-20.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y git
-          pip install -r requirements-dev.txt
+          apt-get update
+          apt-get install -y git
+          pip install -r requirements-dev-ipu.txt
       - name: Run CI
         run: ./dev ci
       - name: Publish documentation
