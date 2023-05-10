@@ -9,7 +9,7 @@ from torch import Tensor, fx
 
 from ._internal_utils import generate__all__
 
-try:
+try:  # pragma: no cover
     import poptorch
     import poptorch_experimental_addons as pea
 
