@@ -84,7 +84,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span><span class="p">,</span> <span class="n">ModuleType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span> <span class="nn">einops</span>
 <span class="kn">import</span> <span class="nn">torch</span>
@@ -116,7 +116,7 @@
 
 <div class="viewcode-block" id="ScaleTracker"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker">[docs]</a><span class="k">class</span> <span class="nc">ScaleTracker</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Given a `nn.Tensor`, records its standard deviation in the forward and</span>
-<span class="sd">    backward pass in the supplied `Dict`.&quot;&quot;&quot;</span>
+<span class="sd">    backward pass in the supplied `ScalePair`.&quot;&quot;&quot;</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
@@ -133,7 +133,13 @@
         <span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Tensor</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">scale_tracker</span><span class="o">.</span><span class="n">backward</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
-        <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div></div>
+        <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">track</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">scale_tracker</span><span class="p">:</span> <span class="n">ScalePair</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="c1"># Add typing information to `apply()` method from `torch.autograd.Function`</span>
+        <span class="n">apply</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">ScalePair</span><span class="p">],</span> <span class="n">Tensor</span><span class="p">],</span> <span class="n">ScaleTracker</span><span class="o">.</span><span class="n">apply</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">apply</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">scale_tracker</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ScaleTrackingInterpreter"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter">[docs]</a><span class="k">class</span> <span class="nc">ScaleTrackingInterpreter</span><span class="p">(</span><span class="n">fx</span><span class="o">.</span><span class="n">Interpreter</span><span class="p">):</span>
@@ -151,8 +157,9 @@
 <div class="viewcode-block" id="ScaleTrackingInterpreter.run_node"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.run_node">[docs]</a>    <span class="k">def</span> <span class="nf">run_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">run_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">)</span> <span class="ow">and</span> <span class="n">out</span><span class="o">.</span><span class="n">is_floating_point</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ScalePair</span><span class="p">()</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">ScaleTracker</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+            <span class="n">scale_pair</span> <span class="o">=</span> <span class="n">ScalePair</span><span class="p">()</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">ScaleTracker</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">scale_pair</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">scale_pair</span>
         <span class="k">return</span> <span class="n">out</span></div>
 
 <div class="viewcode-block" id="ScaleTrackingInterpreter.call_function"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.call_function">[docs]</a>    <span class="k">def</span> <span class="nf">call_function</span><span class="p">(</span>

@@ -121,7 +121,7 @@
 <td><p>Dataclass containing a pair of scalars, intended to represent the standard deviation of an arbitrary tensor in the forward and backward passes.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker" title="unit_scaling.utils.ScaleTracker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScaleTracker</span></code></a>(*args, **kwargs)</p></td>
-<td><p>Given a <cite>nn.Tensor</cite>, records its standard deviation in the forward and backward pass in the supplied <cite>Dict</cite>.</p></td>
+<td><p>Given a <cite>nn.Tensor</cite>, records its standard deviation in the forward and backward pass in the supplied <cite>ScalePair</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter" title="unit_scaling.utils.ScaleTrackingInterpreter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScaleTrackingInterpreter</span></code></a>(module)</p></td>
 <td><p>Wraps an <cite>fx.GraphModule</cite> such than when executed it records the standard deviation of every intermediate <cite>nn.Tensor</cite> in the forward and backward pass.</p></td>
