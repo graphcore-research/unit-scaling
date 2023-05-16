@@ -14,5 +14,5 @@ missing functionality on the development roadmap:
    required for training transformers. Unit scaling is a more general method that will
    work for arbitrary models once support has been implemented.
 
-This list is not exhaustive and we encourage users to get in touch if they have
+This list is not exhaustive and we encourage you to get in touch if you have
 feature-requests not listed here.
