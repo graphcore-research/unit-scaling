@@ -98,7 +98,7 @@ class ScaleTrackingInterpreter(fx.Interpreter):
         args: Tuple[fx.node.Argument, ...],
         kwargs: Dict[str, Any],
     ) -> Any:
-        """To handle functions being passed as arguments (e.g. constraints) the tracer
+        """To handle functions being passed as arguments (for example constraints) the tracer
         represents them as placeholder nodes. This method extracts the original function
         from the node, as stored in the `target_to_function` dict."""
         if isinstance(target, str) and target.startswith("function_placeholder__"):

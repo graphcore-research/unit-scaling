@@ -20,7 +20,7 @@ def _validate(
     f: Callable[..., T], unsupported_args: Iterable[str] = {}
 ) -> Callable[..., T]:
     """Wraps the supplied function in a check to ensure its arguments aren't in the
-    unsupported args list. Unsupported args are by nature optional (i.e. they have
+    unsupported args list. Unsupported args are by nature optional (they have
     a default value). It is assumed this default is valid, but all other values are
     invalid."""
 
@@ -100,15 +100,15 @@ def inherit_docstring(
     docstring, with the specified modifications applied.
 
     Args:
-        short_description (Optional[str], optional): replaces the top one-line
+        short_description (Optional[str], optional): Replaces the top one-line
             description in the parent docstring with the one supplied. Defaults to None.
-        add_args (Optional[List[str]], optional): appends the supplied argument strings
+        add_args (Optional[List[str]], optional): Appends the supplied argument strings
             to the list of arguments. Defaults to None.
-        unsupported_args (Iterable[str]): a list of arguments which are not supported.
+        unsupported_args (Iterable[str]): A list of arguments which are not supported.
             Documentation is updated and runtime checks added to enforce this.
 
     Returns:
-        Callable[[Type], Type]: the decorator used to wrap the child class.
+        Callable[[Type], Type]: The decorator used to wrap the child class.
     """
 
     def decorator(cls: Type[T]) -> Type[T]:
@@ -136,16 +136,16 @@ def docstring_from(
     the target object, with the specified modifications applied.
 
     Args:
-        target (Any): the object to take the docstring from
-        short_description (Optional[str], optional): replaces the top one-line
+        target (Any): The object to take the docstring from.
+        short_description (Optional[str], optional): Replaces the top one-line
             description in the parent docstring with the one supplied. Defaults to None.
-        add_args (Optional[List[str]], optional): appends the supplied argument strings
+        add_args (Optional[List[str]], optional): Appends the supplied argument strings
             to the list of arguments. Defaults to None.
-        unsupported_args (Iterable[str]): a list of arguments which are not supported.
+        unsupported_args (Iterable[str]): A list of arguments which are not supported.
             Documentation is updated and runtime checks added to enforce this.
 
     Returns:
-        Callable[[Callable], Callable]: the decorator used to wrap the child object.
+        Callable[[Callable], Callable]: The decorator used to wrap the child object.
     """
 
     def decorator(source: Callable[..., T]) -> Callable[..., T]:
@@ -165,10 +165,10 @@ def format_docstring(*args: str) -> Callable[[Callable[..., T]], Callable[..., T
     """Returns a decorator that applies `cls.__doc__.format(*args)` to the target class.
 
     Args:
-        args: (*str): the arguments to be passed to the docstrings `.format()` method.
+        args: (*str): The arguments to be passed to the docstrings `.format()` method.
 
     Returns:
-        Callable[[Type], Type]: a decorator to format the docstring.
+        Callable[[Type], Type]: A decorator to format the docstring.
     """
 
     def f(cls: T) -> T:
@@ -180,24 +180,24 @@ def format_docstring(*args: str) -> Callable[[Callable[..., T]], Callable[..., T
 
 
 binary_constraint_docstring = (
-    "constraint (Optional[BinaryConstraint], optional): function which"
-    "takes `output_scale` and `grad_input_scale` and returns a single"
+    "constraint (Optional[BinaryConstraint], optional): Function which"
+    " takes `output_scale` and `grad_input_scale` and returns a single"
     " 'constrained' scale (usually necessary for valid gradients). If `None` is"
     " provided, no constraint will be applied. Defaults to `gmean`."
 )
 
 ternary_constraint_docstring = (
     "constraint (Optional[Callable[[float, float, float], Union[float, Tuple[float,"
-    " float, float]]]], optional): function  which takes `output_scale`,"
-    "`left_grad_scale` & `right_grad_scale` (in that order) and returns either"
+    " float, float]]]], optional): Function  which takes `output_scale`,"
+    "`left_grad_scale` and `right_grad_scale` (in that order) and returns either"
     " a) a single 'constrained' scale (often necessary for valid gradients), or b) a"
-    "tuple of three output scales in the same order of the input scales (it is expected"
-    "that two or all of these scales are constrained to be the same). If `None` is"
-    "provided, no constraint will be applied. Defaults to `gmean`."
+    " tuple of three output scales in the same order of the input scales (it is expected"
+    " that two or all of these scales are constrained to be the same). If `None` is"
+    " provided, no constraint will be applied. Defaults to `gmean`."
 )
 
 variadic_constraint_docstring = (
-    "constraint (Optional[Callable[..., float]], optional): function which takes any"
-    " number of output/grad-input scales and returns a single 'constrained'"
+    "constraint (Optional[Callable[..., float]], optional): Function which takes any"
+    " number of output and grad-input scales and returns a single 'constrained'"
     " scale. If `None` is provided, no constraint will be applied. Defaults to `gmean`."
 )

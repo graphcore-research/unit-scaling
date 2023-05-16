@@ -42,8 +42,8 @@ class GELU(nn.GELU):
         " n-dimensional output Tensor lie in the range [0,1] and sum to 1. Unit scaling"
         " multiplies by n, meaning the output Tensor lies in the range [0,n]."
         "\n\n"
-        "The docs below are from the standard `nn.Softmax`"
-        " implementation. Values therein (e.g. [0,1] ranges) should be adjusted"
+        "The documentation below is from the standard `nn.Softmax`"
+        " implementation. Values there (for example [0,1] ranges) should be adjusted"
         " accordingly."
     ),
     add_args=[binary_constraint_docstring],
@@ -277,7 +277,7 @@ class TransformerDecoder(nn.Module):
     """A **unit-scaled** implementation of a decoder-type transformer.
 
     Note: this class is currently just for demonstrating scaling and lacks key
-    functionality (e.g. causal masking, positional embeddings, usage for inference).
+    functionality (for example causal masking, positional embeddings, usage for inference).
 
     Warning: using `constraint=None` here will likely give incorrect gradients.
 
