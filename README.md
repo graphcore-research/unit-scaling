@@ -7,8 +7,8 @@ Documentation can be found at
 [https://graphcore-research.github.io/unit-scaling](https://graphcore-research.github.io/unit-scaling).
 
 **Warning:** this library is currently in its _alpha_ release. This means it is
-unoptimised and missing important functionality. We hope users still find the
-library valuable, but it should not be expected to work seamlessly. We are keen to
+unoptimised and missing important functionality. There are many useful features,
+but the library should not be expected to work seamlessly. We are keen to
 help early users with any problems they encounter.
 
 ## Development

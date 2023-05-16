@@ -2,9 +2,9 @@ Unit Scaling
 ============
 
 .. Warning:: this library is currently in its *alpha* release. This means it is
-   unoptimised and missing important functionality. We hope you still find the
-   library valuable, but you should not expect it to work seamlessly. We are keen to
-   help early users with any problems they encounter.
+   unoptimised and missing important functionality. There are many useful features,
+but the library should not be expected to work seamlessly. We are keen to
+help early users with any problems they encounter.
 
 Welcome to the :code:`unit-scaling` library. This library is designed to facilitate
 the use of the *unit scaling* method, as outlined in the paper
