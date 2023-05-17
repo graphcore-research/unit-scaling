@@ -277,7 +277,8 @@ class TransformerDecoder(nn.Module):
     """A **unit-scaled** implementation of a decoder-type transformer.
 
     Note: this class is currently just for demonstrating scaling and lacks key
-    functionality (for example causal masking, positional embeddings, usage for inference).
+    functionality (for example causal masking, positional embeddings, usage for
+    inference).
 
     Warning: using `constraint=None` here will likely give incorrect gradients.
 

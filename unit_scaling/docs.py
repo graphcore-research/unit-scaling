@@ -191,9 +191,9 @@ ternary_constraint_docstring = (
     " float, float]]]], optional): Function  which takes `output_scale`,"
     "`left_grad_scale` and `right_grad_scale` (in that order) and returns either"
     " a) a single 'constrained' scale (often necessary for valid gradients), or b) a"
-    " tuple of three output scales in the same order of the input scales (it is expected"
-    " that two or all of these scales are constrained to be the same). If `None` is"
-    " provided, no constraint will be applied. Defaults to `gmean`."
+    " tuple of three output scales in the same order as the input scales (it is"
+    " expected that two or all of these scales are constrained to be the same). If"
+    " `None` is provided, no constraint will be applied. Defaults to `gmean`."
 )
 
 variadic_constraint_docstring = (
