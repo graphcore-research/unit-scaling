@@ -66,7 +66,6 @@ dropout_p = 0.1
 seq = torch.randint(low=0, high=vocab_size, size=(batch_size, seq_len + 1))
 input_idxs = seq[:, :-1]
 labels = torch.roll(seq, -1, 1)[:, 1:]
-backward = torch.randn(batch_size, seq_len, hidden_size)
 
 annotated_code = analyse_module(
     uu.TransformerDecoder(hidden_size, vocab_size, layers, heads, dropout_p),

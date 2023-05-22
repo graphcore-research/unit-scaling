@@ -2,7 +2,7 @@ User Guide
 ==========
 
 **Warning:** this library is currently in its _alpha_ release. This means it is
-unoptimised and missing important functionality. We hope users still find the
+missing important functionality. We hope users still find the
 library valuable, but it should not be expected to work seamlessly. We are keen to
 help early users with any problems they encounter.
 
@@ -317,3 +317,56 @@ differ from the output/input-grad scales.
 The `unit scaling paper
 <https://arxiv.org/abs/2303.11257>`_ provides a comprehensive overview of where and why
 constraints are required.
+
+Optimising unit-scaled models
+-----------------------------
+
+**TL;DR:** It's recommended that unit-scaled models are wrapped in `torch.compile`.
+
+Unit scaling adds extra scalar multiplications to each operation.
+By default, PyTorch's eager evaluation causes each of these multiplications to make an
+additional trip to-and-from memory.
+
+Fortunately, his overhead can be eliminated via *kernel fusion*
+(see this `Stack Overflow answer <https://stackoverflow.com/a/53311373>`_
+for more details). In PyTorch there are two ways of fusing operations.
+
+The "old" method uses `torch.jit.script` to convert PyTorch into a TorchScript program,
+which is then just-in-time compiled.
+However, many models can't be converted to TorchScript directly and users have had
+mixed experiences with this approach.
+
+To rectify this, PyTorch 2.0 introduced a new method: `torch.compile`.
+This approach is much more flexible and in theory can work on
+arbitrary PyTorch programs. Users should refer to the `torch.compile`
+`tutorial <https://pytorch.org/tutorials/intermediate/torch_compile_tutorial.html>`_
+in the PyTorch docs, though it's usually as simple as adding the
+compilation decorator to a function or class:
+
+.. code-block::
+
+    @torch.compile
+    def unit_scaled_function(x):
+        ...
+    
+    @torch.compile
+    class UnitScaledModule(torch.nn.Module):
+        def __init__(self):
+            ...
+
+For unit scaling, `torch.compile` fuses scaling factors where possible in the forward
+pass. There is an
+`outstanding bug <https://github.com/pytorch/pytorch/issues/101937>`_
+in PyTorch meaning that operations with custom-gradients (required for unit scaling)
+are not fused in the backward pass.
+
+We leave the fusing of operations up to the user, and do not automatically apply
+`torch.compile` to our scaled ops.
+PyTorch will attempt to fuse everything within a `torch.compile`d block if possible.
+The fusion of individual unit-scaled operations provides limited benefit, and
+generally we recommend users compile large blocks within their model
+in order to get the most substantial speedups.
+
+For a thorough analysis of the effect of unit-scaling
+(for both individual operations and larger blocks), see the
+`benchmarking compiled unit-scaled ops <https://github.com/graphcore-research/unit-scaling/tree/main/analysis/benchmarking_compiled_unit_scaled_ops.ipynb>`_ notebook.
