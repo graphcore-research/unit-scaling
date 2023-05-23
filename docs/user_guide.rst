@@ -1,23 +1,23 @@
-User Guide
+User guide
 ==========
 
 **Warning:** this library is currently in its _alpha_ release. This means it is
-missing important functionality. There are many useful features,
-but the library should not be expected to work seamlessly. We are keen to
-help early users with any problems they encounter.
+    missing important functionality. There are many useful features,
+    but the library should not be expected to work seamlessly. We are keen to
+    help early users with any problems they encounter.
 
 Installation
 ------------
 
-To install the :code:`unit-scaling` library, simply run:
+To install the :code:`unit-scaling` library, run:
 
 .. code-block::
 
     pip install git+https://github.com/graphcore-research/unit-scaling.git
 
-For those who wish to develop on the :code:`unit-scaling` codebase, clone/fork our
+For those who wish to develop on the :code:`unit-scaling` codebase, clone or fork our
 `GitHub repo <https://github.com/graphcore-research/unit-scaling.git>`_ and follow the
-instructions in our :doc:`Developer Guide <development>`.
+instructions in our :doc:`developer guide <development>`.
 
 What is unit scaling?
 ---------------------
@@ -29,8 +29,8 @@ taken place. This can enable the use of low-precision number formats out-of-the-
 
 "Scaling" simply involves multiplying the output of an operation by a scalar value.
 We use the term "scale" to refer to the standard deviation of a tensor.
-Many operations used in deep learning change the scale of their input(s), and often in
-an unprincipled (i.e. arbitrary) way. This library is a re-implementation of common
+Many operations used in deep learning change the scale of their inputs, and often in
+an arbitrary way. This library is a re-implementation of common
 PyTorch ops, adding scaling factors to ensure that input scale is now preserved.
 
 As unit scaling is a technique for training models (usually from scratch), it considers
@@ -62,7 +62,7 @@ How to unit-scale a model
 -------------------------
 
 We recommend the following approach to applying unit scaling to a model. We assume here
-that the user has an existing PyTorch model which they wish to adapt to be unit-scaled,
+that you have an existing PyTorch model which you wish to adapt to be unit-scaled,
 though a similar approach can be used to design a unit-scaled model from scratch.
 
 **1. Consider your number formats**
@@ -79,7 +79,7 @@ format can represent numbers between roughly 60,000 and 6e-05
 (FP8 E4 has an even smaller range). Operations which use values in these formats may
 require unit scaling.
 
-We recommend users try and put as many tensors as possible into low-precision formats as
+We recommend that you try and put as many tensors as possible into low-precision formats as
 this can speed up training considerably, and is where unit scaling is most useful.
 A full discussion of which tensors should be in which format is beyond the scope of this
 introduction.
@@ -88,10 +88,10 @@ introduction.
 
 The next step is to understand the scales present in the initial (non-unit-scaled)
 model. This analysis can be tricky to implement, particularly in the backward pass, so
-we provide a tool to make this analysis easy for users:
-:code:`unit_scaling.utils.analyse_module`.
+we provide a tool to make this analysis easier:
+:py:func:`unit_scaling.utils.analyse_module`.
 
-Using :code:`torch.fx`, this provides a line-by-line breakdown of a given model,
+Using :external+pytorch:py:mod:`torch.fx`, this provides a line-by-line breakdown of a given model,
 alongside the scale of the output tensor for each operation, in both the forward and
 backward pass.
 
@@ -146,8 +146,8 @@ the scale is 0.198, and by the end of the backward pass the scale is 0.204. Alon
 way we generate large scales for some of the weight gradients, with
 :code:`linear_2_bias` receiving a gradient of scale 16.1.
 
-These scales are not large/small enough to be a problem for our number formats, but in a
-full model the unscaled operations could cause more significant numerics issues.
+These scales are not large or small enough to be a problem for our number formats, but in a
+full model the unscaled operations could cause more significant numerical issues.
 We show below how to address this using unit scaling.
 
 (note: :code:`analyse_module` can't be used on a model wrapped in
@@ -159,7 +159,7 @@ By swapping-in unit-scaled versions of the operations in the module, we can corr
 these scaling factors. :code:`unit-scaling` provides drop-in replacements:
 
 .. code-block::
-    
+
     import unit_scaling as uu
     import unit_scaling.functional as U
 
@@ -202,15 +202,15 @@ It's important to check that swapping in unit-scaled ops has the desired effect 
 the scales in a model. There may be cases in which this is not the case, and additional
 measures are required.
 
-Understanding when tensor scales are "good enough" is something of an art. Generally
-when the standard deviation begins to approach the max/min values defined by a format
-numerics issues arise. For overflow, this is typically seen clearly in the loss
+Understanding when tensor scales are "good enough" is something of an art. Generally,
+when the standard deviation begins to approach the max/min values defined by a format then
+numerical issues arise. For overflow, this is typically seen clearly in the loss
 exploding (even with gradient clipping). Conversely, underflow tends to cause the loss
 to degrade more steadily.
 
 It's not necessary to keep scales at exactly 1, and unit-scaling is designed to only
 approximately meet this target. In practice, scales of between 1/10 to 10 are of no
-concern and are to be expected. Significantly smaller/larger scales may merit further
+concern and are to be expected. Significantly smaller or larger scales may merit further
 investigation (particularly larger).
 
 **5. Optimise**
@@ -251,19 +251,19 @@ The most important operation in the model to unit-scale is the loss function.
 The division term and log-softmax used in the standard cross-entropy loss tend to
 shrink gradients substantially.
 The implementation in :code:`unit_scaling` provides scaled versions of
-:code:`torch.nn.functional.cross_entropy` and :code:`torch.nn.CrossEntropyLoss`
-which correct for this. We recommend users start here when unit-scaling their models.
+:external+pytorch:py:func:`torch.nn.functional.cross_entropy` and :external+pytorch:py:class:`torch.nn.CrossEntropyLoss`
+which correct for this. We recommend that you start here when unit-scaling your models.
 
 **Linear layers**
 
-In non-unit-scaled models linear layers have a mechanism for controlling the scale:
+In non-unit-scaled models, linear layers have a mechanism for controlling the scale:
 their initialisation. The standard Xavier/Glorot initialisation provides good scaling
 for activations and their gradients by pushing a (small) scaling factor into the weights
 themselves. However, it does not provide good scaling for weight gradients.
 
 Unit scaling solves this problem by taking a different approach: keeping scaling factors
 outside the weights, which then enables separate scaling factors for activation
-gradients and weight gradients. Because of this, users should expect their weights
+gradients and weight gradients. Because of this, you should expect your weights
 to begin with scale=1 when using :code:`unit_scaling`. Alternative weight
 initialisations should not be used in conjunction with unit scaling.
 
@@ -293,7 +293,7 @@ The unit-scaled equivalent should be implemented as:
         def __init__(self, tau=0.2):
             self.f = ...
             self.tau = tau
-        
+
         def forward(self, x):
             residual, skip = U.residual_split(x, self.tau)
             residual = self.f(residual)
@@ -305,12 +305,12 @@ as they go through the residual connection, meaning that when the residual is ad
 to the skip connection, the skip connection dominates.
 
 The :code:`tau` hyperparameter is a scale-factor applied to the residual branch to
-correct for this. In practice users may be able to leave it at the default value of 0.2
+correct for this. In practice you may be able to leave it at the default value of 0.2
 without having to tune this as an additional hyperparameter.
 
 We also employ a trick to ensure that this scaling factor is delayed in the backward
 pass to keep values unit-scaled along the residual branch in both passes
-(see :meth:`unit_scaling.functional.residual_split` for further details).
+(see :meth:`~unit_scaling.functional.residual_split` for further details).
 A more comprehensive discussion of this feature can be found in the
 `unit scaling paper
 <https://arxiv.org/abs/2303.11257>`_.
@@ -318,13 +318,13 @@ A more comprehensive discussion of this feature can be found in the
 **Constraints**
 
 Many unit-scaled operations introduce a :code:`constraint: Callable` argument.
-*Most users can simply leave this argument to take the default value and ignore it.*
+*In most cases, you can simply leave this argument to take the default value and ignore it.*
 
-The purpose of this constraint is that for some ops, particular scaling factors in the
-forward and backward pass may be required to be identical in order to produce
+The purpose of this constraint is that, for some ops, particular scaling factors in the
+forward and backward passes must all be identical in order to produce
 valid gradients. This constraint argument specifies how to arrive at the shared scale.
 
-For example, the implementation of :code:`unit_scaling.functional.linear` contains the
+For example, the implementation of :py:func:`unit_scaling.functional.linear` contains the
 following code:
 
 .. code-block::
