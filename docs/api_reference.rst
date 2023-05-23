@@ -35,3 +35,4 @@ Click below for the full documentation:
    :recursive:
 
    unit_scaling
+   unit_scaling.functional
