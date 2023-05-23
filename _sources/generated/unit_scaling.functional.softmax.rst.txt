@@ -1,0 +1,6 @@
+unit\_scaling.functional.softmax
+================================
+
+.. currentmodule:: unit_scaling.functional
+
+.. autofunction:: softmax

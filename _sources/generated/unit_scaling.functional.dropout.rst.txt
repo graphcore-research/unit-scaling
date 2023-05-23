@@ -1,0 +1,6 @@
+unit\_scaling.functional.dropout
+================================
+
+.. currentmodule:: unit_scaling.functional
+
+.. autofunction:: dropout

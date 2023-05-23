@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>unit_scaling.functional &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="unit_scaling.functional.cross_entropy" href="unit_scaling.functional.cross_entropy.html" />
+    <link rel="prev" title="unit_scaling.TransformerLayer" href="unit_scaling.TransformerLayer.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">Limitations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">unit_scaling</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">unit_scaling.functional</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">unit_scaling.functional.cross_entropy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">unit_scaling.functional.dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">unit_scaling.functional.embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">unit_scaling.functional.gelu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">unit_scaling.functional.layer_norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">unit_scaling.functional.linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">unit_scaling.functional.matmul</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">unit_scaling.functional.residual_split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">unit_scaling.functional.scale_elementwise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">unit_scaling.functional.softmax</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html">API Reference</a></li>
+      <li class="breadcrumb-item active">unit_scaling.functional</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/unit_scaling.functional.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-unit_scaling.functional">
+<span id="unit-scaling-functional"></span><h1>unit_scaling.functional<a class="headerlink" href="#module-unit_scaling.functional" title="Permalink to this heading"></a></h1>
+<p>Unit-scaled versions of common <cite>torch.nn.functional</cite> functions.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.cross_entropy.html#unit_scaling.functional.cross_entropy" title="unit_scaling.functional.cross_entropy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_entropy</span></code></a>(input, target[, weight, ...])</p></td>
+<td><p>Computes a <strong>unit-scaled</strong> the cross entropy loss between input logits and target.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.dropout.html#unit_scaling.functional.dropout" title="unit_scaling.functional.dropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dropout</span></code></a>(input[, p, training, inplace])</p></td>
+<td><p>Applies a <strong>unit-scaled</strong> dropout function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.embedding.html#unit_scaling.functional.embedding" title="unit_scaling.functional.embedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">embedding</span></code></a>(input, weight[, padding_idx, ...])</p></td>
+<td><p>A <strong>unit-scaled</strong> lookup table that looks up embeddings in a fixed dictionaryand size.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.gelu.html#unit_scaling.functional.gelu" title="unit_scaling.functional.gelu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gelu</span></code></a>(input[, constraint])</p></td>
+<td><p>Applies a <strong>unit-scaled</strong> GELU function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.layer_norm.html#unit_scaling.functional.layer_norm" title="unit_scaling.functional.layer_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">layer_norm</span></code></a>(input, normalized_shape[, ...])</p></td>
+<td><p>Applies a <strong>unit-scaled</strong> Layer Normalization for last certain number of dimensions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.linear.html#unit_scaling.functional.linear" title="unit_scaling.functional.linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linear</span></code></a>(input, weight, bias[, constraint])</p></td>
+<td><p>Applies a <strong>unit-scaled</strong> linear transformation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.matmul.html#unit_scaling.functional.matmul" title="unit_scaling.functional.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(left, right[, constraint])</p></td>
+<td><p>A <strong>unit-scaled</strong> matrix product of two tensors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add" title="unit_scaling.functional.residual_add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual_add</span></code></a>(residual, skip[, tau])</p></td>
+<td><p>Adds a residual connection and skip connection together, with a relative weighting <cite>tau</cite> applied to the residual branch.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split" title="unit_scaling.functional.residual_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual_split</span></code></a>(input[, tau])</p></td>
+<td><p>Splits a tensor into an <cite>residual</cite> and <cite>skip</cite> tensor, prior to being used in a residual layer, with a relative weighting <cite>tau</cite> applied to the residual branch.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html#unit_scaling.functional.scale_elementwise" title="unit_scaling.functional.scale_elementwise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_elementwise</span></code></a>(f, output_scale, ...[, ...])</p></td>
+<td><p>Transforms an element-wise function into a scaled version.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.softmax.html#unit_scaling.functional.softmax" title="unit_scaling.functional.softmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">softmax</span></code></a>(input, dim[, dtype, constraint])</p></td>
+<td><p>Applies a <strong>unit-scaled</strong> softmax function.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unit_scaling.TransformerLayer.html" class="btn btn-neutral float-left" title="unit_scaling.TransformerLayer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.functional.cross_entropy.html" class="btn btn-neutral float-right" title="unit_scaling.functional.cross_entropy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
