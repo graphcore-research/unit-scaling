@@ -139,8 +139,11 @@ def _annotate(code: str, scales: ScaleDict, syntax_highlight: bool) -> str:
     def is_function_placeholder_line(code_line: str) -> bool:
         return bool(re.search(f" = {function_placeholder_regex}$", code_line))
 
-    def remove_function_placeholder_args(code_line: str) -> str:
-        return re.sub(f", {function_placeholder_regex}", "", code_line)
+    def cleanup_function_signature(code_line: str) -> str:
+        code_line = re.sub(f", {function_placeholder_regex}", "", code_line)
+        inner_code_line = code_line.split("(", 1)[1]
+        replacement = re.sub(r"_([a-zA-Z0-9_]+)_", r"\1", inner_code_line)
+        return code_line.replace(inner_code_line, replacement)
 
     def annotate_line(code_line: str) -> str:
         if code_line.startswith("torch.fx._symbolic_trace.wrap"):
@@ -157,7 +160,7 @@ def _annotate(code: str, scales: ScaleDict, syntax_highlight: bool) -> str:
                 assert isinstance(parsed, ast.FunctionDef)
                 arg_names = [arg.arg for arg in parsed.args.args]
                 scale_strs = [str(scales[a]) for a in arg_names if a in scales]
-                code_line = remove_function_placeholder_args(code_line)
+                code_line = cleanup_function_signature(code_line)
                 if scale_strs:
                     return f"{code_line}  {', '.join(scale_strs)}"  # pragma: no cover
                 else:

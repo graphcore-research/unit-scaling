@@ -6,6 +6,19 @@
 
 .. automodule:: {{ fullname }}
 
+   {% block aliases %}
+   {% if fullname == 'unit_scaling.constraints' %}
+   .. rubric:: {{ _('Type Aliases') }}
+
+   .. autosummary::
+      :toctree:
+
+      BinaryConstraint
+      TernaryConstraint
+      VariadicConstraint
+   {% endif %}
+   {% endblock %}
+
    {% block attributes %}
    {% if attributes %}
    .. rubric:: {{ _('Module Attributes') }}
@@ -19,7 +32,6 @@
    {% endblock %}
 
    {% block functions %}
-   {% if functions %}
    .. rubric:: {{ _('Functions') }}
 
    .. autosummary::
@@ -27,7 +39,6 @@
    {% for item in functions %}
       {{ item }}
    {%- endfor %}
-   {% endif %}
    {% endblock %}
 
    {% block classes %}

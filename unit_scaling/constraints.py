@@ -2,6 +2,8 @@
 
 """Common scale-constraints used in unit-scaled operations."""
 
+from __future__ import annotations  # required for docs to alias type annotations
+
 from math import pow, prod
 from typing import Callable, Tuple, Union
 
@@ -115,4 +117,8 @@ def to_right_grad_scale(
     return right_grad_scale
 
 
-__all__ = generate__all__(__name__)
+__all__ = generate__all__(__name__) + [
+    "BinaryConstraint",
+    "TernaryConstraint",
+    "VariadicConstraint",
+]

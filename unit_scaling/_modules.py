@@ -2,6 +2,8 @@
 
 """Unit-scaled versions of common `torch.nn` modules."""
 
+from __future__ import annotations  # required for docs to alias type annotations
+
 from typing import Any, Optional
 
 import einops

@@ -1,5 +1,7 @@
 # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 
+from __future__ import annotations  # required for docs to alias type annotations
+
 """Unit-scaled versions of common `torch.nn.functional` functions."""
 
 from math import prod
