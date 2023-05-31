@@ -13,6 +13,9 @@ unit\_scaling.functional
 
    
    
+   
+
+   
    .. rubric:: Functions
 
    .. autosummary::
@@ -29,7 +32,6 @@ unit\_scaling.functional
       residual_split
       scale_elementwise
       softmax
-   
    
 
    

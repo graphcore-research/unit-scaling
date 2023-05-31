@@ -1,0 +1,6 @@
+unit\_scaling.constraints.TernaryConstraint
+===========================================
+
+.. currentmodule:: unit_scaling.constraints
+
+.. autodata:: TernaryConstraint

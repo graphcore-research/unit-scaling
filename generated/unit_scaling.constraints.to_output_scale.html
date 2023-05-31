@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.2.9. unit_scaling.constraints.to_output_scale &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4.2.10. unit_scaling.constraints.to_right_grad_scale" href="unit_scaling.constraints.to_right_grad_scale.html" />
+    <link rel="prev" title="4.2.8. unit_scaling.constraints.to_left_grad_scale" href="unit_scaling.constraints.to_left_grad_scale.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">4. API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">4.1. unit_scaling</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.constraints.html">4.2. unit_scaling.constraints</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.BinaryConstraint.html">4.2.1. unit_scaling.constraints.BinaryConstraint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.TernaryConstraint.html">4.2.2. unit_scaling.constraints.TernaryConstraint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.VariadicConstraint.html">4.2.3. unit_scaling.constraints.VariadicConstraint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.amean.html">4.2.4. unit_scaling.constraints.amean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.gmean.html">4.2.5. unit_scaling.constraints.gmean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.hmean.html">4.2.6. unit_scaling.constraints.hmean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_grad_input_scale.html">4.2.7. unit_scaling.constraints.to_grad_input_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_left_grad_scale.html">4.2.8. unit_scaling.constraints.to_left_grad_scale</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.2.9. unit_scaling.constraints.to_output_scale</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.constraints.to_output_scale"><code class="docutils literal notranslate"><span class="pre">to_output_scale()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_right_grad_scale.html">4.2.10. unit_scaling.constraints.to_right_grad_scale</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">4.3. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.4. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">4.5. unit_scaling.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.constraints.html"><span class="section-number">4.2. </span>unit_scaling.constraints</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.2.9. </span>unit_scaling.constraints.to_output_scale</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/unit_scaling.constraints.to_output_scale.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="unit-scaling-constraints-to-output-scale">
+<h1><span class="section-number">4.2.9. </span>unit_scaling.constraints.to_output_scale<a class="headerlink" href="#unit-scaling-constraints-to-output-scale" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="unit_scaling.constraints.to_output_scale">
+<span class="sig-prename descclassname"><span class="pre">unit_scaling.constraints.</span></span><span class="sig-name descname"><span class="pre">to_output_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">grad_input_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/constraints.html#to_output_scale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.constraints.to_output_scale" title="Permalink to this definition"></a></dt>
+<dd><p>Assumes an output scale is provided and any number of grad input scales:
+<cite>(output_scale, *grad_input_scales)</cite>. Selects only <cite>output_scale</cite> as the chosen
+scaling factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – the scale of the op’s output</p></li>
+<li><p><strong>grad_input_scales</strong> (<a href="#id1"><span class="problematic" id="id2">*</span></a>float) – the scales of the op’s input gradients</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>equal to <cite>output_scale</cite></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unit_scaling.constraints.to_left_grad_scale.html" class="btn btn-neutral float-left" title="4.2.8. unit_scaling.constraints.to_left_grad_scale" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.constraints.to_right_grad_scale.html" class="btn btn-neutral float-right" title="4.2.10. unit_scaling.constraints.to_right_grad_scale" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

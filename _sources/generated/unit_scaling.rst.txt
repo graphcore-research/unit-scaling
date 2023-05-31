@@ -16,6 +16,14 @@ unit\_scaling
    
 
    
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+   
+
+   
    
    .. rubric:: Classes
 

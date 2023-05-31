@@ -1,0 +1,6 @@
+unit\_scaling.constraints.VariadicConstraint
+============================================
+
+.. currentmodule:: unit_scaling.constraints
+
+.. autodata:: VariadicConstraint

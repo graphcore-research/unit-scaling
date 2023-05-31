@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.2. unit_scaling.constraints &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4.2.1. unit_scaling.constraints.BinaryConstraint" href="unit_scaling.constraints.BinaryConstraint.html" />
+    <link rel="prev" title="4.1.11. unit_scaling.TransformerLayer" href="unit_scaling.TransformerLayer.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">4. API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">4.1. unit_scaling</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">4.2. unit_scaling.constraints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.BinaryConstraint.html">4.2.1. unit_scaling.constraints.BinaryConstraint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.TernaryConstraint.html">4.2.2. unit_scaling.constraints.TernaryConstraint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.VariadicConstraint.html">4.2.3. unit_scaling.constraints.VariadicConstraint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.amean.html">4.2.4. unit_scaling.constraints.amean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.gmean.html">4.2.5. unit_scaling.constraints.gmean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.hmean.html">4.2.6. unit_scaling.constraints.hmean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_grad_input_scale.html">4.2.7. unit_scaling.constraints.to_grad_input_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_left_grad_scale.html">4.2.8. unit_scaling.constraints.to_left_grad_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_output_scale.html">4.2.9. unit_scaling.constraints.to_output_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_right_grad_scale.html">4.2.10. unit_scaling.constraints.to_right_grad_scale</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">4.3. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.4. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">4.5. unit_scaling.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.2. </span>unit_scaling.constraints</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/unit_scaling.constraints.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-unit_scaling.constraints">
+<span id="unit-scaling-constraints"></span><h1><span class="section-number">4.2. </span>unit_scaling.constraints<a class="headerlink" href="#module-unit_scaling.constraints" title="Permalink to this heading"></a></h1>
+<p>Common scale-constraints used in unit-scaled operations.</p>
+<p class="rubric">Type Aliases</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.constraints.BinaryConstraint.html#unit_scaling.constraints.BinaryConstraint" title="unit_scaling.constraints.BinaryConstraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BinaryConstraint</span></code></a></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.constraints.TernaryConstraint.html#unit_scaling.constraints.TernaryConstraint" title="unit_scaling.constraints.TernaryConstraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TernaryConstraint</span></code></a></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]]]</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.constraints.VariadicConstraint.html#unit_scaling.constraints.VariadicConstraint" title="unit_scaling.constraints.VariadicConstraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VariadicConstraint</span></code></a></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[...], <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.constraints.amean.html#unit_scaling.constraints.amean" title="unit_scaling.constraints.amean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">amean</span></code></a>(*scales)</p></td>
+<td><p>Computes the arithmetic mean of the provided scales.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.constraints.gmean.html#unit_scaling.constraints.gmean" title="unit_scaling.constraints.gmean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gmean</span></code></a>(*scales)</p></td>
+<td><p>Computes the geometric mean of the provided scales.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.constraints.hmean.html#unit_scaling.constraints.hmean" title="unit_scaling.constraints.hmean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hmean</span></code></a>(*scales)</p></td>
+<td><p>Computes the harmonic mean of the provided scales.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.constraints.to_grad_input_scale.html#unit_scaling.constraints.to_grad_input_scale" title="unit_scaling.constraints.to_grad_input_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_grad_input_scale</span></code></a>(output_scale, ...)</p></td>
+<td><p>Assumes two provided scales: <cite>(output_scale, grad_input_scale)</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.constraints.to_left_grad_scale.html#unit_scaling.constraints.to_left_grad_scale" title="unit_scaling.constraints.to_left_grad_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_left_grad_scale</span></code></a>(output_scale, ...)</p></td>
+<td><p>Assumes three provided scales: <cite>(output_scale, left_grad_scale, right_grad_scale)</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.constraints.to_output_scale.html#unit_scaling.constraints.to_output_scale" title="unit_scaling.constraints.to_output_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_output_scale</span></code></a>(output_scale, *grad_input_scale)</p></td>
+<td><p>Assumes an output scale is provided and any number of grad input scales: <cite>(output_scale, *grad_input_scales)</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.constraints.to_right_grad_scale.html#unit_scaling.constraints.to_right_grad_scale" title="unit_scaling.constraints.to_right_grad_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_right_grad_scale</span></code></a>(output_scale, ...)</p></td>
+<td><p>Assumes three provided scales: <cite>(output_scale, left_grad_scale, right_grad_scale)</cite>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unit_scaling.TransformerLayer.html" class="btn btn-neutral float-left" title="4.1.11. unit_scaling.TransformerLayer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.constraints.BinaryConstraint.html" class="btn btn-neutral float-right" title="4.2.1. unit_scaling.constraints.BinaryConstraint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

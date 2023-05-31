@@ -17,7 +17,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="User Guide" href="user_guide.html" /> 
+    <link rel="next" title="1. User guide" href="user_guide.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,10 +41,10 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="limitations.html">Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="limitations.html">3. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">4. API reference</a></li>
 </ul>
 
         </div>
@@ -73,63 +73,93 @@
              
   <section id="unit-scaling">
 <h1>Unit Scaling<a class="headerlink" href="#unit-scaling" title="Permalink to this heading"></a></h1>
-<p><strong>Warning:</strong> this library is currently in its _alpha_ release. This means it is
-unoptimised and missing important functionality. We hope users still find the
-library valuable, but it should not be expected to work seamlessly. We are keen to
-help early users with any problems they encounter.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>this library is currently in its <em>alpha</em> release. This means it’s
+missing some functionality and should not be expected to work seamlessly.
+We’re keen to help early users with any problems they encounter.</p>
+</div>
 <p>Welcome to the <code class="code docutils literal notranslate"><span class="pre">unit-scaling</span></code> library. This library is designed to facilitate
 the use of the <em>unit scaling</em> method, as outlined in the paper
 <a class="reference external" href="https://arxiv.org/abs/2303.11257">Unit Scaling: Out-of-the-Box Low-Precision Training (ICML, 2023)</a>.</p>
+<p>The following video illustrates how unit scaling works.</p>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/LKtWAgpzS_Y" title="YouTube video player"
     frameborder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    allowfullscreen></iframe><p>We recommend that new users get started with our <a class="reference internal" href="user_guide.html#user-guide"><span class="std std-ref">User Guide</span></a>.</p>
-<p>For a high-level overview of the technique, see
+    allowfullscreen></iframe>
+<p></p>
+<p>We recommend that new users get started with <a class="reference internal" href="user_guide.html#user-guide"><span class="std std-numref">Section 1. User guide</span></a>.</p>
+<p>For a high-level overview of the technique, see the blog post
 <a class="reference external" href="https://www.graphcore.ai/posts/simple-fp16-and-fp8-training-with-unit-scaling">Simple FP16 and FP8 training with Unit Scaling</a>.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide.html#what-is-unit-scaling">What is unit scaling?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide.html#how-to-unit-scale-a-model">How to unit-scale a model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide.html#key-considerations-for-unit-scaling">Key considerations for unit scaling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide.html#optimising-unit-scaled-models">Optimising unit-scaled models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">1. User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#installation">1.1. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#what-is-unit-scaling">1.2. What is unit scaling?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#how-to-unit-scale-a-model">1.3. How to unit-scale a model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#key-considerations-for-unit-scaling">1.4. Key considerations for unit scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#optimising-unit-scaled-models">1.5. Optimising unit-scaled models</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">Developer Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="development.html#development">Development</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">2. Developer guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development.html#development">2.1. Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#license">2.2. License</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="limitations.html">Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.html">unit_scaling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.GELU.html">unit_scaling.GELU</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.MHSA.html">unit_scaling.MHSA</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.MLP.html">unit_scaling.MLP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.CrossEntropyLoss.html">unit_scaling.CrossEntropyLoss</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.Dropout.html">unit_scaling.Dropout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.Embedding.html">unit_scaling.Embedding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.LayerNorm.html">unit_scaling.LayerNorm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.Linear.html">unit_scaling.Linear</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.Softmax.html">unit_scaling.Softmax</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.TransformerDecoder.html">unit_scaling.TransformerDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.TransformerLayer.html">unit_scaling.TransformerLayer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="limitations.html">3. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">4. API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.html">4.1. unit_scaling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.GELU.html">4.1.1. unit_scaling.GELU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.MHSA.html">4.1.2. unit_scaling.MHSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.MLP.html">4.1.3. unit_scaling.MLP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.CrossEntropyLoss.html">4.1.4. unit_scaling.CrossEntropyLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.Dropout.html">4.1.5. unit_scaling.Dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.Embedding.html">4.1.6. unit_scaling.Embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.LayerNorm.html">4.1.7. unit_scaling.LayerNorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.Linear.html">4.1.8. unit_scaling.Linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.Softmax.html">4.1.9. unit_scaling.Softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.TransformerDecoder.html">4.1.10. unit_scaling.TransformerDecoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.TransformerLayer.html">4.1.11. unit_scaling.TransformerLayer</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.functional.html">unit_scaling.functional</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.cross_entropy.html">unit_scaling.functional.cross_entropy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.dropout.html">unit_scaling.functional.dropout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.embedding.html">unit_scaling.functional.embedding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.gelu.html">unit_scaling.functional.gelu</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.layer_norm.html">unit_scaling.functional.layer_norm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.linear.html">unit_scaling.functional.linear</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.matmul.html">unit_scaling.functional.matmul</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.residual_add.html">unit_scaling.functional.residual_add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.residual_split.html">unit_scaling.functional.residual_split</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.scale_elementwise.html">unit_scaling.functional.scale_elementwise</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.softmax.html">unit_scaling.functional.softmax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.constraints.html">4.2. unit_scaling.constraints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.constraints.BinaryConstraint.html">4.2.1. unit_scaling.constraints.BinaryConstraint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.constraints.TernaryConstraint.html">4.2.2. unit_scaling.constraints.TernaryConstraint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.constraints.VariadicConstraint.html">4.2.3. unit_scaling.constraints.VariadicConstraint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.constraints.amean.html">4.2.4. unit_scaling.constraints.amean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.constraints.gmean.html">4.2.5. unit_scaling.constraints.gmean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.constraints.hmean.html">4.2.6. unit_scaling.constraints.hmean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.constraints.to_grad_input_scale.html">4.2.7. unit_scaling.constraints.to_grad_input_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.constraints.to_left_grad_scale.html">4.2.8. unit_scaling.constraints.to_left_grad_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.constraints.to_output_scale.html">4.2.9. unit_scaling.constraints.to_output_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.constraints.to_right_grad_scale.html">4.2.10. unit_scaling.constraints.to_right_grad_scale</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.functional.html">4.3. unit_scaling.functional</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.cross_entropy.html">4.3.1. unit_scaling.functional.cross_entropy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.dropout.html">4.3.2. unit_scaling.functional.dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.embedding.html">4.3.3. unit_scaling.functional.embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.gelu.html">4.3.4. unit_scaling.functional.gelu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.layer_norm.html">4.3.5. unit_scaling.functional.layer_norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.linear.html">4.3.6. unit_scaling.functional.linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.matmul.html">4.3.7. unit_scaling.functional.matmul</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.residual_add.html">4.3.8. unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.residual_split.html">4.3.9. unit_scaling.functional.residual_split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.scale_elementwise.html">4.3.10. unit_scaling.functional.scale_elementwise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.functional.softmax.html">4.3.11. unit_scaling.functional.softmax</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.scale.html">4.4. unit_scaling.scale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.scale.scale_bwd.html">4.4.1. unit_scaling.scale.scale_bwd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.scale.scale_fwd.html">4.4.2. unit_scaling.scale.scale_fwd</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.utils.html">4.5. unit_scaling.utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.utils.analyse_module.html">4.5.1. unit_scaling.utils.analyse_module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.utils.ScalePair.html">4.5.2. unit_scaling.utils.ScalePair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.utils.ScaleTracker.html">4.5.3. unit_scaling.utils.ScaleTracker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html">4.5.4. unit_scaling.utils.ScaleTrackingInterpreter</a></li>
 </ul>
 </li>
 </ul>
@@ -142,7 +172,7 @@ the use of the <em>unit scaling</em> method, as outlined in the paper
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="user_guide.html" class="btn btn-neutral float-right" title="User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="user_guide.html" class="btn btn-neutral float-right" title="1. User guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

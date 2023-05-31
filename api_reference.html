@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; unit-scaling  documentation</title>
+  <title>4. API reference &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,8 +17,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="unit_scaling" href="generated/unit_scaling.html" />
-    <link rel="prev" title="Limitations" href="limitations.html" /> 
+    <link rel="next" title="4.1. unit_scaling" href="generated/unit_scaling.html" />
+    <link rel="prev" title="3. Limitations" href="limitations.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,12 +42,15 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="limitations.html">Limitations</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.html">unit_scaling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.functional.html">unit_scaling.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="limitations.html">3. Limitations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.html">4.1. unit_scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.constraints.html">4.2. unit_scaling.constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.functional.html">4.3. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.scale.html">4.4. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.utils.html">4.5. unit_scaling.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -66,7 +69,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">API Reference</li>
+      <li class="breadcrumb-item active"><span class="section-number">4. </span>API reference</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/api_reference.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -77,7 +80,7 @@
            <div itemprop="articleBody">
              
   <section id="api-reference">
-<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading"></a></h1>
+<h1><span class="section-number">4. </span>API reference<a class="headerlink" href="#api-reference" title="Permalink to this heading"></a></h1>
 <p><code class="code docutils literal notranslate"><span class="pre">unit-scaling</span></code> is implemented using thin wrappers around existing <code class="code docutils literal notranslate"><span class="pre">torch.nn</span></code>
 classes and functions. Documentation also inherits from the standard PyTorch docs, with
 modifications for scaling. Note that some docs may no longer be relevant but are
@@ -89,7 +92,7 @@ classes and functions can easily be swapped-out for their unit-scaled equivalent
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">F</span>
 </pre></div>
 </div>
-<p>unit scaling can be applied by first adding:</p>
+<p>Unit scaling can be applied by first adding:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">unit_scaling</span> <span class="k">as</span> <span class="nn">uu</span>
 <span class="kn">from</span> <span class="nn">unit_scaling</span> <span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">U</span>
 </pre></div>
@@ -103,8 +106,17 @@ classes and functions can easily be swapped-out for their unit-scaled equivalent
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/unit_scaling.html#module-unit_scaling" title="unit_scaling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling</span></code></a></p></td>
 <td><p>Unit-scaled versions of common torch.nn modules.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/unit_scaling.functional.html#module-unit_scaling.functional" title="unit_scaling.functional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.functional</span></code></a></p></td>
-<td><p>Unit-scaled versions of common <cite>torch.nn.functional</cite> functions.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/unit_scaling.constraints.html#module-unit_scaling.constraints" title="unit_scaling.constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.constraints</span></code></a></p></td>
+<td><p>Common scale-constraints used in unit-scaled operations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/unit_scaling.functional.html#module-unit_scaling.functional" title="unit_scaling.functional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.functional</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/unit_scaling.scale.html#module-unit_scaling.scale" title="unit_scaling.scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.scale</span></code></a></p></td>
+<td><p>Operations to enable different scaling factors in the forward and backward passes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/unit_scaling.utils.html#module-unit_scaling.utils" title="unit_scaling.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.utils</span></code></a></p></td>
+<td><p>Utility functions for developing unit-scaled models.</p></td>
 </tr>
 </tbody>
 </table>
@@ -114,8 +126,8 @@ classes and functions can easily be swapped-out for their unit-scaled equivalent
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="limitations.html" class="btn btn-neutral float-left" title="Limitations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="generated/unit_scaling.html" class="btn btn-neutral float-right" title="unit_scaling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="limitations.html" class="btn btn-neutral float-left" title="3. Limitations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/unit_scaling.html" class="btn btn-neutral float-right" title="4.1. unit_scaling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
