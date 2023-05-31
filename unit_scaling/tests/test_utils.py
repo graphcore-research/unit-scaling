@@ -25,7 +25,7 @@ def test_analyse_mlp() -> None:
     )
 
     expected_code = """
-def forward(self, input : torch.Tensor) -> torch.Tensor:
+def forward(self, input : Tensor) -> Tensor:
     input_1 = input;  (-> 1.0, <- 1.01)
     linear_1_weight = self.linear_1.weight;  (-> 1.0, <- 0.716)
     linear_1_bias = self.linear_1.bias;  (-> 0.0, <- 0.714)
@@ -53,7 +53,7 @@ def test_analyse_mhsa() -> None:
     )
 
     expected_code = """
-def forward(self, input : torch.Tensor) -> torch.Tensor:
+def forward(self, input : Tensor) -> Tensor:
     input_1 = input;  (-> 1.0, <- 0.819)
     linear_qkv_weight = self.linear_qkv.weight;  (-> 1.01, <- 0.681)
     linear = U.linear(input_1, linear_qkv_weight, None, gmean);  (-> 0.766, <- 0.631)

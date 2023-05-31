@@ -1,4 +1,4 @@
-API Reference
+API reference
 =============
 
 :code:`unit-scaling` is implemented using thin wrappers around existing :code:`torch.nn`
@@ -16,7 +16,7 @@ For PyTorch code which uses the following imports:
    from torch import nn
    from torch import functional as F
 
-unit scaling can be applied by first adding:
+Unit scaling can be applied by first adding:
 
 .. code-block::
 
@@ -35,4 +35,7 @@ Click below for the full documentation:
    :recursive:
 
    unit_scaling
+   unit_scaling.constraints
    unit_scaling.functional
+   unit_scaling.scale
+   unit_scaling.utils

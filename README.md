@@ -4,12 +4,11 @@ A library for unit scaling in PyTorch, based on the paper
 [Unit Scaling: Out-of-the-Box Low-Precision Training](https://arxiv.org/abs/2303.11257).
 
 Documentation can be found at
-https://graphcore-research.github.io/unit-scaling.
+[https://graphcore-research.github.io/unit-scaling](https://graphcore-research.github.io/unit-scaling).
 
-**Warning:** this library is currently in its _alpha_ release. This means it is
-unoptimised and missing important functionality. We hope users still find the
-library valuable, but it should not be expected to work seamlessly. We are keen to
-help early users with any problems they encounter.
+**Warning:** this library is currently in its *alpha* release. This means it's
+missing some functionality and should not be expected to work seamlessly.
+We're keen to help early users with any problems they encounter.
 
 ## Development
 
@@ -39,7 +38,7 @@ source .venv/bin/activate
 
  - Python intepreter is set to `.venv/bin/python`
  - Format-on-save enabled
- - Consider a `.env` file for setting PYTHONPATH, e.g. `echo "PYTHONPATH=$(pwd)" > .env`
+ - Consider a `.env` file for setting `PYTHONPATH`, for example `echo "PYTHONPATH=$(pwd)" > .env`
  (note that this will be a different path if using devcontainers)
 
 **Docs development**:

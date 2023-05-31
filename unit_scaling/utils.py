@@ -98,9 +98,9 @@ class ScaleTrackingInterpreter(fx.Interpreter):
         args: Tuple[fx.node.Argument, ...],
         kwargs: Dict[str, Any],
     ) -> Any:
-        """To handle functions being passed as arguments (e.g. constraints) the tracer
-        represents them as placeholder nodes. This method extracts the original function
-        from the node, as stored in the `target_to_function` dict."""
+        """To handle functions being passed as arguments (for example constraints) the
+        tracer represents them as placeholder nodes. This method extracts the original
+        function from the node, as stored in the `target_to_function` dict."""
         if isinstance(target, str) and target.startswith("function_placeholder__"):
             return self.module.graph._tracer_extras["target_to_function"][target]
         return super().placeholder(target, args, kwargs)
@@ -139,8 +139,11 @@ def _annotate(code: str, scales: ScaleDict, syntax_highlight: bool) -> str:
     def is_function_placeholder_line(code_line: str) -> bool:
         return bool(re.search(f" = {function_placeholder_regex}$", code_line))
 
-    def remove_function_placeholder_args(code_line: str) -> str:
-        return re.sub(f", {function_placeholder_regex}", "", code_line)
+    def cleanup_function_signature(code_line: str) -> str:
+        code_line = re.sub(f", {function_placeholder_regex}", "", code_line)
+        inner_code_line = code_line.split("(", 1)[1]
+        replacement = re.sub(r"_([a-zA-Z0-9_]+)_", r"\1", inner_code_line)
+        return code_line.replace(inner_code_line, replacement)
 
     def annotate_line(code_line: str) -> str:
         if code_line.startswith("torch.fx._symbolic_trace.wrap"):
@@ -157,7 +160,7 @@ def _annotate(code: str, scales: ScaleDict, syntax_highlight: bool) -> str:
                 assert isinstance(parsed, ast.FunctionDef)
                 arg_names = [arg.arg for arg in parsed.args.args]
                 scale_strs = [str(scales[a]) for a in arg_names if a in scales]
-                code_line = remove_function_placeholder_args(code_line)
+                code_line = cleanup_function_signature(code_line)
                 if scale_strs:
                     return f"{code_line}  {', '.join(scale_strs)}"  # pragma: no cover
                 else:

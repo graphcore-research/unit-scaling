@@ -2,6 +2,8 @@
 
 """Operations to enable different scaling factors in the forward and backward passes."""
 
+from __future__ import annotations  # required for docs to alias type annotations
+
 from typing import Tuple
 
 import torch

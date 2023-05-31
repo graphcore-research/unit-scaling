@@ -40,13 +40,26 @@ autosummary_ignore_module_all = False
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
 
+numfig_format = {
+    "section": "Section {number}. {name}",
+    "figure": "Fig. %s",
+    "table": "Table %s",
+    "code-block": "Listing %s",
+}
 
 intersphinx_mapping = {
     "rtd": ("https://docs.readthedocs.io/en/stable/", None),
     "python": ("https://docs.python.org/3/", None),
     "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
+    "pytorch": ("https://pytorch.org/docs/stable/", None),
 }
 intersphinx_disabled_domains = ["std"]
+
+autodoc_type_aliases = {
+    "BinaryConstraint": "unit_scaling.constraints.BinaryConstraint",
+    "TernaryConstraint": "unit_scaling.constraints.TernaryConstraint",
+    "VariadicConstraint": "unit_scaling.constraints.VariadicConstraint",
+}  # make docgen output name of alias rather than definition.
 
 templates_path = ["_templates"]
 
