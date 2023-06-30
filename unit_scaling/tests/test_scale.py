@@ -1,10 +1,10 @@
 # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 
 import torch
+from torch import randn
 
 from ..scale import scale_bwd, scale_fwd
 from .helper import unit_backward
-from torch import randn
 
 
 def test_scale_fwd() -> None:

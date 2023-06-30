@@ -276,6 +276,47 @@ def embedding(
     )
 
 
+if hasattr(F, "scaled_dot_product_attention"):
+
+    @docstring_from(
+        F.scaled_dot_product_attention,
+        short_description=(
+            "A **unit-scaled** dot-product attention function. Note that this will use"
+            "whatever underlying PyTorch scaled_dot_product_attention implementation"
+            "is available, so if flash attention is enabled it will be used here too."
+            "\n\n"
+            "Computes scaled dot product attention on query, key and value tensors,"
+            "using an optional attention mask if passed, and applying dropout if a"
+            "probability greater than 0.0 is specified."
+        ),
+    )
+    def scaled_dot_product_attention(
+        query: Tensor,
+        key: Tensor,
+        value: Tensor,
+        attn_mask: Optional[Tensor] = None,
+        dropout_p: float = 0.0,
+        is_causal: bool = False,
+        scale: Optional[float] = None,
+    ) -> Tensor:
+        s, d = value.shape[-2:]
+        # Fwd: s/1.31 * s**-0.5 = s**0.5/1.31
+        # Bwd: d**0.5[counter `scale`] * s**-0.5 * s/1.65 * (s**-0.5 * d**-0.5)**0.5
+        #    = d**0.25 * s**0.25 / 1.65
+        # GeoMean: s**0.375 * d**0.125 / 1.47
+        scale_factor = s**0.375 * d**0.125 / 1.47
+        query, key, value = (scale_bwd(t, scale_factor) for t in (query, key, value))
+        out = F.scaled_dot_product_attention(
+            query,
+            key,
+            value,
+            attn_mask=attn_mask,
+            dropout_p=dropout_p,
+            is_causal=is_causal,
+        )
+        return scale_fwd(out, scale_factor)
+
+
 @docstring_from(
     F.cross_entropy,
     short_description=(

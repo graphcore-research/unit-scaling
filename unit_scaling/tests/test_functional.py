@@ -25,6 +25,7 @@ from ..functional import (
     residual_add,
     residual_split,
     scale_elementwise,
+    scaled_dot_product_attention,
     softmax,
 )
 from .helper import assert_not_unit_scaled, assert_unit_scaled, unit_backward
@@ -347,6 +348,18 @@ def test_embedding() -> None:
         embedding(input_idxs, embedding_table, scale_grad_by_freq=True)
     with pytest.raises(ValueError):
         embedding(input_idxs, embedding_table, sparse=True)
+
+
+# --- test scaled_dot_product_attention() ---
+
+
+def test_scaled_dot_product_attention() -> None:
+    shape = 2**8, 2**6, 2**6
+    q, k, v = (randn(*shape, requires_grad=True) for _ in range(3))
+    output = scaled_dot_product_attention(q, k, v)
+    unit_backward(output)
+
+    assert_unit_scaled(output, q.grad, k.grad, v.grad)
 
 
 # --- test cross_entropy() ---
