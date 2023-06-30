@@ -5,7 +5,7 @@ from __future__ import annotations  # required for docs to alias type annotation
 """Unit-scaled versions of common `torch.nn.functional` functions."""
 
 from math import prod
-from typing import Any, Callable, Optional, Sequence, Tuple
+from typing import Any, Callable, Iterable, Optional, Sequence, Tuple
 
 import torch
 import torch.nn.functional as F
@@ -50,6 +50,15 @@ def scale_elementwise(
         return scale_fwd(output, output_scale)
 
     return scaled_f
+
+
+def _get_broadcast_sizes(*args: Tensor) -> Iterable[int]:
+    """Returns the product of the dimensions added to each arg when broadcasting."""
+    output_broadcast_shape = torch.broadcast_shapes(  # type: ignore [no-untyped-call]
+        *(a.shape for a in args)
+    )
+    output_numel = output_broadcast_shape.numel()
+    return (output_numel // a.shape.numel() for a in args)
 
 
 @docstring_from(
@@ -184,6 +193,21 @@ def layer_norm(
     if bias is not None:
         bias = scale_bwd(bias, grad_bias_scale)
     return F.layer_norm(input, normalized_shape, weight, bias, eps)
+
+
+@docstring_from(
+    torch.add,
+    short_description="Applies a **unit-scaled** addition.",
+    unsupported_args=["alpha"],
+)
+def add(
+    input: Tensor, other: Tensor, alpha: int = 1, out: Optional[Tensor] = None
+) -> Tensor:
+    input_broadcast_size, other_broadcast_size = _get_broadcast_sizes(input, other)
+    input = scale_bwd(input, input_broadcast_size**-0.5)
+    other = scale_bwd(other, other_broadcast_size**-0.5)
+    out = torch.add(input, other, out=out)
+    return scale_fwd(out, 2**-0.5)
 
 
 def residual_split(input: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
