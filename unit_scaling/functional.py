@@ -5,7 +5,7 @@ from __future__ import annotations  # required for docs to alias type annotation
 """Unit-scaled versions of common `torch.nn.functional` functions."""
 
 from math import prod
-from typing import Any, Callable, Iterable, Optional, Sequence, Tuple
+from typing import Any, Callable, Optional, Sequence, Tuple
 
 import torch
 import torch.nn.functional as F
@@ -52,13 +52,13 @@ def scale_elementwise(
     return scaled_f
 
 
-def _get_broadcast_sizes(*args: Tensor) -> Iterable[int]:
+def _get_broadcast_sizes(*args: Tensor) -> Tuple[int, ...]:
     """Returns the product of the dimensions added to each arg when broadcasting."""
     output_broadcast_shape = torch.broadcast_shapes(  # type: ignore [no-untyped-call]
         *(a.shape for a in args)
     )
     output_numel = output_broadcast_shape.numel()
-    return (output_numel // a.shape.numel() for a in args)
+    return tuple(output_numel // a.shape.numel() for a in args)
 
 
 @docstring_from(
@@ -201,13 +201,27 @@ def layer_norm(
     unsupported_args=["alpha"],
 )
 def add(
-    input: Tensor, other: Tensor, alpha: int = 1, out: Optional[Tensor] = None
+    input: Tensor,
+    other: Tensor,
+    constraint: Optional[TernaryConstraint] = gmean,
+    alpha: int = 1,
+    out: Optional[Tensor] = None,
 ) -> Tensor:
     input_broadcast_size, other_broadcast_size = _get_broadcast_sizes(input, other)
-    input = scale_bwd(input, input_broadcast_size**-0.5)
-    other = scale_bwd(other, other_broadcast_size**-0.5)
+    grad_input_scale = input_broadcast_size**-0.5
+    grad_other_scale = other_broadcast_size**-0.5
+    fwd_scale = 2**-0.5
+    if constraint:
+        scale = constraint(fwd_scale, grad_input_scale, grad_other_scale)
+        if isinstance(scale, Sequence):
+            fwd_scale, grad_input_scale, grad_other_scale = scale  # type: ignore
+        else:
+            fwd_scale = grad_input_scale = grad_other_scale = scale
+
+    input = scale_bwd(input, grad_input_scale)
+    other = scale_bwd(other, grad_other_scale)
     out = torch.add(input, other, out=out)
-    return scale_fwd(out, 2**-0.5)
+    return scale_fwd(out, fwd_scale)
 
 
 def residual_split(input: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
@@ -297,7 +311,6 @@ if hasattr(F, "scaled_dot_product_attention"):
         attn_mask: Optional[Tensor] = None,
         dropout_p: float = 0.0,
         is_causal: bool = False,
-        scale: Optional[float] = None,
     ) -> Tensor:
         s, d = value.shape[-2:]
         # Fwd: s/1.31 * s**-0.5 = s**0.5/1.31

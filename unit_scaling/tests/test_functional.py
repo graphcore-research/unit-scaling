@@ -291,29 +291,40 @@ def test_layer_norm() -> None:
 # --- test add() ---
 
 
-def test_add() -> None:
+def test_add_no_constraint() -> None:
     left = randn(2**8, 2**10, requires_grad=True)
     right = randn(2**8, 2**10, requires_grad=True)
-    output = add(left, right)
+    output = add(left, right, constraint=None)
     unit_backward(output)
 
-    assert_unit_scaled(output, left, right)
+    assert_unit_scaled(output, left.grad, right.grad)
+
+
+def test_add_geo_mean() -> None:
+    left = randn(2**8, 2**10, requires_grad=True)
+    right = randn(2**8, 2**10, requires_grad=True)
+    output = add(left, right, constraint=gmean)
+    unit_backward(output)
+
+    assert_not_unit_scaled(output, left.grad, right.grad)
+    std = output.std().detach() * left.grad.std() * right.grad.std()  # type: ignore
+    assert std == pytest.approx(1, abs=0.1)
 
 
 def test_add_broadcast() -> None:
     left = randn(2**10, requires_grad=True)
     right = randn(2**8, 2**10, requires_grad=True)
-    output = add(left, right)
+    output = add(left, right, constraint=None)
     unit_backward(output)
 
-    assert_unit_scaled(output, left, right)
+    assert_unit_scaled(output, left.grad, right.grad)
 
     left = randn(2**8, 1, 2**10, requires_grad=True)
     right = randn(2**9, 2**10, requires_grad=True)
-    output = add(left, right)
+    output = add(left, right, constraint=None)
     unit_backward(output)
 
-    assert_unit_scaled(output, left, right)
+    assert_unit_scaled(output, left.grad, right.grad)
 
 
 # --- test residual() ---
