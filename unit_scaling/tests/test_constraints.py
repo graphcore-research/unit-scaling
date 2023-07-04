@@ -2,7 +2,14 @@
 
 import pytest
 
-from ..constraints import amean, gmean, hmean, to_grad_input_scale, to_output_scale
+from ..constraints import (
+    amean,
+    apply_constraint,
+    gmean,
+    hmean,
+    to_grad_input_scale,
+    to_output_scale,
+)
 
 
 def test_gmean() -> None:
@@ -30,3 +37,10 @@ def test_to_output_scale() -> None:
 
 def test_to_grad_input_scale() -> None:
     assert to_grad_input_scale(2, 3) == 3
+
+
+def test_apply_constraint() -> None:
+    assert apply_constraint("gmean", 1.0, 4.0, 2.0) == (2.0, 2.0, 2.0)
+    assert apply_constraint("hmean", 8.0, 2.0) == (3.2, 3.2)
+    with pytest.raises(ValueError):
+        apply_constraint("invalid", 8.0, 2.0)

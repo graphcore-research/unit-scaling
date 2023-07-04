@@ -12,7 +12,7 @@ import torch.nn.functional as F
 from torch import Tensor
 
 from ._internal_utils import generate__all__
-from .constraints import BinaryConstraint, TernaryConstraint, gmean
+from .constraints import apply_constraint
 from .docs import (
     binary_constraint_docstring,
     docstring_from,
@@ -27,7 +27,7 @@ def scale_elementwise(
     f: Callable[..., Tensor],
     output_scale: float,
     grad_input_scale: float,
-    constraint: Optional[BinaryConstraint] = gmean,
+    constraint: Optional[str] = "gmean",
 ) -> Callable[..., Tensor]:
     """Transforms an element-wise function into a scaled version.
 
@@ -41,8 +41,9 @@ def scale_elementwise(
     Returns:
         Callable[..., Tensor]: the scaled function
     """
-    if constraint:
-        output_scale = grad_input_scale = constraint(output_scale, grad_input_scale)
+    output_scale, grad_input_scale = apply_constraint(
+        constraint, output_scale, grad_input_scale
+    )
 
     def scaled_f(input: Tensor, *args: Any, **kwargs: Any) -> Tensor:
         input = scale_bwd(input, grad_input_scale)
@@ -68,7 +69,7 @@ def _get_broadcast_sizes(*args: Tensor) -> Tuple[int, ...]:
 )
 def gelu(
     input: Tensor,
-    constraint: Optional[BinaryConstraint] = gmean,
+    constraint: Optional[str] = "gmean",
 ) -> Tensor:
     # Scale factors determined empirically, assuming unit scaled input & grad
     output_scale = 0.588**-1
@@ -86,7 +87,7 @@ def softmax(
     input: Tensor,
     dim: int,
     dtype: Optional[torch.dtype] = None,
-    constraint: Optional[BinaryConstraint] = gmean,
+    constraint: Optional[str] = "gmean",
 ) -> Tensor:
     dim_size = input.shape[dim]
     # Scale factors determined empirically, assuming unit-scaled & large dim_size
@@ -121,7 +122,7 @@ def dropout(
 def matmul(
     left: Tensor,
     right: Tensor,
-    constraint: Optional[TernaryConstraint] = gmean,
+    constraint: Optional[str] = "gmean",
 ) -> Tensor:
     left_size = left.shape[-2]
     inner_size = left.shape[-1]
@@ -131,12 +132,9 @@ def matmul(
     left_grad_scale = right_size**-0.5
     right_grad_scale = left_size**-0.5
 
-    if constraint:
-        scale = constraint(output_scale, left_grad_scale, right_grad_scale)
-        if isinstance(scale, Sequence):
-            output_scale, left_grad_scale, right_grad_scale = scale  # type: ignore
-        else:
-            output_scale = left_grad_scale = right_grad_scale = scale
+    output_scale, left_grad_scale, right_grad_scale = apply_constraint(
+        constraint, output_scale, left_grad_scale, right_grad_scale
+    )
 
     left = scale_bwd(left, left_grad_scale)
     right = scale_bwd(right, right_grad_scale)
@@ -153,7 +151,7 @@ def linear(
     input: Tensor,
     weight: Tensor,
     bias: Optional[Tensor],
-    constraint: Optional[BinaryConstraint] = gmean,
+    constraint: Optional[str] = "gmean",
 ) -> Tensor:
     fan_out, fan_in = weight.shape
     batch_size = input.numel() // fan_in
@@ -161,8 +159,10 @@ def linear(
     output_scale = fan_in**-0.5
     grad_input_scale = fan_out**-0.5
     grad_weight_scale = grad_bias_scale = batch_size**-0.5
-    if constraint:
-        output_scale = grad_input_scale = constraint(output_scale, grad_input_scale)
+
+    output_scale, grad_input_scale = apply_constraint(
+        constraint, output_scale, grad_input_scale
+    )
 
     input = scale_bwd(input, grad_input_scale)
     weight = scale_bwd(weight, grad_weight_scale)
@@ -199,29 +199,28 @@ def layer_norm(
     torch.add,
     short_description="Applies a **unit-scaled** addition.",
     unsupported_args=["alpha"],
+    add_args=[ternary_constraint_docstring],
 )
 def add(
     input: Tensor,
     other: Tensor,
-    constraint: Optional[TernaryConstraint] = gmean,
+    constraint: Optional[str] = "gmean",
     alpha: int = 1,
     out: Optional[Tensor] = None,
 ) -> Tensor:
     input_broadcast_size, other_broadcast_size = _get_broadcast_sizes(input, other)
-    grad_input_scale = input_broadcast_size**-0.5
-    grad_other_scale = other_broadcast_size**-0.5
-    fwd_scale = 2**-0.5
-    if constraint:
-        scale = constraint(fwd_scale, grad_input_scale, grad_other_scale)
-        if isinstance(scale, Sequence):
-            fwd_scale, grad_input_scale, grad_other_scale = scale  # type: ignore
-        else:
-            fwd_scale = grad_input_scale = grad_other_scale = scale
+    input_grad_scale = input_broadcast_size**-0.5
+    other_grad_scale = other_broadcast_size**-0.5
+    output_scale = 2**-0.5
 
-    input = scale_bwd(input, grad_input_scale)
-    other = scale_bwd(other, grad_other_scale)
+    output_scale, input_grad_scale, other_grad_scale = apply_constraint(
+        constraint, output_scale, input_grad_scale, other_grad_scale
+    )
+
+    input = scale_bwd(input, input_grad_scale)
+    other = scale_bwd(other, other_grad_scale)
     out = torch.add(input, other, out=out)
-    return scale_fwd(out, fwd_scale)
+    return scale_fwd(out, output_scale)
 
 
 def residual_split(input: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:

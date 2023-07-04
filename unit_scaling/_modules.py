@@ -11,7 +11,6 @@ from torch import Tensor, nn
 
 from . import functional as U
 from ._internal_utils import generate__all__
-from .constraints import BinaryConstraint, VariadicConstraint, gmean
 from .docs import (
     binary_constraint_docstring,
     format_docstring,
@@ -27,7 +26,7 @@ from .docs import (
 class GELU(nn.GELU):
     def __init__(
         self,
-        constraint: Optional[BinaryConstraint] = gmean,
+        constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__()
         self.constraint = constraint
@@ -54,7 +53,7 @@ class Softmax(nn.Softmax):
     def __init__(
         self,
         dim: int,
-        constraint: Optional[BinaryConstraint] = gmean,
+        constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__(dim=dim)
         self.constraint = constraint
@@ -89,7 +88,7 @@ class Linear(nn.Linear):
         bias: bool = True,
         device: Any = None,
         dtype: Any = None,
-        constraint: Optional[BinaryConstraint] = gmean,
+        constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__(in_features, out_features, bias, device, dtype)
         self.constraint = constraint
@@ -170,7 +169,7 @@ class MLP(nn.Module):
         hidden_size: int,
         act_fn: nn.Module = GELU(),
         expansion_factor: int = 4,
-        constraint: Optional[BinaryConstraint] = gmean,
+        constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__()
         intermediate_size = hidden_size * expansion_factor
@@ -202,7 +201,7 @@ class MHSA(nn.Module):
         hidden_size: int,
         heads: int,
         dropout_p: float,
-        constraint: Optional[VariadicConstraint] = gmean,
+        constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__()
         self.heads = heads
@@ -250,7 +249,7 @@ class TransformerLayer(nn.Module):
         dropout_p: float,
         act_fn: nn.Module = GELU(),
         tau: float = 0.2,
-        constraint: Optional[VariadicConstraint] = gmean,
+        constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__()
         self.dropout_p = dropout_p
@@ -305,7 +304,7 @@ class TransformerDecoder(nn.Module):
         dropout_p: float,
         act_fn: nn.Module = GELU(),
         tau: float = 0.2,
-        constraint: Optional[VariadicConstraint] = gmean,
+        constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__()
         self.embedding = Embedding(vocab_size, hidden_size)

@@ -1,18 +1,9 @@
 # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 
-from typing import Tuple
-
 import pytest
 import torch.nn.functional as F
 from torch import Tensor, randint, randn, zeros
 
-from ..constraints import (
-    gmean,
-    to_grad_input_scale,
-    to_left_grad_scale,
-    to_output_scale,
-    to_right_grad_scale,
-)
 from ..functional import (
     add,
     cross_entropy,
@@ -60,7 +51,7 @@ def test_scale_elementwise_for_output() -> None:
     input = randn(2**10, requires_grad=True)
     f = lambda x: x
     scaled_f = scale_elementwise(
-        f, output_scale=2.5, grad_input_scale=0.5, constraint=to_output_scale
+        f, output_scale=2.5, grad_input_scale=0.5, constraint="to_output_scale"
     )
     output = scaled_f(input)
     unit_backward(output)
@@ -73,7 +64,7 @@ def test_scale_elementwise_for_grad_input() -> None:
     input = randn(2**10, requires_grad=True)
     f = lambda x: x
     scaled_f = scale_elementwise(
-        f, output_scale=2.5, grad_input_scale=0.5, constraint=to_grad_input_scale
+        f, output_scale=2.5, grad_input_scale=0.5, constraint="to_grad_input_scale"
     )
     output = scaled_f(input)
     unit_backward(output)
@@ -95,7 +86,7 @@ def test_gelu_no_constraint() -> None:
 
 def test_gelu_scale_for_output() -> None:
     input = randn(2**10, requires_grad=True)
-    output = gelu(input, constraint=to_output_scale)
+    output = gelu(input, constraint="to_output_scale")
     unit_backward(output)
 
     assert_unit_scaled(output)
@@ -104,7 +95,7 @@ def test_gelu_scale_for_output() -> None:
 
 def test_gelu_scale_for_grad_input() -> None:
     input = randn(2**10, requires_grad=True)
-    output = gelu(input, constraint=to_grad_input_scale)
+    output = gelu(input, constraint="to_grad_input_scale")
     unit_backward(output)
 
     assert_unit_scaled(input.grad)
@@ -124,7 +115,7 @@ def test_softmax_no_constraint() -> None:
 
 def test_softmax_scale_for_output() -> None:
     input = randn(2**12, requires_grad=True)
-    output = softmax(input, dim=0, constraint=to_output_scale)
+    output = softmax(input, dim=0, constraint="to_output_scale")
     unit_backward(output)
 
     assert_unit_scaled(output)
@@ -133,7 +124,7 @@ def test_softmax_scale_for_output() -> None:
 
 def test_softmax_scale_for_grad_input() -> None:
     input = randn(2**12, requires_grad=True)
-    output = softmax(input, dim=0, constraint=to_grad_input_scale)
+    output = softmax(input, dim=0, constraint="to_grad_input_scale")
     unit_backward(output)
 
     assert_unit_scaled(input.grad)
@@ -181,7 +172,7 @@ def test_matmul_no_constraint() -> None:
 def test_matmul_scale_for_output() -> None:
     left = randn(2**8, 2**10, requires_grad=True)
     right = randn(2**10, 2**12, requires_grad=True)
-    output = matmul(left, right, constraint=to_output_scale)
+    output = matmul(left, right, constraint="to_output_scale")
     unit_backward(output)
 
     assert_unit_scaled(output)
@@ -191,7 +182,7 @@ def test_matmul_scale_for_output() -> None:
 def test_matmul_scale_for_grad_left() -> None:
     left = randn(2**8, 2**10, requires_grad=True)
     right = randn(2**10, 2**12, requires_grad=True)
-    output = matmul(left, right, constraint=to_left_grad_scale)
+    output = matmul(left, right, constraint="to_left_grad_scale")
     unit_backward(output)
 
     assert_unit_scaled(left.grad)
@@ -201,30 +192,11 @@ def test_matmul_scale_for_grad_left() -> None:
 def test_matmul_scale_for_grad_right() -> None:
     left = randn(2**8, 2**10, requires_grad=True)
     right = randn(2**10, 2**12, requires_grad=True)
-    output = matmul(left, right, constraint=to_right_grad_scale)
+    output = matmul(left, right, constraint="to_right_grad_scale")
     unit_backward(output)
 
     assert_unit_scaled(right.grad)
     assert_not_unit_scaled(output, left.grad)
-
-
-def test_matmul_custom_constraint() -> None:
-    def constrain_grad_left(
-        output_scale: float, left_grad_scale: float, right_grad_scale: float
-    ) -> Tuple[float, float, float]:
-        output_scale = left_grad_scale = gmean(output_scale, left_grad_scale)
-        return output_scale, left_grad_scale, right_grad_scale
-
-    left = randn(2**8, 2**10, requires_grad=True)
-    right = randn(2**10, 2**12, requires_grad=True)
-    output = matmul(left, right, constraint=constrain_grad_left)
-    unit_backward(output)
-
-    assert_unit_scaled(right.grad)
-    assert_not_unit_scaled(output, left.grad)
-
-    combined_out_left_std = output.std().detach() * left.grad.std()  # type: ignore
-    assert combined_out_left_std == pytest.approx(1, abs=0.1)
 
 
 # --- test linear() ---
@@ -244,7 +216,7 @@ def test_linear_geo_mean() -> None:
     input = randn(2**8, 2**10, requires_grad=True)
     weight = randn(2**12, 2**10, requires_grad=True)
     bias = zeros(2**12).requires_grad_()
-    output = linear(input, weight, bias, constraint=gmean)
+    output = linear(input, weight, bias, constraint="gmean")
     unit_backward(output)
 
     assert_unit_scaled(weight.grad, bias.grad)
@@ -257,7 +229,7 @@ def test_linear_scale_for_output() -> None:
     input = randn(2**8, 2**10, requires_grad=True)
     weight = randn(2**12, 2**10, requires_grad=True)
     bias = zeros(2**12).requires_grad_()
-    output = linear(input, weight, bias, constraint=to_output_scale)
+    output = linear(input, weight, bias, constraint="to_output_scale")
     unit_backward(output)
 
     assert_unit_scaled(output, weight.grad, bias.grad)
@@ -268,7 +240,7 @@ def test_linear_scale_for_grad_input() -> None:
     input = randn(2**8, 2**10, requires_grad=True)
     weight = randn(2**12, 2**10, requires_grad=True)
     bias = zeros(2**12).requires_grad_()
-    output = linear(input, weight, bias, constraint=to_grad_input_scale)
+    output = linear(input, weight, bias, constraint="to_grad_input_scale")
     unit_backward(output)
 
     assert_unit_scaled(input.grad, weight.grad, bias.grad)
@@ -303,7 +275,7 @@ def test_add_no_constraint() -> None:
 def test_add_geo_mean() -> None:
     left = randn(2**8, 2**10, requires_grad=True)
     right = randn(2**8, 2**10, requires_grad=True)
-    output = add(left, right, constraint=gmean)
+    output = add(left, right, constraint="gmean")
     unit_backward(output)
 
     assert_not_unit_scaled(output, left.grad, right.grad)

@@ -4,16 +4,11 @@
 
 from __future__ import annotations  # required for docs to alias type annotations
 
+import sys
 from math import pow, prod
-from typing import Callable, Tuple, Union
+from typing import Optional, Tuple
 
 from ._internal_utils import generate__all__
-
-BinaryConstraint = Callable[[float, float], float]
-TernaryConstraint = Callable[
-    [float, float, float], Union[float, Tuple[float, float, float]]
-]
-VariadicConstraint = Callable[..., float]
 
 
 def gmean(*scales: float) -> float:
@@ -117,8 +112,19 @@ def to_right_grad_scale(
     return right_grad_scale
 
 
-__all__ = generate__all__(__name__) + [
-    "BinaryConstraint",
-    "TernaryConstraint",
-    "VariadicConstraint",
-]
+def apply_constraint(
+    constraint_name: Optional[str], *scales: float
+) -> Tuple[float, ...]:
+    if constraint_name is None or constraint_name == "":
+        return scales
+    constraint = getattr(sys.modules[__name__], constraint_name, None)
+    if constraint is None:
+        raise ValueError(
+            f"Constraint: {constraint_name} is not a valid constraint (see"
+            " unit_scaling.constraints for available options)."
+        )
+    scale = constraint(*scales)
+    return tuple(scale for _ in scales)
+
+
+__all__ = generate__all__(__name__)

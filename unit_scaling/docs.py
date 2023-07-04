@@ -180,24 +180,29 @@ def format_docstring(*args: str) -> Callable[[Callable[..., T]], Callable[..., T
 
 
 binary_constraint_docstring = (
-    "constraint (Optional[BinaryConstraint], optional): Function which"
-    " takes `output_scale` and `grad_input_scale` and returns a single"
-    " 'constrained' scale (usually necessary for valid gradients). If `None` is"
-    " provided, no constraint will be applied. Defaults to `gmean`."
+    "constraint (Optional[str], optional): The name of the constraint function to be"
+    " applied to the outputs & input gradient. In this case, the constraint name must"
+    " be one of:"
+    " [None, 'gmean', 'hmean', 'amean', 'to_output_scale', 'to_grad_input_scale']"
+    " (see `unit_scaling.constraints` for details on these constraint functions)."
+    " Defaults to `gmean`."
 )
 
 ternary_constraint_docstring = (
-    "constraint (Optional[Callable[[float, float, float], Union[float, Tuple[float,"
-    " float, float]]]], optional): Function  which takes `output_scale`,"
-    "`left_grad_scale` and `right_grad_scale` (in that order) and returns either"
-    " a) a single 'constrained' scale (often necessary for valid gradients), or b) a"
-    " tuple of three output scales in the same order as the input scales (it is"
-    " expected that two or all of these scales are constrained to be the same). If"
-    " `None` is provided, no constraint will be applied. Defaults to `gmean`."
+    "constraint (Optional[str], optional): The name of the constraint function to be"
+    " applied to the outputs & input gradients. In this case, the constraint name must"
+    " be one of:"
+    " [None, 'gmean', 'hmean', 'amean', 'to_output_scale', 'to_left_grad_scale',"
+    " to_right_grad_scale]"
+    " (see `unit_scaling.constraints` for details on these constraint functions)."
+    " Defaults to `gmean`."
 )
 
 variadic_constraint_docstring = (
-    "constraint (Optional[Callable[..., float]], optional): Function which takes any"
-    " number of output and grad-input scales and returns a single 'constrained'"
-    " scale. If `None` is provided, no constraint will be applied. Defaults to `gmean`."
+    "constraint (Optional[str], optional): The name of the constraint function to be"
+    " applied to the outputs & input gradients. In this case, the constraint name must"
+    " be one of:"
+    " [None, 'gmean', 'hmean', 'amean', 'to_output_scale']"
+    " (see `unit_scaling.constraints` for details on these constraint functions)."
+    " Defaults to `gmean`."
 )
