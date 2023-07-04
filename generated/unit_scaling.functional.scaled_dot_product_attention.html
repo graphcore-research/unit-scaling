@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.3.12. unit_scaling.functional.scaled_dot_product_attention &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4.3.13. unit_scaling.functional.softmax" href="unit_scaling.functional.softmax.html" />
+    <link rel="prev" title="4.3.11. unit_scaling.functional.scale_elementwise" href="unit_scaling.functional.scale_elementwise.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">4. API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">4.1. unit_scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">4.2. unit_scaling.constraints</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.functional.html">4.3. unit_scaling.functional</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.add.html">4.3.1. unit_scaling.functional.add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">4.3.2. unit_scaling.functional.cross_entropy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">4.3.3. unit_scaling.functional.dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">4.3.4. unit_scaling.functional.embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">4.3.5. unit_scaling.functional.gelu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">4.3.6. unit_scaling.functional.layer_norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">4.3.7. unit_scaling.functional.linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">4.3.8. unit_scaling.functional.matmul</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">4.3.9. unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">4.3.10. unit_scaling.functional.residual_split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">4.3.11. unit_scaling.functional.scale_elementwise</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.3.12. unit_scaling.functional.scaled_dot_product_attention</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.scaled_dot_product_attention"><code class="docutils literal notranslate"><span class="pre">scaled_dot_product_attention()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">4.3.13. unit_scaling.functional.softmax</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.4. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">4.5. unit_scaling.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.functional.html"><span class="section-number">4.3. </span>unit_scaling.functional</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.3.12. </span>unit_scaling.functional.scaled_dot_product_attention</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/unit_scaling.functional.scaled_dot_product_attention.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="unit-scaling-functional-scaled-dot-product-attention">
+<h1><span class="section-number">4.3.12. </span>unit_scaling.functional.scaled_dot_product_attention<a class="headerlink" href="#unit-scaling-functional-scaled-dot-product-attention" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="unit_scaling.functional.scaled_dot_product_attention">
+<span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">scaled_dot_product_attention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attn_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_causal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#scaled_dot_product_attention"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.scaled_dot_product_attention" title="Permalink to this definition"></a></dt>
+<dd><p>A <strong>unit-scaled</strong> dot-product attention function. Note that this will usewhatever underlying PyTorch scaled_dot_product_attention implementationis available, so if flash attention is enabled it will be used here too.</p>
+<p>Computes scaled dot product attention on query, key and value tensors,using an optional attention mask if passed, and applying dropout if aprobability greater than 0.0 is specified.</p>
+<p>Computes scaled dot product attention on query, key and value tensors, using
+an optional attention mask if passed, and applying dropout if a probability
+greater than 0.0 is specified.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Efficient implementation equivalent to the following:</span>
+<span class="n">attn_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">diagonal</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_causal</span> <span class="k">else</span> <span class="n">attn_mask</span>
+<span class="n">attn_mask</span> <span class="o">=</span> <span class="n">attn_mask</span><span class="o">.</span><span class="n">masked_fill</span><span class="p">(</span><span class="ow">not</span> <span class="n">attn_mask</span><span class="p">,</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">))</span> <span class="k">if</span> <span class="n">attn_mask</span><span class="o">.</span><span class="n">dtype</span><span class="o">==</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span> <span class="k">else</span> <span class="n">attn_mask</span>
+<span class="n">attn_weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">((</span><span class="n">Q</span> <span class="o">@</span> <span class="n">K</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)))</span> <span class="o">+</span> <span class="n">attn_mask</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">attn_weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">attn_weight</span><span class="p">,</span> <span class="n">dropout_p</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">attn_weight</span> <span class="o">@</span> <span class="n">V</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function is beta and subject to change.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There are currently three supported implementations of scaled dot product attention:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a href="#id1"><span class="problematic" id="id2">`FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness`_</span></a></p></li>
+<li><p><a href="#id3"><span class="problematic" id="id4">`Memory-Efficient Attention`_</span></a></p></li>
+<li><p>A PyTorch implementation defined in C++ matching the above formulation</p></li>
+</ul>
+</div></blockquote>
+<p>The function may call optimized kernels for improved performance when using the CUDA backend.
+For all other backends, the PyTorch implementation will be used.</p>
+<p>All implementations are enabled by default. Scaled dot product attention attempts to automatically select the
+most optimal implementation based on the inputs. In order to provide more fine-grained control over what implementation
+is used, the following functions are provided for enabling and disabling implementations.
+The context manager is the preferred mechanism:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://pytorch.org/docs/stable/backends.html#torch.backends.cuda.sdp_kernel" title="(in PyTorch v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.backends.cuda.sdp_kernel()</span></code></a>: A context manager used to enable/disable any of the implementations.</p></li>
+<li><p><a class="reference external" href="https://pytorch.org/docs/stable/backends.html#torch.backends.cuda.enable_flash_sdp" title="(in PyTorch v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.backends.cuda.enable_flash_sdp()</span></code></a>: Enables or Disables FlashAttention.</p></li>
+<li><p><a class="reference external" href="https://pytorch.org/docs/stable/backends.html#torch.backends.cuda.enable_mem_efficient_sdp" title="(in PyTorch v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.backends.cuda.enable_mem_efficient_sdp()</span></code></a>: Enables or Disables Memory-Efficient Attention.</p></li>
+<li><p><a class="reference external" href="https://pytorch.org/docs/stable/backends.html#torch.backends.cuda.enable_math_sdp" title="(in PyTorch v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.backends.cuda.enable_math_sdp()</span></code></a>: Enables or Disables the PyTorch C++ implementation.</p></li>
+</ul>
+</div></blockquote>
+<p>Each of the fused kernels has specific input limitations. If the user requires the use of a specific fused implementation,
+disable the PyTorch C++ implementation using <a class="reference external" href="https://pytorch.org/docs/stable/backends.html#torch.backends.cuda.sdp_kernel" title="(in PyTorch v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.backends.cuda.sdp_kernel()</span></code></a>.
+In the event that a fused implementation is not available, an error will be raised with the
+reasons why the fused implementation cannot run.</p>
+<p>Due to the nature of fusing floating point operations, the output of this function may be different
+depending on what backend kernel is chosen.
+The c++ implementation supports torch.float64 and can be used when higher precision is required.
+For more information please see <span class="xref std std-doc">/notes/numerical_accuracy</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In some circumstances when given tensors on a CUDA device and using CuDNN, this operator may select a nondeterministic algorithm to increase performance. If this is undesirable, you can try to make the operation deterministic (potentially at a performance cost) by setting <code class="docutils literal notranslate"><span class="pre">torch.backends.cudnn.deterministic</span> <span class="pre">=</span> <span class="pre">True</span></code>. See <span class="xref std std-doc">/notes/randomness</span> for more information.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>Tensor</em>) – Query tensor; shape <span class="math notranslate nohighlight">\((N, ..., L, E)\)</span>.</p></li>
+<li><p><strong>key</strong> (<em>Tensor</em>) – Key tensor; shape <span class="math notranslate nohighlight">\((N, ..., S, E)\)</span>.</p></li>
+<li><p><strong>value</strong> (<em>Tensor</em>) – Value tensor; shape <span class="math notranslate nohighlight">\((N, ..., S, Ev)\)</span>.</p></li>
+<li><p><strong>attn_mask</strong> (<em>optional Tensor</em>) – Attention mask; shape <span class="math notranslate nohighlight">\((N, ..., L, S)\)</span>. Two types of masks are supported.
+A boolean mask where a value of True indicates that the element <em>should</em> take part in attention.
+A float mask of the same type as query, key, value that is added to the attention score.</p></li>
+<li><p><strong>dropout_p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – Dropout probability; if greater than 0.0, dropout is applied</p></li>
+<li><p><strong>is_causal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a>) – If true, assumes causal attention masking and errors if both attn_mask and is_causal
+are set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>output (Tensor): Attention output; shape <span class="math notranslate nohighlight">\((N, ..., L, Ev)\)</span>.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Optionally use the context manager to ensure one of the fused kerenels is run</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">sdp_kernel</span><span class="p">(</span><span class="n">enable_math</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">F</span><span class="o">.</span><span class="n">scaled_dot_product_attention</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unit_scaling.functional.scale_elementwise.html" class="btn btn-neutral float-left" title="4.3.11. unit_scaling.functional.scale_elementwise" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.functional.softmax.html" class="btn btn-neutral float-right" title="4.3.13. unit_scaling.functional.softmax" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

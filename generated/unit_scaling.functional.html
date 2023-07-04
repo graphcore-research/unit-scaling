@@ -17,7 +17,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4.3.1. unit_scaling.functional.cross_entropy" href="unit_scaling.functional.cross_entropy.html" />
+    <link rel="next" title="4.3.1. unit_scaling.functional.add" href="unit_scaling.functional.add.html" />
     <link rel="prev" title="4.2.10. unit_scaling.constraints.to_right_grad_scale" href="unit_scaling.constraints.to_right_grad_scale.html" /> 
 </head>
 
@@ -49,17 +49,19 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">4.1. unit_scaling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">4.2. unit_scaling.constraints</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">4.3. unit_scaling.functional</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">4.3.1. unit_scaling.functional.cross_entropy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">4.3.2. unit_scaling.functional.dropout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">4.3.3. unit_scaling.functional.embedding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">4.3.4. unit_scaling.functional.gelu</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">4.3.5. unit_scaling.functional.layer_norm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">4.3.6. unit_scaling.functional.linear</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">4.3.7. unit_scaling.functional.matmul</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">4.3.8. unit_scaling.functional.residual_add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">4.3.9. unit_scaling.functional.residual_split</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">4.3.10. unit_scaling.functional.scale_elementwise</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">4.3.11. unit_scaling.functional.softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.add.html">4.3.1. unit_scaling.functional.add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">4.3.2. unit_scaling.functional.cross_entropy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">4.3.3. unit_scaling.functional.dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">4.3.4. unit_scaling.functional.embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">4.3.5. unit_scaling.functional.gelu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">4.3.6. unit_scaling.functional.layer_norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">4.3.7. unit_scaling.functional.linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">4.3.8. unit_scaling.functional.matmul</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">4.3.9. unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">4.3.10. unit_scaling.functional.residual_split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">4.3.11. unit_scaling.functional.scale_elementwise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scaled_dot_product_attention.html">4.3.12. unit_scaling.functional.scaled_dot_product_attention</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">4.3.13. unit_scaling.functional.softmax</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.4. unit_scaling.scale</a></li>
@@ -98,35 +100,41 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.cross_entropy.html#unit_scaling.functional.cross_entropy" title="unit_scaling.functional.cross_entropy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_entropy</span></code></a>(input, target[, weight, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.add.html#unit_scaling.functional.add" title="unit_scaling.functional.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code></a>(input, other[, constraint, alpha, out])</p></td>
+<td><p>Applies a <strong>unit-scaled</strong> addition.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.cross_entropy.html#unit_scaling.functional.cross_entropy" title="unit_scaling.functional.cross_entropy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_entropy</span></code></a>(input, target[, weight, ...])</p></td>
 <td><p>Computes a <strong>unit-scaled</strong> the cross entropy loss between input logits and target.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.dropout.html#unit_scaling.functional.dropout" title="unit_scaling.functional.dropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dropout</span></code></a>(input[, p, training, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.dropout.html#unit_scaling.functional.dropout" title="unit_scaling.functional.dropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dropout</span></code></a>(input[, p, training, inplace])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> dropout function.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.embedding.html#unit_scaling.functional.embedding" title="unit_scaling.functional.embedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">embedding</span></code></a>(input, weight[, padding_idx, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.embedding.html#unit_scaling.functional.embedding" title="unit_scaling.functional.embedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">embedding</span></code></a>(input, weight[, padding_idx, ...])</p></td>
 <td><p>A <strong>unit-scaled</strong> lookup table that looks up embeddings in a fixed dictionaryand size.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.gelu.html#unit_scaling.functional.gelu" title="unit_scaling.functional.gelu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gelu</span></code></a>(input[, constraint])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.gelu.html#unit_scaling.functional.gelu" title="unit_scaling.functional.gelu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gelu</span></code></a>(input[, constraint])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> GELU function.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.layer_norm.html#unit_scaling.functional.layer_norm" title="unit_scaling.functional.layer_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">layer_norm</span></code></a>(input, normalized_shape[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.layer_norm.html#unit_scaling.functional.layer_norm" title="unit_scaling.functional.layer_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">layer_norm</span></code></a>(input, normalized_shape[, ...])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> Layer Normalization for last certain number of dimensions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.linear.html#unit_scaling.functional.linear" title="unit_scaling.functional.linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linear</span></code></a>(input, weight, bias[, constraint])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.linear.html#unit_scaling.functional.linear" title="unit_scaling.functional.linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linear</span></code></a>(input, weight, bias[, constraint])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> linear transformation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.matmul.html#unit_scaling.functional.matmul" title="unit_scaling.functional.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(left, right[, constraint])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.matmul.html#unit_scaling.functional.matmul" title="unit_scaling.functional.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(left, right[, constraint])</p></td>
 <td><p>A <strong>unit-scaled</strong> matrix product of two tensors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add" title="unit_scaling.functional.residual_add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual_add</span></code></a>(residual, skip[, tau])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add" title="unit_scaling.functional.residual_add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual_add</span></code></a>(residual, skip[, tau])</p></td>
 <td><p>Adds a residual connection and skip connection together, with a relative weighting <cite>tau</cite> applied to the residual branch.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split" title="unit_scaling.functional.residual_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual_split</span></code></a>(input[, tau])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split" title="unit_scaling.functional.residual_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual_split</span></code></a>(input[, tau])</p></td>
 <td><p>Splits a tensor into an <cite>residual</cite> and <cite>skip</cite> tensor, prior to being used in a residual layer, with a relative weighting <cite>tau</cite> applied to the residual branch.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html#unit_scaling.functional.scale_elementwise" title="unit_scaling.functional.scale_elementwise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_elementwise</span></code></a>(f, output_scale, ...[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html#unit_scaling.functional.scale_elementwise" title="unit_scaling.functional.scale_elementwise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_elementwise</span></code></a>(f, output_scale, ...[, ...])</p></td>
 <td><p>Transforms an element-wise function into a scaled version.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.functional.scaled_dot_product_attention.html#unit_scaling.functional.scaled_dot_product_attention" title="unit_scaling.functional.scaled_dot_product_attention"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scaled_dot_product_attention</span></code></a>(query, key, value)</p></td>
+<td><p>A <strong>unit-scaled</strong> dot-product attention function.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.functional.softmax.html#unit_scaling.functional.softmax" title="unit_scaling.functional.softmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">softmax</span></code></a>(input, dim[, dtype, constraint])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> softmax function.</p></td>
@@ -140,7 +148,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="unit_scaling.constraints.to_right_grad_scale.html" class="btn btn-neutral float-left" title="4.2.10. unit_scaling.constraints.to_right_grad_scale" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.functional.cross_entropy.html" class="btn btn-neutral float-right" title="4.3.1. unit_scaling.functional.cross_entropy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.functional.add.html" class="btn btn-neutral float-right" title="4.3.1. unit_scaling.functional.add" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

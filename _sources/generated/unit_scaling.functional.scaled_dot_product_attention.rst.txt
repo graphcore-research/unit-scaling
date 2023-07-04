@@ -1,0 +1,6 @@
+unit\_scaling.functional.scaled\_dot\_product\_attention
+========================================================
+
+.. currentmodule:: unit_scaling.functional
+
+.. autofunction:: scaled_dot_product_attention

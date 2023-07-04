@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.3.1. unit_scaling.functional.add &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4.3.2. unit_scaling.functional.cross_entropy" href="unit_scaling.functional.cross_entropy.html" />
+    <link rel="prev" title="4.3. unit_scaling.functional" href="unit_scaling.functional.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">4. API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">4.1. unit_scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">4.2. unit_scaling.constraints</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.functional.html">4.3. unit_scaling.functional</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.3.1. unit_scaling.functional.add</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.add"><code class="docutils literal notranslate"><span class="pre">add()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">4.3.2. unit_scaling.functional.cross_entropy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">4.3.3. unit_scaling.functional.dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">4.3.4. unit_scaling.functional.embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">4.3.5. unit_scaling.functional.gelu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">4.3.6. unit_scaling.functional.layer_norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">4.3.7. unit_scaling.functional.linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">4.3.8. unit_scaling.functional.matmul</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">4.3.9. unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">4.3.10. unit_scaling.functional.residual_split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">4.3.11. unit_scaling.functional.scale_elementwise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scaled_dot_product_attention.html">4.3.12. unit_scaling.functional.scaled_dot_product_attention</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">4.3.13. unit_scaling.functional.softmax</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.4. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">4.5. unit_scaling.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.functional.html"><span class="section-number">4.3. </span>unit_scaling.functional</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.3.1. </span>unit_scaling.functional.add</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/unit_scaling.functional.add.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="unit-scaling-functional-add">
+<h1><span class="section-number">4.3.1. </span>unit_scaling.functional.add<a class="headerlink" href="#unit-scaling-functional-add" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="unit_scaling.functional.add">
+<span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input:</span> <span class="pre">~torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other:</span> <span class="pre">~torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint:</span> <span class="pre">unit_scaling.constraints.TernaryConstraint</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">gmean&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out:</span> <span class="pre">~torch.Tensor</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.add" title="Permalink to this definition"></a></dt>
+<dd><p>Applies a <strong>unit-scaled</strong> addition.</p>
+<p>Adds <code class="xref py py-attr docutils literal notranslate"><span class="pre">other</span></code>, scaled by <code class="xref py py-attr docutils literal notranslate"><span class="pre">alpha</span></code>, to <code class="xref py py-attr docutils literal notranslate"><span class="pre">input</span></code>.</p>
+<div class="math notranslate nohighlight">
+\[\text{{out}}_i = \text{{input}}_i + \text{{alpha}} \times \text{{other}}_i\]</div>
+<p>Supports <a class="reference external" href="https://pytorch.org/docs/stable/notes/broadcasting.html#broadcasting-semantics" title="(in PyTorch v2.0)"><span class="xref std std-ref">broadcasting to a common shape</span></a>,
+<a class="reference external" href="https://pytorch.org/docs/stable/tensor_attributes.html#type-promotion-doc" title="(in PyTorch v2.0)"><span class="xref std std-ref">type promotion</span></a>, and integer, float, and complex inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> (<em>Tensor</em>) – the input tensor.</p></li>
+<li><p><strong>other</strong> (<em>Tensor</em><em> or </em><em>Number</em>) – the tensor or number to add to <code class="xref py py-attr docutils literal notranslate"><span class="pre">input</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">tensor([ 0.0202,  1.0985,  1.3506, -0.6056])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="go">tensor([ 20.0202,  21.0985,  21.3506,  19.3944])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">tensor([-0.9732, -0.3497,  0.6245,  0.4022])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span>
+<span class="go">tensor([[ 0.3743],</span>
+<span class="go">        [-1.7724],</span>
+<span class="go">        [-0.5811],</span>
+<span class="go">        [-0.8017]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">tensor([[  2.7695,   3.3930,   4.3672,   4.1450],</span>
+<span class="go">        [-18.6971, -18.0736, -17.0994, -17.3216],</span>
+<span class="go">        [ -6.7845,  -6.1610,  -5.1868,  -5.4090],</span>
+<span class="go">        [ -8.9902,  -8.3667,  -7.3925,  -7.6147]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unit_scaling.functional.html" class="btn btn-neutral float-left" title="4.3. unit_scaling.functional" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.functional.cross_entropy.html" class="btn btn-neutral float-right" title="4.3.2. unit_scaling.functional.cross_entropy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

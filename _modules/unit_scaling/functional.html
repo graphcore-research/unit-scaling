@@ -124,6 +124,15 @@
     <span class="k">return</span> <span class="n">scaled_f</span></div>
 
 
+<span class="k">def</span> <span class="nf">_get_broadcast_sizes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the product of the dimensions added to each arg when broadcasting.&quot;&quot;&quot;</span>
+    <span class="n">output_broadcast_shape</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span>  <span class="c1"># type: ignore [no-untyped-call]</span>
+        <span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">output_numel</span> <span class="o">=</span> <span class="n">output_broadcast_shape</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">output_numel</span> <span class="o">//</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="gelu"><a class="viewcode-back" href="../../generated/unit_scaling.functional.gelu.html#unit_scaling.functional.gelu">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">gelu</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** GELU function.&quot;</span><span class="p">,</span>
@@ -258,6 +267,35 @@
     <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">layer_norm</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">normalized_shape</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="add"><a class="viewcode-back" href="../../generated/unit_scaling.functional.add.html#unit_scaling.functional.add">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">add</span><span class="p">,</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** addition.&quot;</span><span class="p">,</span>
+    <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">other</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TernaryConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="n">gmean</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="n">input_broadcast_size</span><span class="p">,</span> <span class="n">other_broadcast_size</span> <span class="o">=</span> <span class="n">_get_broadcast_sizes</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+    <span class="n">grad_input_scale</span> <span class="o">=</span> <span class="n">input_broadcast_size</span><span class="o">**-</span><span class="mf">0.5</span>
+    <span class="n">grad_other_scale</span> <span class="o">=</span> <span class="n">other_broadcast_size</span><span class="o">**-</span><span class="mf">0.5</span>
+    <span class="n">fwd_scale</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**-</span><span class="mf">0.5</span>
+    <span class="k">if</span> <span class="n">constraint</span><span class="p">:</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">(</span><span class="n">fwd_scale</span><span class="p">,</span> <span class="n">grad_input_scale</span><span class="p">,</span> <span class="n">grad_other_scale</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+            <span class="n">fwd_scale</span><span class="p">,</span> <span class="n">grad_input_scale</span><span class="p">,</span> <span class="n">grad_other_scale</span> <span class="o">=</span> <span class="n">scale</span>  <span class="c1"># type: ignore</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fwd_scale</span> <span class="o">=</span> <span class="n">grad_input_scale</span> <span class="o">=</span> <span class="n">grad_other_scale</span> <span class="o">=</span> <span class="n">scale</span>
+
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">scale_bwd</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">grad_input_scale</span><span class="p">)</span>
+    <span class="n">other</span> <span class="o">=</span> <span class="n">scale_bwd</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">grad_other_scale</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">fwd_scale</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="residual_split"><a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split">[docs]</a><span class="k">def</span> <span class="nf">residual_split</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Splits a tensor into an `residual` and `skip` tensor, prior to being used</span>
 <span class="sd">    in a residual layer, with a relative weighting `tau` applied to the residual branch.</span>
@@ -322,6 +360,46 @@
     <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span>
         <span class="nb">input</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">padding_idx</span><span class="p">,</span> <span class="n">max_norm</span><span class="p">,</span> <span class="n">norm_type</span><span class="p">,</span> <span class="n">scale_grad_by_freq</span><span class="p">,</span> <span class="n">sparse</span>
     <span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="s2">&quot;scaled_dot_product_attention&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="scaled_dot_product_attention"><a class="viewcode-back" href="../../generated/unit_scaling.functional.scaled_dot_product_attention.html#unit_scaling.functional.scaled_dot_product_attention">[docs]</a>    <span class="nd">@docstring_from</span><span class="p">(</span>
+        <span class="n">F</span><span class="o">.</span><span class="n">scaled_dot_product_attention</span><span class="p">,</span>
+        <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;A **unit-scaled** dot-product attention function. Note that this will use&quot;</span>
+            <span class="s2">&quot;whatever underlying PyTorch scaled_dot_product_attention implementation&quot;</span>
+            <span class="s2">&quot;is available, so if flash attention is enabled it will be used here too.&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Computes scaled dot product attention on query, key and value tensors,&quot;</span>
+            <span class="s2">&quot;using an optional attention mask if passed, and applying dropout if a&quot;</span>
+            <span class="s2">&quot;probability greater than 0.0 is specified.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">scaled_dot_product_attention</span><span class="p">(</span>
+        <span class="n">query</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">attn_mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dropout_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">is_causal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">s</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="c1"># Fwd: s/1.31 * s**-0.5 = s**0.5/1.31</span>
+        <span class="c1"># Bwd: d**0.5[counter `scale`] * s**-0.5 * s/1.65 * (s**-0.5 * d**-0.5)**0.5</span>
+        <span class="c1">#    = d**0.25 * s**0.25 / 1.65</span>
+        <span class="c1"># GeoMean: s**0.375 * d**0.125 / 1.47</span>
+        <span class="n">scale_factor</span> <span class="o">=</span> <span class="n">s</span><span class="o">**</span><span class="mf">0.375</span> <span class="o">*</span> <span class="n">d</span><span class="o">**</span><span class="mf">0.125</span> <span class="o">/</span> <span class="mf">1.47</span>
+        <span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">scale_bwd</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">scale_factor</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">scaled_dot_product_attention</span><span class="p">(</span>
+            <span class="n">query</span><span class="p">,</span>
+            <span class="n">key</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">,</span>
+            <span class="n">attn_mask</span><span class="o">=</span><span class="n">attn_mask</span><span class="p">,</span>
+            <span class="n">dropout_p</span><span class="o">=</span><span class="n">dropout_p</span><span class="p">,</span>
+            <span class="n">is_causal</span><span class="o">=</span><span class="n">is_causal</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">scale_factor</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="cross_entropy"><a class="viewcode-back" href="../../generated/unit_scaling.functional.cross_entropy.html#unit_scaling.functional.cross_entropy">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>

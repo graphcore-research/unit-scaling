@@ -21,6 +21,7 @@ unit\_scaling.functional
    .. autosummary::
       :toctree:
    
+      add
       cross_entropy
       dropout
       embedding
@@ -31,6 +32,7 @@ unit\_scaling.functional
       residual_add
       residual_split
       scale_elementwise
+      scaled_dot_product_attention
       softmax
    
 
