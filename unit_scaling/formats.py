@@ -1,3 +1,5 @@
+# Copyright (c) 2023 Graphcore Ltd. All rights reserved.
+
 import math
 from dataclasses import dataclass
 from typing import Tuple, cast
@@ -58,7 +60,9 @@ class FPFormat(Format):
         absmax = self.max_absolute_value
         downscale = 2.0 ** (127 - 2 ** (self.exponent_bits - 1))
         mask = torch.tensor(2 ** (23 - self.mantissa_bits) - 1, device=x.device)
-        sr_mask = torch.randint(0, mask + 1, x.shape, dtype=torch.int32, device=x.device)
+        sr_mask = torch.randint(  # type: ignore[call-overload]
+            0, mask + 1, x.shape, dtype=torch.int32, device=x.device
+        )
         q = x.to(torch.float32)
         q = torch.clip(x, -absmax, absmax)
         q /= downscale
@@ -80,7 +84,7 @@ class FPFormat(Format):
             ) -> Tensor:
                 return grad_y
 
-        return QuantiseForward().apply(x)
+        return QuantiseForward.apply(x)  # type: ignore
 
     def quantise_bwd(self, x: Tensor) -> Tensor:
         class QuantiseBackward(torch.autograd.Function):
@@ -96,4 +100,4 @@ class FPFormat(Format):
             ) -> Tensor:
                 return self.quantise_no_grad(grad_y)
 
-        return QuantiseBackward().apply(x)
+        return QuantiseBackward.apply(x)  # type: ignore

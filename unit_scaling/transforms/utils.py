@@ -1,7 +1,9 @@
+# Copyright (c) 2023 Graphcore Ltd. All rights reserved.
+
 import functools
 from contextlib import contextmanager
 from copy import copy
-from typing import Any, Callable, Dict, Iterable, Optional, Set, Tuple
+from typing import Any, Callable, Dict, Iterable, Optional, Set, Tuple, TypeVar
 from unittest.mock import patch
 
 import torch._dynamo
@@ -9,9 +11,11 @@ from torch import nn
 from torch.fx.graph import Graph
 from torch.fx.node import Node
 
+T = TypeVar("T")
+
 
 def _get_patched_allowed_function_ids(
-    non_recurse_functions: Iterable[Callable],
+    non_recurse_functions: Iterable[Callable[..., Any]],
 ) -> Set[int]:
     allowed_function_ids = copy(torch._dynamo.allowed_functions._allowed_function_ids)
     for v in nn.modules.__dict__.values():
@@ -21,10 +25,10 @@ def _get_patched_allowed_function_ids(
                 allowed_function_ids.remove(i)
     for f in non_recurse_functions:
         allowed_function_ids.add(id(f))
-    return allowed_function_ids
+    return allowed_function_ids  # type: ignore[no-any-return]
 
 
-def _patched_call_function(self, tx, args, kwargs):
+def _patched_call_function(self, tx, args, kwargs):  # type: ignore[no-untyped-def]
     if tx.output.is_root_tracer() and isinstance(
         self.obj, torch._dynamo.variables.NNModuleVariable
     ):
@@ -34,7 +38,7 @@ def _patched_call_function(self, tx, args, kwargs):
             and module_attr.startswith("torch.nn.modules.module")
             or self.is_constant
         ):
-            return self.obj.call_method(
+            return self.obj.call_method(  # type: ignore[no-untyped-call]
                 tx, self.fn.__name__, args, kwargs, constant=self.is_constant
             ).add_options(self)
     return super(
@@ -43,7 +47,7 @@ def _patched_call_function(self, tx, args, kwargs):
 
 
 @contextmanager
-def expand_modules_patch(non_recurse_functions: Iterable[Callable]):
+def expand_modules_patch(non_recurse_functions):  # type: ignore[no-untyped-def]
     patcher_a = patch(
         "torch._dynamo.allowed_functions._allowed_function_ids",
         new=_get_patched_allowed_function_ids(non_recurse_functions),
@@ -60,10 +64,10 @@ def expand_modules_patch(non_recurse_functions: Iterable[Callable]):
 
 
 def patch_to_expand_modules(
-    fn: Callable, non_recurse_functions: Iterable[Callable] = ()
-) -> Callable:
+    fn: Callable[..., T], non_recurse_functions: Iterable[Callable[..., Any]] = ()
+) -> Callable[..., T]:
     @functools.wraps(fn)
-    def new_fn(*args, **kwargs):
+    def new_fn(*args: Any, **kwargs: Any) -> Any:
         with expand_modules_patch(non_recurse_functions):
             return fn(*args, **kwargs)
 
@@ -73,11 +77,11 @@ def patch_to_expand_modules(
 def replace_node_with_function(
     graph: Graph,
     source: Node,
-    target_fn: Callable,
+    target_fn: Callable[..., Any],
     args: Optional[Tuple[Any, ...]] = None,
     kwargs: Optional[Dict[Any, Any]] = None,
     keep_type_expr: bool = True,
-):
+) -> None:
     if args is None:
         args = source.args
     if kwargs is None:
