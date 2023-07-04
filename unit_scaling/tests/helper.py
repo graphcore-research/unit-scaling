@@ -4,23 +4,7 @@ from typing import Optional
 
 import pytest
 import torch
-from torch import Tensor
-
-
-def unit_normal(*shape: int, requires_grad: bool = True) -> Tensor:
-    """A normal distribution with `mean=0, std=1`. Requires grad by default.
-
-    Args:
-        *shapes (int): the shape dimensions of the tensor created.
-        requires_grad (bool, optional): sets `_requires_grad()`. Defaults to True.
-
-    Returns:
-        Tensor: the unit normal tensor.
-    """
-    x = torch.normal(0, 1, shape)
-    if requires_grad:
-        x.requires_grad_()
-    return x
+from torch import Tensor, randn
 
 
 def unit_backward(tensor: Tensor) -> Tensor:
@@ -32,7 +16,7 @@ def unit_backward(tensor: Tensor) -> Tensor:
     Returns:
         Tensor: the unit normal gradient tensor fed into `backward()`.
     """
-    gradient = unit_normal(*tensor.shape, requires_grad=False)
+    gradient = randn(*tensor.shape)
     tensor.backward(gradient)  # type: ignore
     return gradient
 

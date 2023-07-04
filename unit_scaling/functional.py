@@ -52,6 +52,15 @@ def scale_elementwise(
     return scaled_f
 
 
+def _get_broadcast_sizes(*args: Tensor) -> Tuple[int, ...]:
+    """Returns the product of the dimensions added to each arg when broadcasting."""
+    output_broadcast_shape = torch.broadcast_shapes(  # type: ignore [no-untyped-call]
+        *(a.shape for a in args)
+    )
+    output_numel = output_broadcast_shape.numel()
+    return tuple(output_numel // a.shape.numel() for a in args)
+
+
 @docstring_from(
     F.gelu,
     short_description="Applies a **unit-scaled** GELU function.",
@@ -186,6 +195,35 @@ def layer_norm(
     return F.layer_norm(input, normalized_shape, weight, bias, eps)
 
 
+@docstring_from(
+    torch.add,
+    short_description="Applies a **unit-scaled** addition.",
+    unsupported_args=["alpha"],
+)
+def add(
+    input: Tensor,
+    other: Tensor,
+    constraint: Optional[TernaryConstraint] = gmean,
+    alpha: int = 1,
+    out: Optional[Tensor] = None,
+) -> Tensor:
+    input_broadcast_size, other_broadcast_size = _get_broadcast_sizes(input, other)
+    grad_input_scale = input_broadcast_size**-0.5
+    grad_other_scale = other_broadcast_size**-0.5
+    fwd_scale = 2**-0.5
+    if constraint:
+        scale = constraint(fwd_scale, grad_input_scale, grad_other_scale)
+        if isinstance(scale, Sequence):
+            fwd_scale, grad_input_scale, grad_other_scale = scale  # type: ignore
+        else:
+            fwd_scale = grad_input_scale = grad_other_scale = scale
+
+    input = scale_bwd(input, grad_input_scale)
+    other = scale_bwd(other, grad_other_scale)
+    out = torch.add(input, other, out=out)
+    return scale_fwd(out, fwd_scale)
+
+
 def residual_split(input: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
     """Splits a tensor into an `residual` and `skip` tensor, prior to being used
     in a residual layer, with a relative weighting `tau` applied to the residual branch.
@@ -250,6 +288,46 @@ def embedding(
     return F.embedding(
         input, weight, padding_idx, max_norm, norm_type, scale_grad_by_freq, sparse
     )
+
+
+if hasattr(F, "scaled_dot_product_attention"):
+
+    @docstring_from(
+        F.scaled_dot_product_attention,
+        short_description=(
+            "A **unit-scaled** dot-product attention function. Note that this will use"
+            "whatever underlying PyTorch scaled_dot_product_attention implementation"
+            "is available, so if flash attention is enabled it will be used here too."
+            "\n\n"
+            "Computes scaled dot product attention on query, key and value tensors,"
+            "using an optional attention mask if passed, and applying dropout if a"
+            "probability greater than 0.0 is specified."
+        ),
+    )
+    def scaled_dot_product_attention(
+        query: Tensor,
+        key: Tensor,
+        value: Tensor,
+        attn_mask: Optional[Tensor] = None,
+        dropout_p: float = 0.0,
+        is_causal: bool = False,
+    ) -> Tensor:
+        s, d = value.shape[-2:]
+        # Fwd: s/1.31 * s**-0.5 = s**0.5/1.31
+        # Bwd: d**0.5[counter `scale`] * s**-0.5 * s/1.65 * (s**-0.5 * d**-0.5)**0.5
+        #    = d**0.25 * s**0.25 / 1.65
+        # GeoMean: s**0.375 * d**0.125 / 1.47
+        scale_factor = s**0.375 * d**0.125 / 1.47
+        query, key, value = (scale_bwd(t, scale_factor) for t in (query, key, value))
+        out = F.scaled_dot_product_attention(
+            query,
+            key,
+            value,
+            attn_mask=attn_mask,
+            dropout_p=dropout_p,
+            is_causal=is_causal,
+        )
+        return scale_fwd(out, scale_factor)
 
 
 @docstring_from(

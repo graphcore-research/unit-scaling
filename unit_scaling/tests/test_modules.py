@@ -2,7 +2,7 @@
 
 import pytest
 import torch
-from torch import randint
+from torch import randint, randn
 from torch.optim import SGD
 
 from .._modules import (
@@ -24,12 +24,11 @@ from .helper import (
     assert_unit_scaled,
     assert_zeros,
     unit_backward,
-    unit_normal,
 )
 
 
 def test_gelu() -> None:
-    input = unit_normal(2**10)
+    input = randn(2**10, requires_grad=True)
     model = GELU()
     output = model(input)
 
@@ -40,7 +39,7 @@ def test_gelu() -> None:
 
 
 def test_softmax() -> None:
-    input = unit_normal(2**14)
+    input = randn(2**14, requires_grad=True)
     model = Softmax(dim=0)
     output = model(input)
 
@@ -51,7 +50,7 @@ def test_softmax() -> None:
 
 
 def test_dropout() -> None:
-    input = unit_normal(2**12)
+    input = randn(2**12, requires_grad=True)
     model = Dropout()
     output = model(input)
 
@@ -65,7 +64,7 @@ def test_dropout() -> None:
 
 
 def test_linear() -> None:
-    input = unit_normal(2**8, 2**10)
+    input = randn(2**8, 2**10, requires_grad=True)
     model = Linear(2**10, 2**12)
     output = model(input)
 
@@ -84,7 +83,7 @@ def test_linear() -> None:
 
 
 def test_layer_norm() -> None:
-    input = unit_normal(2**8, 2**10)
+    input = randn(2**8, 2**10, requires_grad=True)
     model = LayerNorm(2**10)
     output = model(input)
 
@@ -116,7 +115,7 @@ def test_embedding() -> None:
 
 def test_cross_entropy_loss() -> None:
     num_tokens, vocab_sz = 2**12, 2**8
-    input = unit_normal(num_tokens, vocab_sz)
+    input = randn(num_tokens, vocab_sz, requires_grad=True)
     labels = randint(low=0, high=vocab_sz, size=(num_tokens,))
     model = CrossEntropyLoss()
     loss = model(input, labels)
@@ -125,13 +124,13 @@ def test_cross_entropy_loss() -> None:
     assert_unit_scaled(input.grad)
 
     with pytest.raises(ValueError):
-        CrossEntropyLoss(weight=unit_normal(vocab_sz))
+        CrossEntropyLoss(weight=randn(vocab_sz))
     with pytest.raises(ValueError):
         CrossEntropyLoss(label_smoothing=0.5)
 
 
 def test_mlp() -> None:
-    input = unit_normal(2**8, 2**10)
+    input = randn(2**8, 2**10, requires_grad=True)
     model = MLP(2**10)
     output = model(input)
 
@@ -151,7 +150,7 @@ def test_mlp() -> None:
 
 def test_mhsa() -> None:
     batch_sz, seq_len, hidden_dim = 2**8, 2**6, 2**6
-    input = unit_normal(batch_sz, seq_len, hidden_dim)
+    input = randn(batch_sz, seq_len, hidden_dim, requires_grad=True)
     model = MHSA(hidden_dim, heads=8, dropout_p=0.1)
     output = model(input)
 
@@ -169,7 +168,7 @@ def test_mhsa() -> None:
 
 def test_transformer_layer() -> None:
     batch_sz, seq_len, hidden_dim, heads = 2**8, 2**6, 2**6, 8
-    input = unit_normal(batch_sz, seq_len, hidden_dim)
+    input = randn(batch_sz, seq_len, hidden_dim, requires_grad=True)
     model = TransformerLayer(hidden_dim, heads=heads, dropout_p=0.1)
     output = model(input)
 
