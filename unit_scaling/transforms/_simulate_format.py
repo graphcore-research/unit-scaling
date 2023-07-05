@@ -11,6 +11,7 @@ from torch.fx.graph_module import GraphModule
 from torch.fx.node import Node
 
 from .. import functional as U
+from .._internal_utils import generate__all__
 from ..formats import FPFormat
 from .utils import patch_to_expand_modules, replace_node_with_function
 
@@ -124,18 +125,81 @@ def _quantisation_backend(fwd_format: FPFormat, bwd_format: FPFormat) -> Backend
 
 
 def simulate_format(
-    model: nn.Module, fwd_format: FPFormat, bwd_format: FPFormat
+    module: nn.Module, fwd_format: FPFormat, bwd_format: FPFormat
 ) -> nn.Module:
-    model = deepcopy(model)
+    """[Experimental] Given a module, uses torch.dynamo to return a new module which
+    simulates the effect of using the supplied formats for matmuls.
+
+    Specifically, before each :func:`torch.nn.functional.linear` and
+    :func:`torch.nn.functional.scaled_dot_product_attention` call, a quantisation op
+    is inserted which simulates the effect of using the supplied `fwd_format`. This op
+    reduces the range of values to that of the given format, and (stochastically) rounds
+    values to only those representable by the format.
+
+    The same is true for the backward pass, where an op is inserted to quantise to the
+    `bwd_format`. Models which use modules that contain these functions internally
+    (such as :class:`torch.Linear`) will be inspected by torch.dynamo and have the
+    correct quantisation ops inserted.
+
+    If the equivalent unit-scaled functions from :mod:`unit_scaling.functional` are
+    used in the module, these too will be quantised.
+
+    Simulation of formats is run in FP32. Users should not expect speedups from using
+    this method. The purpose is to simulate the numerical effects of running matmuls
+    in various formats.
+
+    Args:
+        module (nn.Module): the module to be quantised
+        fwd_format (FPFormat): the quantisation format to be used in the forward pass
+            (activations and weights)
+        bwd_format (FPFormat): the quantisation format to be used in the backward pass
+            (gradients of activations and weights)
+
+    Returns:
+        nn.Module: a new module which when used, will run using the simulated formats.
+    """
+    module = deepcopy(module)
     torch._dynamo.reset()  # type: ignore[no-untyped-call]
-    quantised_model = torch._dynamo.optimize(  # type: ignore[no-untyped-call]
+    quantised_module = torch._dynamo.optimize(  # type: ignore[no-untyped-call]
         backend=_quantisation_backend(fwd_format, bwd_format)
-    )(model)
-    quantised_model.forward = patch_to_expand_modules(
-        quantised_model.forward, non_recurse_functions=unit_scaled_functions
+    )(module)
+    quantised_module.forward = patch_to_expand_modules(
+        quantised_module.forward, non_recurse_functions=unit_scaled_functions
     )
-    return quantised_model  # type: ignore[no-any-return]
+    return quantised_module  # type: ignore[no-any-return]
 
 
-def simulate_fp8(model: nn.Module) -> nn.Module:
-    return simulate_format(model, fwd_format=FPFormat(4, 3), bwd_format=FPFormat(5, 2))
+def simulate_fp8(module: nn.Module) -> nn.Module:
+    """[Experimental] Given a module, uses torch.dynamo to return a new module which
+    simulates the effect of running matmuls in FP8. As is standard in the literature
+    (Noune et al., 2022; Micikevicius et al., 2022), we use the FP8 E4 format in the
+    forwards pass, and FP8 E5 in the backward pass.
+
+    Specifically, before each :func:`torch.nn.functional.linear` and
+    :func:`torch.nn.functional.scaled_dot_product_attention` call, a quantisation op
+    is inserted which simulates the effect of using FP8. This op
+    reduces the range of values to that of the format, and (stochastically) rounds
+    values to only those representable by the format.
+
+    The same is true for the backward pass.
+    Models which use modules that contain these functions internally
+    (such as :class:`torch.Linear`) will be inspected by torch.dynamo and have the
+    correct quantisation ops inserted.
+
+    If the equivalent unit-scaled functions from :mod:`unit_scaling.functional` are
+    used in the module, these too will be quantised.
+
+    Simulation of formats is run in FP32. Users should not expect speedups from using
+    this method. The purpose is to simulate the numerical effects of running matmuls
+    in FP8.
+
+    Args:
+        module (nn.Module): the module to be quantised
+
+    Returns:
+        nn.Module: a new module which when used, will run with matmul inputs in FP8.
+    """
+    return simulate_format(module, fwd_format=FPFormat(4, 3), bwd_format=FPFormat(5, 2))
+
+
+__all__ = generate__all__(__name__)

@@ -115,6 +115,19 @@ def to_right_grad_scale(
 def apply_constraint(
     constraint_name: Optional[str], *scales: float
 ) -> Tuple[float, ...]:
+    """Retrieves the constraint function corresponding to `constraint_name` and applies
+    it to the group of scales. This name must be that of one of the functions defined in
+    this module.
+
+    Args:
+        constraint_name (Optional[str]): The name of the constraint function to be used.
+
+    Raises:
+        ValueError: if `constraint_name` is not that of a function in this module.
+
+    Returns:
+        Tuple[float, ...]: the scales after the constraint has been applied.
+    """
     if constraint_name is None or constraint_name == "":
         return scales
     constraint = getattr(sys.modules[__name__], constraint_name, None)
