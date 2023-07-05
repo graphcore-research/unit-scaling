@@ -102,7 +102,9 @@ class ScaleTrackingInterpreter(fx.Interpreter):
         tracer represents them as placeholder nodes. This method extracts the original
         function from the node, as stored in the `target_to_function` dict."""
         if isinstance(target, str) and target.startswith("function_placeholder__"):
-            return self.module.graph._tracer_extras["target_to_function"][target]
+            return self.module.graph._tracer_extras["target_to_function"][
+                target
+            ]  # pragma: no cover
         return super().placeholder(target, args, kwargs)
 
 
@@ -149,7 +151,7 @@ def _annotate(code: str, scales: ScaleDict, syntax_highlight: bool) -> str:
         if code_line.startswith("torch.fx._symbolic_trace.wrap"):
             return ""
         code_line = code_line.split(";")[0]
-        if is_function_placeholder_line(code_line):
+        if is_function_placeholder_line(code_line):  # pragma: no cover
             return ""
         words = code_line.strip().split(" ")
         if words:
@@ -210,7 +212,7 @@ class _DeepTracer(fx.Tracer):
 
     def create_arg(self, a: Any) -> fx.node.Argument:
         """Replaces callable arguments with strings for tracing."""
-        if isinstance(a, FunctionType):
+        if isinstance(a, FunctionType):  # pragma: no cover
             node = self.function_to_node.get(a)
             if node is None:
                 assert hasattr(
