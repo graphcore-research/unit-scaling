@@ -1,6 +1,6 @@
-unit\_scaling.constraints.TernaryConstraint
+unit\_scaling.constraints.apply\_constraint
 ===========================================
 
 .. currentmodule:: unit_scaling.constraints
 
-.. autodata:: TernaryConstraint
+.. autofunction:: apply_constraint

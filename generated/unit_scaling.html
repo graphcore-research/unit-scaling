@@ -104,13 +104,13 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.GELU.html#unit_scaling.GELU" title="unit_scaling.GELU"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GELU</span></code></a>(constraint)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.GELU.html#unit_scaling.GELU" title="unit_scaling.GELU"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GELU</span></code></a>([constraint])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> Gaussian Error Linear Units function:</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.MHSA.html#unit_scaling.MHSA" title="unit_scaling.MHSA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MHSA</span></code></a>(hidden_size, heads, dropout_p, constraint)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.MHSA.html#unit_scaling.MHSA" title="unit_scaling.MHSA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MHSA</span></code></a>(hidden_size, heads, dropout_p[, constraint])</p></td>
 <td><p>A <strong>unit-scaled</strong> implementation of a multi-head self-attention layer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.MLP.html#unit_scaling.MLP" title="unit_scaling.MLP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MLP</span></code></a>(hidden_size, act_fn, expansion_factor, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.MLP.html#unit_scaling.MLP" title="unit_scaling.MLP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MLP</span></code></a>(hidden_size[, act_fn, expansion_factor, ...])</p></td>
 <td><p>A <strong>unit-scaled</strong> implementation of an MLP layer.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.CrossEntropyLoss.html#unit_scaling.CrossEntropyLoss" title="unit_scaling.CrossEntropyLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CrossEntropyLoss</span></code></a>([weight, size_average, ...])</p></td>
@@ -125,16 +125,16 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.LayerNorm.html#unit_scaling.LayerNorm" title="unit_scaling.LayerNorm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LayerNorm</span></code></a>(normalized_shape[, eps, ...])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> Layer Normalization over a mini-batch of inputs.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.Linear.html#unit_scaling.Linear" title="unit_scaling.Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Linear</span></code></a>(in_features, out_features, bias, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.Linear.html#unit_scaling.Linear" title="unit_scaling.Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Linear</span></code></a>(in_features, out_features[, bias, ...])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> linear transformation to the incoming data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.Softmax.html#unit_scaling.Softmax" title="unit_scaling.Softmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Softmax</span></code></a>(dim, constraint)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.Softmax.html#unit_scaling.Softmax" title="unit_scaling.Softmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Softmax</span></code></a>(dim[, constraint])</p></td>
 <td><p>Applies a <strong>unit-scaled</strong> Softmax function to an n-dimensional input Tensor.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.TransformerDecoder.html#unit_scaling.TransformerDecoder" title="unit_scaling.TransformerDecoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformerDecoder</span></code></a>(hidden_size, vocab_size, ...)</p></td>
 <td><p>A <strong>unit-scaled</strong> implementation of a decoder-type transformer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.TransformerLayer.html#unit_scaling.TransformerLayer" title="unit_scaling.TransformerLayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformerLayer</span></code></a>(hidden_size, heads, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.TransformerLayer.html#unit_scaling.TransformerLayer" title="unit_scaling.TransformerLayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformerLayer</span></code></a>(hidden_size, heads, dropout_p)</p></td>
 <td><p>A <strong>unit-scaled</strong> implementation of a PreNorm (see <a class="reference external" href="https://arxiv.org/abs/2002.04745">https://arxiv.org/abs/2002.04745</a>) transformer layer.</p></td>
 </tr>
 </tbody>

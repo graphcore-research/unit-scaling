@@ -1,6 +1,0 @@
-unit\_scaling.constraints.BinaryConstraint
-==========================================
-
-.. currentmodule:: unit_scaling.constraints
-
-.. autodata:: BinaryConstraint

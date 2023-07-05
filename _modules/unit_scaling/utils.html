@@ -174,7 +174,9 @@
 <span class="sd">        tracer represents them as placeholder nodes. This method extracts the original</span>
 <span class="sd">        function from the node, as stored in the `target_to_function` dict.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;function_placeholder__&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">_tracer_extras</span><span class="p">[</span><span class="s2">&quot;target_to_function&quot;</span><span class="p">][</span><span class="n">target</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">_tracer_extras</span><span class="p">[</span><span class="s2">&quot;target_to_function&quot;</span><span class="p">][</span>
+                <span class="n">target</span>
+            <span class="p">]</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div></div>
 
 
@@ -221,7 +223,7 @@
         <span class="k">if</span> <span class="n">code_line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;torch.fx._symbolic_trace.wrap&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
         <span class="n">code_line</span> <span class="o">=</span> <span class="n">code_line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">is_function_placeholder_line</span><span class="p">(</span><span class="n">code_line</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_function_placeholder_line</span><span class="p">(</span><span class="n">code_line</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
         <span class="n">words</span> <span class="o">=</span> <span class="n">code_line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">words</span><span class="p">:</span>
@@ -282,7 +284,7 @@
 
     <span class="k">def</span> <span class="nf">create_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fx</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">Argument</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Replaces callable arguments with strings for tracing.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
             <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_to_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span>
