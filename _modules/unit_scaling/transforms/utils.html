@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>unit_scaling.transforms.utils &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">4. API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">unit_scaling.transforms.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for unit_scaling.transforms.utils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2023 Graphcore Ltd. All rights reserved.</span>
+
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">patch</span>
+
+<span class="kn">import</span> <span class="nn">torch._dynamo</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span> <span class="nn">torch.fx.graph</span> <span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span> <span class="nn">torch.fx.node</span> <span class="kn">import</span> <span class="n">Node</span>
+
+<span class="kn">from</span> <span class="nn">.._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_patched_allowed_function_ids</span><span class="p">(</span>
+    <span class="n">non_recurse_functions</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">allowed_function_ids</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">_dynamo</span><span class="o">.</span><span class="n">allowed_functions</span><span class="o">.</span><span class="n">_allowed_function_ids</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nn</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nn</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">allowed_function_ids</span><span class="p">:</span>
+                <span class="n">allowed_function_ids</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">non_recurse_functions</span><span class="p">:</span>
+        <span class="n">allowed_function_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">allowed_function_ids</span>  <span class="c1"># type: ignore[no-any-return]</span>
+
+
+<span class="k">def</span> <span class="nf">_patched_call_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># type: ignore[no-untyped-def]</span>
+    <span class="k">if</span> <span class="n">tx</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">is_root_tracer</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">_dynamo</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">NNModuleVariable</span>
+    <span class="p">):</span>
+        <span class="n">module_attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="s2">&quot;__module__&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">module_attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">module_attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;torch.nn.modules.module&quot;</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_constant</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">call_method</span><span class="p">(</span>  <span class="c1"># type: ignore[no-untyped-call]</span>
+                <span class="n">tx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">constant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_constant</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">add_options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">_dynamo</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">UserMethodVariable</span><span class="p">,</span> <span class="bp">self</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">call_function</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">_expand_modules_patch</span><span class="p">(</span><span class="n">non_recurse_functions</span><span class="p">):</span>  <span class="c1"># type: ignore[no-untyped-def]</span>
+    <span class="n">patcher_a</span> <span class="o">=</span> <span class="n">patch</span><span class="p">(</span>
+        <span class="s2">&quot;torch._dynamo.allowed_functions._allowed_function_ids&quot;</span><span class="p">,</span>
+        <span class="n">new</span><span class="o">=</span><span class="n">_get_patched_allowed_function_ids</span><span class="p">(</span><span class="n">non_recurse_functions</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">patcher_b</span> <span class="o">=</span> <span class="n">patch</span><span class="p">(</span>
+        <span class="s2">&quot;torch._dynamo.variables.functions.UserMethodVariable.call_function&quot;</span><span class="p">,</span>
+        <span class="n">new</span><span class="o">=</span><span class="n">_patched_call_function</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">patcher_a</span><span class="p">,</span> <span class="n">patcher_b</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">patcher_a</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">patcher_b</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="patch_to_expand_modules"><a class="viewcode-back" href="../../../generated/unit_scaling.transforms.utils.patch_to_expand_modules.html#unit_scaling.transforms.utils.patch_to_expand_modules">[docs]</a><span class="k">def</span> <span class="nf">patch_to_expand_modules</span><span class="p">(</span>
+    <span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">non_recurse_functions</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">()</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;By default torch.dynamo doesn&#39;t recurse into :mod:`torch.nn` modules or</span>
+<span class="sd">    :mod:`torch.nn.functional` functions when capturing the FX graph.</span>
+<span class="sd">    Any function which is wrapped in</span>
+<span class="sd">    :func:`torch._dynamo.optimise` (or :func:`torch.compile`) and is then passed to</span>
+<span class="sd">    this function as `fn` will now automatically recurse into</span>
+<span class="sd">    :mod:`torch.nn` modules or :mod:`torch.nn.functional` functions.</span>
+
+<span class="sd">    In practice, to use this with a :class:`torch.nn.Module` the typical use case</span>
+<span class="sd">    is to call `module = torch._dynamo.optimize(backend)(module)`, followed by</span>
+<span class="sd">    `module.forward = patch_to_expand_modules(module.forward)`.</span>
+
+<span class="sd">    In addition, any functions the user *doesn&#39;t* wish to recurse into can be passed</span>
+<span class="sd">    into `non_recurse_functions` and these will not be expanded.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fn (Callable[..., T]): the function to be patched.</span>
+<span class="sd">        non_recurse_functions (Iterable[Callable[..., Any]], optional): functions which</span>
+<span class="sd">            the user does not wish to be recursed into. Defaults to ().</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Callable[..., T]: the new version of `fn` with patching applied.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">new_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_expand_modules_patch</span><span class="p">(</span><span class="n">non_recurse_functions</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_fn</span></div>
+
+
+<div class="viewcode-block" id="replace_node_with_function"><a class="viewcode-back" href="../../../generated/unit_scaling.transforms.utils.replace_node_with_function.html#unit_scaling.transforms.utils.replace_node_with_function">[docs]</a><span class="k">def</span> <span class="nf">replace_node_with_function</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span>
+    <span class="n">target_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keep_type_expr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given a source node and its accompanying graph, remove the node and replace it</span>
+<span class="sd">    with a new node that represents calling the target function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        graph (Graph): the graph in which the node is present.</span>
+<span class="sd">        source (Node): the node to be replaced.</span>
+<span class="sd">        target_fn (Callable[..., Any]): the function to be contained in the new node.</span>
+<span class="sd">        args (Optional[Tuple[Any, ...]], optional): args of the new node.</span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">        kwargs (Optional[Dict[Any, Any]], optional): kwargs of the new node.</span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">        keep_type_expr (bool, optional): retain the type expression of the removed node.</span>
+<span class="sd">            Defaults to True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">args</span>
+    <span class="k">if</span> <span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">kwargs</span>
+    <span class="n">type_expr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">keep_type_expr</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">with</span> <span class="n">graph</span><span class="o">.</span><span class="n">inserting_after</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+        <span class="n">new_node</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">call_function</span><span class="p">(</span><span class="n">target_fn</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">type_expr</span><span class="p">)</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">replace_all_uses_with</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">erase_node</span><span class="p">(</span><span class="n">source</span><span class="p">)</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="n">generate__all__</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

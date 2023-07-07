@@ -1,0 +1,6 @@
+unit\_scaling.transforms.simulate\_fp8
+======================================
+
+.. currentmodule:: unit_scaling.transforms
+
+.. autofunction:: simulate_fp8

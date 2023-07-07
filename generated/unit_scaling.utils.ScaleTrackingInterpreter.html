@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.5.4. unit_scaling.utils.ScaleTrackingInterpreter &mdash; unit-scaling  documentation</title>
+  <title>4.8.4. unit_scaling.utils.ScaleTrackingInterpreter &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,7 +17,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="4.5.3. unit_scaling.utils.ScaleTracker" href="unit_scaling.utils.ScaleTracker.html" /> 
+    <link rel="prev" title="4.8.3. unit_scaling.utils.ScaleTracker" href="unit_scaling.utils.ScaleTracker.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,13 +47,16 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">4. API reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">4.1. unit_scaling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">4.2. unit_scaling.constraints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">4.3. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.4. unit_scaling.scale</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.utils.html">4.5. unit_scaling.utils</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.analyse_module.html">4.5.1. unit_scaling.utils.analyse_module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScalePair.html">4.5.2. unit_scaling.utils.ScalePair</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScaleTracker.html">4.5.3. unit_scaling.utils.ScaleTracker</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">4.5.4. unit_scaling.utils.ScaleTrackingInterpreter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">4.3. unit_scaling.formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">4.4. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.5. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">4.6. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">4.7. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.utils.html">4.8. unit_scaling.utils</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.analyse_module.html">4.8.1. unit_scaling.utils.analyse_module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScalePair.html">4.8.2. unit_scaling.utils.ScalePair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScaleTracker.html">4.8.3. unit_scaling.utils.ScaleTracker</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.8.4. unit_scaling.utils.ScaleTrackingInterpreter</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#unit_scaling.utils.ScaleTrackingInterpreter"><code class="docutils literal notranslate"><span class="pre">ScaleTrackingInterpreter</span></code></a></li>
 </ul>
 </li>
@@ -78,8 +81,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
-          <li class="breadcrumb-item"><a href="unit_scaling.utils.html"><span class="section-number">4.5. </span>unit_scaling.utils</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4.5.4. </span>unit_scaling.utils.ScaleTrackingInterpreter</li>
+          <li class="breadcrumb-item"><a href="unit_scaling.utils.html"><span class="section-number">4.8. </span>unit_scaling.utils</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.8.4. </span>unit_scaling.utils.ScaleTrackingInterpreter</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/generated/unit_scaling.utils.ScaleTrackingInterpreter.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -90,7 +93,7 @@
            <div itemprop="articleBody">
              
   <section id="unit-scaling-utils-scaletrackinginterpreter">
-<h1><span class="section-number">4.5.4. </span>unit_scaling.utils.ScaleTrackingInterpreter<a class="headerlink" href="#unit-scaling-utils-scaletrackinginterpreter" title="Permalink to this heading"></a></h1>
+<h1><span class="section-number">4.8.4. </span>unit_scaling.utils.ScaleTrackingInterpreter<a class="headerlink" href="#unit-scaling-utils-scaletrackinginterpreter" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTrackingInterpreter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.utils.</span></span><span class="sig-name descname"><span class="pre">ScaleTrackingInterpreter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/fx.html#torch.fx.GraphModule" title="(in PyTorch v2.0)"><span class="pre">GraphModule</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/utils.html#ScaleTrackingInterpreter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.utils.ScaleTrackingInterpreter" title="Permalink to this definition"></a></dt>
@@ -363,7 +366,7 @@ on <code class="docutils literal notranslate"><span class="pre">node.op</span></
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.utils.ScaleTracker.html" class="btn btn-neutral float-left" title="4.5.3. unit_scaling.utils.ScaleTracker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.utils.ScaleTracker.html" class="btn btn-neutral float-left" title="4.8.3. unit_scaling.utils.ScaleTracker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

@@ -1,0 +1,6 @@
+unit\_scaling.transforms.utils.patch\_to\_expand\_modules
+=========================================================
+
+.. currentmodule:: unit_scaling.transforms.utils
+
+.. autofunction:: patch_to_expand_modules

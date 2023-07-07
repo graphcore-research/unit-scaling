@@ -86,6 +86,7 @@
  | <a href="#M"><strong>M</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -115,12 +116,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker.backward">backward() (unit_scaling.utils.ScaleTracker static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.LayerNorm.html#unit_scaling.LayerNorm.bias">bias (unit_scaling.LayerNorm attribute)</a>
 
       <ul>
         <li><a href="generated/unit_scaling.Linear.html#unit_scaling.Linear.bias">(unit_scaling.Linear attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/unit_scaling.formats.Format.html#unit_scaling.formats.Format.bits">bits (unit_scaling.formats.Format property)</a>
+
+      <ul>
+        <li><a href="generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat.bits">(unit_scaling.formats.FPFormat property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -133,10 +140,16 @@
 </li>
       <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.call_method">call_method() (unit_scaling.utils.ScaleTrackingInterpreter method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.call_module">call_module() (unit_scaling.utils.ScaleTrackingInterpreter method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/unit_scaling.formats.Format.html#unit_scaling.formats.Format.count_bits">count_bits() (unit_scaling.formats.Format method)</a>
+
+      <ul>
+        <li><a href="generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat.count_bits">(unit_scaling.formats.FPFormat method)</a>
+</li>
+      </ul></li>
       <li><a href="generated/unit_scaling.functional.cross_entropy.html#unit_scaling.functional.cross_entropy">cross_entropy() (in module unit_scaling.functional)</a>
 </li>
       <li><a href="generated/unit_scaling.CrossEntropyLoss.html#unit_scaling.CrossEntropyLoss">CrossEntropyLoss (class in unit_scaling)</a>
@@ -173,9 +186,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.fetch_args_kwargs_from_env">fetch_args_kwargs_from_env() (unit_scaling.utils.ScaleTrackingInterpreter method)</a>
 </li>
+      <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.fetch_attr">fetch_attr() (unit_scaling.utils.ScaleTrackingInterpreter method)</a>
+</li>
+      <li><a href="generated/unit_scaling.formats.Format.html#unit_scaling.formats.Format">Format (class in unit_scaling.formats)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.fetch_attr">fetch_attr() (unit_scaling.utils.ScaleTrackingInterpreter method)</a>
+      <li><a href="generated/unit_scaling.formats.format_to_tuple.html#unit_scaling.formats.format_to_tuple">format_to_tuple() (in module unit_scaling.formats)</a>
+</li>
+      <li><a href="generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat">FPFormat (class in unit_scaling.formats)</a>
 </li>
       <li><a href="generated/unit_scaling.Embedding.html#unit_scaling.Embedding.from_pretrained">from_pretrained() (unit_scaling.Embedding class method)</a>
 </li>
@@ -249,7 +268,13 @@
 </li>
       <li><a href="generated/unit_scaling.functional.matmul.html#unit_scaling.functional.matmul">matmul() (in module unit_scaling.functional)</a>
 </li>
+      <li><a href="generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat.max_absolute_value">max_absolute_value (unit_scaling.formats.FPFormat property)</a>
+</li>
       <li><a href="generated/unit_scaling.MHSA.html#unit_scaling.MHSA">MHSA (class in unit_scaling)</a>
+</li>
+      <li><a href="generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat.min_absolute_normal">min_absolute_normal (unit_scaling.formats.FPFormat property)</a>
+</li>
+      <li><a href="generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat.min_absolute_subnormal">min_absolute_subnormal (unit_scaling.formats.FPFormat property)</a>
 </li>
       <li><a href="generated/unit_scaling.MLP.html#unit_scaling.MLP">MLP (class in unit_scaling)</a>
 </li>
@@ -263,9 +288,15 @@
 </li>
         <li><a href="generated/unit_scaling.constraints.html#module-unit_scaling.constraints">unit_scaling.constraints</a>
 </li>
+        <li><a href="generated/unit_scaling.formats.html#module-unit_scaling.formats">unit_scaling.formats</a>
+</li>
         <li><a href="generated/unit_scaling.functional.html#module-unit_scaling.functional">unit_scaling.functional</a>
 </li>
         <li><a href="generated/unit_scaling.scale.html#module-unit_scaling.scale">unit_scaling.scale</a>
+</li>
+        <li><a href="generated/unit_scaling.transforms.html#module-unit_scaling.transforms">unit_scaling.transforms</a>
+</li>
+        <li><a href="generated/unit_scaling.transforms.utils.html#module-unit_scaling.transforms.utils">unit_scaling.transforms.utils</a>
 </li>
         <li><a href="generated/unit_scaling.utils.html#module-unit_scaling.utils">unit_scaling.utils</a>
 </li>
@@ -284,7 +315,25 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/unit_scaling.transforms.utils.patch_to_expand_modules.html#unit_scaling.transforms.utils.patch_to_expand_modules">patch_to_expand_modules() (in module unit_scaling.transforms.utils)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.placeholder">placeholder() (unit_scaling.utils.ScaleTrackingInterpreter method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat.quantise">quantise() (unit_scaling.formats.FPFormat method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat.quantise_bwd">quantise_bwd() (unit_scaling.formats.FPFormat method)</a>
+</li>
+      <li><a href="generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat.quantise_fwd">quantise_fwd() (unit_scaling.formats.FPFormat method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -292,12 +341,14 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add">residual_add() (in module unit_scaling.functional)</a>
+      <li><a href="generated/unit_scaling.transforms.utils.replace_node_with_function.html#unit_scaling.transforms.utils.replace_node_with_function">replace_node_with_function() (in module unit_scaling.transforms.utils)</a>
 </li>
-      <li><a href="generated/unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split">residual_split() (in module unit_scaling.functional)</a>
+      <li><a href="generated/unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add">residual_add() (in module unit_scaling.functional)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split">residual_split() (in module unit_scaling.functional)</a>
+</li>
       <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.run">run() (unit_scaling.utils.ScaleTrackingInterpreter method)</a>
 </li>
       <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.run_node">run_node() (unit_scaling.utils.ScaleTrackingInterpreter method)</a>
@@ -320,10 +371,10 @@
 </li>
       <li><a href="generated/unit_scaling.functional.scaled_dot_product_attention.html#unit_scaling.functional.scaled_dot_product_attention">scaled_dot_product_attention() (in module unit_scaling.functional)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.utils.ScalePair.html#unit_scaling.utils.ScalePair">ScalePair (class in unit_scaling.utils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker">ScaleTracker (class in unit_scaling.utils)</a>
 </li>
       <li><a href="generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter">ScaleTrackingInterpreter (class in unit_scaling.utils)</a>
@@ -331,6 +382,10 @@
       <li><a href="generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker.set_materialize_grads">set_materialize_grads() (unit_scaling.utils.ScaleTracker method)</a>
 </li>
       <li><a href="generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker.setup_context">setup_context() (unit_scaling.utils.ScaleTracker static method)</a>
+</li>
+      <li><a href="generated/unit_scaling.transforms.simulate_format.html#unit_scaling.transforms.simulate_format">simulate_format() (in module unit_scaling.transforms)</a>
+</li>
+      <li><a href="generated/unit_scaling.transforms.simulate_fp8.html#unit_scaling.transforms.simulate_fp8">simulate_fp8() (in module unit_scaling.transforms)</a>
 </li>
       <li><a href="generated/unit_scaling.Softmax.html#unit_scaling.Softmax">Softmax (class in unit_scaling)</a>
 </li>
@@ -356,6 +411,8 @@
 </li>
       <li><a href="generated/unit_scaling.TransformerLayer.html#unit_scaling.TransformerLayer">TransformerLayer (class in unit_scaling)</a>
 </li>
+      <li><a href="generated/unit_scaling.formats.tuple_to_format.html#unit_scaling.formats.tuple_to_format">tuple_to_format() (in module unit_scaling.formats)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -377,6 +434,13 @@
 </li>
       </ul></li>
       <li>
+    unit_scaling.formats
+
+      <ul>
+        <li><a href="generated/unit_scaling.formats.html#module-unit_scaling.formats">module</a>
+</li>
+      </ul></li>
+      <li>
     unit_scaling.functional
 
       <ul>
@@ -390,6 +454,20 @@
 
       <ul>
         <li><a href="generated/unit_scaling.scale.html#module-unit_scaling.scale">module</a>
+</li>
+      </ul></li>
+      <li>
+    unit_scaling.transforms
+
+      <ul>
+        <li><a href="generated/unit_scaling.transforms.html#module-unit_scaling.transforms">module</a>
+</li>
+      </ul></li>
+      <li>
+    unit_scaling.transforms.utils
+
+      <ul>
+        <li><a href="generated/unit_scaling.transforms.utils.html#module-unit_scaling.transforms.utils">module</a>
 </li>
       </ul></li>
       <li>
