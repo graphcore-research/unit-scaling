@@ -194,7 +194,7 @@ M = TypeVar("M", bound=nn.Module)
 def unit_scale(
     module: M, replace: Dict[Callable[..., Any], Callable[..., Any]] = dict()
 ) -> M:
-    """[Experimental] Returns a unit-scaled version of the input model.
+    """**[Experimental]** Returns a unit-scaled version of the input model.
 
     Uses TorchDynamo to trace and transform the user-supplied module.
     This transformation identifies all :mod:`torch.nn.functional` uses in the input
@@ -206,67 +206,69 @@ def unit_scale(
     Unit scaling is then applied as a transformation on top of this graph.
 
     This transformation proceeds in five stages:
-    1. User-defined replacement of functions according to the supplied `replace` dict.
-    2. Replacement of all functions with unit-scaled equivalents defined in
-    `unit_scaling.functional`.
-    3. Identification & replacement of all add operations that represent residual-adds.
-    The identification of residual connections is done via a dependency analysis on the
-    graph. Residual-adds require special scaling compared with regular adds (see paper
-    / User Guide for details).
-    4. Unconstraining of all operations after the final residual layer. By default
-    all unit scaled operations have their scaling factors constrained in the forward and
-    backward pass to give valid gradients. This is not required in these final layers
-    (see paper for proof), and hence we can unconstrain the operations to give better
-    scaling.
-    5. Unit-scaling of all weights, and zero-initialisation of all biases.
 
-    Note that by using TorchDynamo, `unit_scale` is able to trace a much larger set of
+    #. **Replacement of user-defined functions** according to the supplied `replace`
+       dictionary.
+    #. **Replacement of all functions with unit-scaled equivalents** defined in
+       :mod:`unit_scaling.functional`.
+    #. Identification & **replacement of all add operations that represent
+       residual-adds**. The identification of residual connections is done via a
+       dependency analysis on the graph. Residual-adds require special scaling compared
+       with regular adds (see paper / User Guide for details).
+    #. **Unconstraining of all operations after the final residual layer**. By default
+       all unit scaled operations have their scaling factors constrained in the forward
+       and backward pass to give valid gradients. This is not required in these final
+       layers (see paper for proof), and hence we can unconstrain the operations to give
+       better scaling.
+    #. **Unit-scaling of all weights** and zero-initialisation of all biases.
+
+    Note that by using TorchDynamo, `unit_scale()` is able to trace a much larger set of
     modules / operations than with previous PyTorch tracing approaches. This enables
     the process of unit scaling to be expressed as a generic graph transform that can be
     applied to arbitrary modules.
 
-    Note that the current version of TorchDynamo (or :mod:`torch.compile`, which is a
+    Note that the current version of TorchDynamo (or :func:`torch.compile`, which is a
     wrapper around TorchDynamo) doesn't support nested transforms, so we implement our
     own system here. This makes it easy to nest transforms:
 
-    ```
-    from unit_scaling.transforms import compile, simulate_fp8, unit_scale
+    .. code-block:: python
 
-    module = compile(simulate_fp8(unit_scale(module)))
-    ```
+        from unit_scaling.transforms import compile, simulate_fp8, unit_scale
+
+        module = compile(simulate_fp8(unit_scale(module)))
 
     However, these transforms are not interoperable with the standard
-    :mod:`torch.compile` interface.
+    :func:`torch.compile` interface.
 
     In some cases users may have a model definition that uses a custom implementation of
-    a basic operation. In this case, `unit_scale` can be told explicitly to substitute
+    a basic operation. In this case, `unit_scale()` can be told explicitly to substitute
     the layer for an equivalent, using the `replace` dictionary:
 
-    ```
-    import unit_scaling.functional as U
-    from unit_scaling.transforms import unit_scale
+    .. code-block:: python
 
-    def new_gelu(x):
-        ...
+        import unit_scaling.functional as U
+        from unit_scaling.transforms import unit_scale
 
-    class Model(nn.Module):
-        def forward(x):
-            ...
-            x = new_gelu(x)
+        def new_gelu(x):
             ...
 
-    model = unit_scale(Model(), replace={new_gelu: U.gelu})
-    ```
+        class Model(nn.Module):
+            def forward(x):
+                ...
+                x = new_gelu(x)
+                ...
+
+        model = unit_scale(Model(), replace={new_gelu: U.gelu})
 
     This can also be used to substitute a particular function for a user-defined
-    unit-scaled function not provided by `unit_scaling.functional`.
+    unit-scaled function not provided by :mod:`unit_scaling.functional`.
 
-    Note: this function is experimental and has not yet been widely tested on a range
-    of models. The "standard" approach to unit scaling a model is still to manually
-    substitute the layers/operations in a model with their unit-scaled equivalents.
-    Having said this, `unit_scale` is implemented in a sufficiently generic way that
-    we anticipate many users will ultimately be able to rely on this graph transform
-    alone.
+    **Note:** `unit_scale()` is experimental and has not yet been widely tested on a
+    range of models. The standard approach to unit scaling a model is still to
+    manually substitute the layers/operations in a model with their unit-scaled
+    equivalents. Having said this, `unit_scale()` is implemented in a sufficiently
+    generic way that we anticipate many users will ultimately be able to rely on this
+    graph transform alone.
 
     Args:
         module (nn.Module): the input module to be unit scaled.

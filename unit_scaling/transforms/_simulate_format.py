@@ -125,7 +125,7 @@ M = TypeVar("M", bound=nn.Module)
 
 
 def simulate_format(module: M, fwd_format: FPFormat, bwd_format: FPFormat) -> M:
-    """[Experimental] Given a module, uses TorchDynamo to return a new module which
+    """**[Experimental]** Given a module, uses TorchDynamo to return a new module which
     simulates the effect of using the supplied formats for matmuls.
 
     Specifically, before each :func:`torch.nn.functional.linear` and
@@ -136,7 +136,7 @@ def simulate_format(module: M, fwd_format: FPFormat, bwd_format: FPFormat) -> M:
 
     The same is true for the backward pass, where an op is inserted to quantise to the
     `bwd_format`. Models which use modules that contain these functions internally
-    (such as :class:`torch.Linear`) will be inspected by TorchDynamo and have the
+    (such as :class:`torch.nn.Linear`) will be inspected by TorchDynamo and have the
     correct quantisation ops inserted.
 
     If the equivalent unit-scaled functions from :mod:`unit_scaling.functional` are
@@ -162,7 +162,7 @@ def simulate_format(module: M, fwd_format: FPFormat, bwd_format: FPFormat) -> M:
 
 
 def simulate_fp8(module: M) -> M:
-    """[Experimental] Given a module, uses TorchDynamo to return a new module which
+    """**[Experimental]** Given a module, uses TorchDynamo to return a new module which
     simulates the effect of running matmuls in FP8. As is standard in the literature
     (Noune et al., 2022; Micikevicius et al., 2022), we use the FP8 E4 format in the
     forwards pass, and FP8 E5 in the backward pass.
@@ -175,7 +175,7 @@ def simulate_fp8(module: M) -> M:
 
     The same is true for the backward pass.
     Models which use modules that contain these functions internally
-    (such as :class:`torch.Linear`) will be inspected by TorchDynamo and have the
+    (such as :class:`torch.nn.Linear`) will be inspected by TorchDynamo and have the
     correct quantisation ops inserted.
 
     If the equivalent unit-scaled functions from :mod:`unit_scaling.functional` are
