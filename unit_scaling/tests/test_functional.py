@@ -299,6 +299,22 @@ def test_add_broadcast() -> None:
     assert_unit_scaled(output, left.grad, right.grad)
 
 
+def test_add_scalar() -> None:
+    left = 2.0
+    right = randn(2**8, 2**10, requires_grad=True)
+    output = add(left, right, constraint=None)
+    unit_backward(output)
+
+    assert_unit_scaled(output, right.grad)
+
+    left = randn(2**8, 1, 2**10, requires_grad=True)  # type: ignore[assignment]
+    right = -1.0  # type: ignore[assignment]
+    output = add(left, right, constraint=None)
+    unit_backward(output)
+
+    assert_unit_scaled(output, left.grad)  # type: ignore[attr-defined]
+
+
 # --- test residual() ---
 
 

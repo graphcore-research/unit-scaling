@@ -4,8 +4,10 @@ from __future__ import annotations  # required for docs to alias type annotation
 
 """Unit-scaled versions of common `torch.nn.functional` functions."""
 
+import sys
 from math import prod
-from typing import Any, Callable, Optional, Sequence, Tuple
+from types import FunctionType
+from typing import Any, Callable, Dict, Optional, Sequence, Tuple, Union, cast
 
 import torch
 import torch.nn.functional as F
@@ -202,12 +204,20 @@ def layer_norm(
     add_args=[ternary_constraint_docstring],
 )
 def add(
-    input: Tensor,
-    other: Tensor,
+    input: Union[Tensor, int, float],
+    other: Union[Tensor, int, float],
     constraint: Optional[str] = "gmean",
     alpha: int = 1,
     out: Optional[Tensor] = None,
 ) -> Tensor:
+    # Adding a constant shouldn't change scale
+    if (
+        isinstance(input, (int, float))
+        or isinstance(other, (int, float))
+        or input.numel() == 1
+        or other.numel() == 1
+    ):
+        return torch.add(input, other, out=out)
     input_broadcast_size, other_broadcast_size = _get_broadcast_sizes(input, other)
     input_grad_scale = input_broadcast_size**-0.5
     other_grad_scale = other_broadcast_size**-0.5
@@ -246,7 +256,7 @@ def residual_split(input: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
     return residual, skip
 
 
-def residual_add(residual: Tensor, skip: Tensor, tau: float = 0.2) -> Tensor:
+def residual_add(residual: Tensor, skip: Tensor, tau: float = 0.1) -> Tensor:
     """Adds a residual connection and skip connection together, with a relative
     weighting `tau` applied to the residual branch. Should be used in conjunction with
     `residual_split`.
@@ -372,4 +382,20 @@ def cross_entropy(
     return loss
 
 
+def _gen_torch_function_map() -> Dict[FunctionType, FunctionType]:
+    torch_objects = {name: getattr(torch, name) for name in dir(torch)}
+    torch_objects = {**torch_objects, **{name: getattr(F, name) for name in dir(F)}}
+    current_module = sys.modules[__name__]
+    function_map = {}
+    for unit_fn_name in dir(current_module):
+        unit_fn = getattr(current_module, unit_fn_name)
+        if isinstance(unit_fn, FunctionType) and unit_fn_name in torch_objects:
+            torch_fn = cast(FunctionType, torch_objects[unit_fn_name])
+            function_map[torch_fn] = unit_fn
+    return function_map
+
+
 __all__ = generate__all__(__name__)
+
+
+torch_map = _gen_torch_function_map()

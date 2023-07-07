@@ -2,18 +2,35 @@
 
 import functools
 from contextlib import contextmanager
-from copy import copy
-from typing import Any, Callable, Dict, Iterable, Optional, Set, Tuple, TypeVar
+from copy import copy, deepcopy
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    TypeVar,
+    no_type_check,
+)
 from unittest.mock import patch
 
 import torch._dynamo
-from torch import nn
+from torch import Tensor, nn
 from torch.fx.graph import Graph
+from torch.fx.graph_module import GraphModule
 from torch.fx.node import Node
 
+from .. import functional as U
 from .._internal_utils import generate__all__
 
 T = TypeVar("T")
+
+Backend = Callable[[GraphModule, List[Tensor]], Callable[..., Any]]
+
+_unit_scaled_functions = [getattr(U, f) for f in U.__all__]
 
 
 def _get_patched_allowed_function_ids(
@@ -30,7 +47,12 @@ def _get_patched_allowed_function_ids(
     return allowed_function_ids  # type: ignore[no-any-return]
 
 
-def _patched_call_function(self, tx, args, kwargs):  # type: ignore[no-untyped-def]
+def _patched_call_function(  # type: ignore[no-untyped-def]
+    self,
+    tx,
+    args,
+    kwargs,
+):  # pragma: no cover
     if tx.output.is_root_tracer() and isinstance(
         self.obj, torch._dynamo.variables.NNModuleVariable
     ):
@@ -65,7 +87,7 @@ def _expand_modules_patch(non_recurse_functions):  # type: ignore[no-untyped-def
 def patch_to_expand_modules(
     fn: Callable[..., T], non_recurse_functions: Iterable[Callable[..., Any]] = ()
 ) -> Callable[..., T]:
-    """By default torch.dynamo doesn't recurse into :mod:`torch.nn` modules or
+    """By default TorchDynamo doesn't recurse into :mod:`torch.nn` modules or
     :mod:`torch.nn.functional` functions when capturing the FX graph.
     Any function which is wrapped in
     :func:`torch._dynamo.optimise` (or :func:`torch.compile`) and is then passed to
@@ -129,4 +151,84 @@ def replace_node_with_function(
         graph.erase_node(source)
 
 
-__all__ = generate__all__(__name__)
+def _compose_backends(backends: Iterable[Backend]) -> Backend:
+    def composite_backend(
+        gm: GraphModule, example_inputs: List[Tensor]
+    ) -> Callable[..., Any]:
+        for b in backends:
+            gm = b(gm, example_inputs)  # type: ignore[assignment]
+        return gm
+
+    return composite_backend
+
+
+M = TypeVar("M", bound=nn.Module)
+
+
+@no_type_check
+def apply_transform(
+    module: M,
+    backend: Backend,
+    non_recurse_functions: List[Callable[..., Any]] = list(),
+) -> M:
+    """Applies a graph transformation to a module.
+
+    `backend` represents a transformation of a
+    :class:`torch.fx.graph_module.GraphModule`. `apply_transform` uses
+    :func:`torch._dynamo.optimize` to apply this transformation to the module,
+    returning a new transformed module.
+
+    Note that the current version of TorchDynamo (or :mod:`torch.compile`, which is a
+    wrapper around TorchDynamo) doesn't support nested transforms, so we implement our
+    own system here. This makes it easy to nest transforms:
+
+    ```
+    module = apply_transform(apply_transform(module, backend_1), backend_2)
+    ```
+
+    However, it should be noted these transforms are not interoperable with the standard
+    :mod:`torch.compile` interface.
+
+    This nesting system is implemented by moving the call to
+    :func:`torch._dynamo.optimize` within the `forward()` method of the module
+    (though it is only executed on the first call to the module, or if a new transform
+    is applied, the optimised call being cached thereafter). This differs from the
+    standard approach to apply :func:`torch._dynamo.optimize`, but enables the
+    convenient nesting functionality.
+
+    Args:
+        _module (nn.Module): the module to be transformed.
+        backend (Backend): the graph transformation to be applied.
+        non_recurse_functions (Iterable[Callable[..., Any]], optional): functions which
+            the user does not wish to be recursed into. Defaults to list().
+
+    Returns:
+        nn.Module: the transformed module.
+    """
+    module = deepcopy(module)
+    if not hasattr(module, "backends"):
+        module.backends = []
+    module.backends.append(backend)
+    if not hasattr(module, "non_recurse_functions"):
+        module.non_recurse_functions = list(_unit_scaled_functions)
+    module.non_recurse_functions += non_recurse_functions
+    backend = _compose_backends(module.backends)
+
+    def new_forward(*args: Any, **kwargs: Any) -> Any:
+        if module.rerun_transform:
+            torch._dynamo.reset()
+            dynamo_module = torch._dynamo.optimize(backend)(module)
+            module.dynamo_forward = patch_to_expand_modules(
+                dynamo_module.forward, module.non_recurse_functions
+            )
+            module.rerun_transform = False
+        with patch.object(module, "forward", module.base_forward):
+            return module.dynamo_forward(*args, **kwargs)
+
+    module.rerun_transform = True
+    module.base_forward = getattr(module, "base_forward", module.forward)
+    module.forward = new_forward
+    return module
+
+
+__all__ = generate__all__(__name__) + ["Backend"]
