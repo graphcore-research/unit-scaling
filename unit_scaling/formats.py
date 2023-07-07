@@ -39,16 +39,6 @@ class FPFormat(Format):
     def __post_init__(self) -> None:
         assert self.exponent_bits >= 2, "FPFormat requires at least 2 exponent bits"
 
-    def to_tuple(self) -> Tuple[int, int]:
-        """Convert the format into a tuple of `(exponent_bits, mantissa_bits)`"""
-        return (self.exponent_bits, self.mantissa_bits)
-
-    @staticmethod
-    def from_tuple(t: Tuple[int, int]) -> "FPFormat":
-        """Given a tuple of `(exponent_bits, mantissa_bits)` returns the corresponding
-        :class:`FPFormat`"""
-        return FPFormat(*t)
-
     @property
     def max_absolute_value(self) -> float:
         """The maximum absolute value representable by the format."""
@@ -66,7 +56,7 @@ class FPFormat(Format):
         """The minimum absolute subnormal value representable by the format."""
         return self.min_absolute_normal * 2.0**-self.mantissa_bits
 
-    def quantise_no_grad(self, x: Tensor) -> Tensor:
+    def quantise(self, x: Tensor) -> Tensor:
         """Non-differentiably quantise the given tensor in this format."""
         absmax = self.max_absolute_value
         downscale = 2.0 ** (127 - 2 ** (self.exponent_bits - 1))
@@ -81,7 +71,7 @@ class FPFormat(Format):
         q *= downscale
         return q.to(x.dtype)
 
-    def quantise(self, x: Tensor) -> Tensor:
+    def quantise_fwd(self, x: Tensor) -> Tensor:
         """Quantise the given tensor in the forward pass only."""
 
         class QuantiseForward(torch.autograd.Function):
@@ -89,7 +79,7 @@ class FPFormat(Format):
             def forward(  # type:ignore[override]
                 ctx: torch.autograd.function.FunctionCtx, x: Tensor
             ) -> Tensor:
-                return self.quantise_no_grad(x)
+                return self.quantise(x)
 
             @staticmethod
             def backward(  # type:ignore[override]
@@ -113,9 +103,20 @@ class FPFormat(Format):
             def backward(  # type:ignore[override]
                 ctx: torch.autograd.function.FunctionCtx, grad_y: Tensor
             ) -> Tensor:
-                return self.quantise_no_grad(grad_y)
+                return self.quantise(grad_y)
 
         return QuantiseBackward.apply(x)  # type: ignore
+
+
+def format_to_tuple(format: FPFormat) -> Tuple[int, int]:
+    """Convert the format into a tuple of `(exponent_bits, mantissa_bits)`"""
+    return (format.exponent_bits, format.mantissa_bits)
+
+
+def tuple_to_format(t: Tuple[int, int]) -> FPFormat:
+    """Given a tuple of `(exponent_bits, mantissa_bits)` returns the corresponding
+    :class:`FPFormat`"""
+    return FPFormat(*t)
 
 
 __all__ = generate__all__(__name__)

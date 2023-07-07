@@ -11,11 +11,11 @@ def test_fp_format() -> None:
     assert fmt.max_absolute_value == 3
     assert fmt.min_absolute_normal == 0.5
     assert fmt.min_absolute_subnormal == 0.25
-    assert set(fmt.quantise(torch.linspace(-4, 4, steps=100)).tolist()) == {
+    assert set(fmt.quantise_fwd(torch.linspace(-4, 4, steps=100)).tolist()) == {
         sx for x in [0, 0.25, 0.5, 0.75, 1, 1.5, 2, 3] for sx in [x, -x]
     }
     assert set(
-        FPFormat(3, 0).quantise(torch.linspace(-10, 10, steps=1000)).abs().tolist()
+        FPFormat(3, 0).quantise_fwd(torch.linspace(-10, 10, steps=1000)).abs().tolist()
     ) == {0, 0.125, 0.25, 0.5, 1, 2, 4, 8}
 
 

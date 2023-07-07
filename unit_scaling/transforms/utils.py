@@ -58,11 +58,8 @@ def _expand_modules_patch(non_recurse_functions):  # type: ignore[no-untyped-def
         "torch._dynamo.variables.functions.UserMethodVariable.call_function",
         new=_patched_call_function,
     )
-    try:
+    with patcher_a, patcher_b:
         yield (patcher_a.start(), patcher_b.start())
-    finally:
-        patcher_a.stop()
-        patcher_b.stop()
 
 
 def patch_to_expand_modules(

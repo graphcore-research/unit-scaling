@@ -12,7 +12,7 @@ from torch.fx.node import Node
 
 from .. import functional as U
 from .._internal_utils import generate__all__
-from ..formats import FPFormat
+from ..formats import FPFormat, format_to_tuple, tuple_to_format
 from .utils import patch_to_expand_modules, replace_node_with_function
 
 logger = logging.getLogger(__name__)
@@ -31,10 +31,10 @@ def _quantised_linear(
     fwd_format_tuple: Tuple[int, int],
     bwd_format_tuple: Tuple[int, int],
 ) -> Tensor:
-    fwd_format = FPFormat.from_tuple(fwd_format_tuple)
-    bwd_format = FPFormat.from_tuple(bwd_format_tuple)
-    input = fwd_format.quantise(input)
-    weight = fwd_format.quantise(weight)
+    fwd_format = tuple_to_format(fwd_format_tuple)
+    bwd_format = tuple_to_format(bwd_format_tuple)
+    input = fwd_format.quantise_fwd(input)
+    weight = fwd_format.quantise_fwd(weight)
     output = F.linear(input, weight, bias)
     return bwd_format.quantise_bwd(output)
 
@@ -47,9 +47,9 @@ def _quantised_u_linear(
     bwd_format_tuple: Tuple[int, int],
     constraint: Optional[str] = "gmean",
 ) -> Tensor:
-    fwd_format = FPFormat.from_tuple(fwd_format_tuple)
-    bwd_format = FPFormat.from_tuple(bwd_format_tuple)
-    input, weight = (fwd_format.quantise(t) for t in (input, weight))
+    fwd_format = tuple_to_format(fwd_format_tuple)
+    bwd_format = tuple_to_format(bwd_format_tuple)
+    input, weight = (fwd_format.quantise_fwd(t) for t in (input, weight))
     output = U.linear(input, weight, bias, constraint)
     return bwd_format.quantise_bwd(output)
 
@@ -62,9 +62,9 @@ def _quantised_scaled_dot_product_attention(
     bwd_format_tuple: Tuple[int, int],
     **kwargs: Any,
 ) -> Tensor:
-    fwd_format = FPFormat.from_tuple(fwd_format_tuple)
-    bwd_format = FPFormat.from_tuple(bwd_format_tuple)
-    query, key, value = (fwd_format.quantise(t) for t in (query, key, value))
+    fwd_format = tuple_to_format(fwd_format_tuple)
+    bwd_format = tuple_to_format(bwd_format_tuple)
+    query, key, value = (fwd_format.quantise_fwd(t) for t in (query, key, value))
     output = F.scaled_dot_product_attention(query, key, value, **kwargs)
     return bwd_format.quantise_bwd(output)
 
@@ -77,9 +77,9 @@ def _quantised_u_scaled_dot_product_attention(
     bwd_format_tuple: Tuple[int, int],
     **kwargs: Any,
 ) -> Tensor:
-    fwd_format = FPFormat.from_tuple(fwd_format_tuple)
-    bwd_format = FPFormat.from_tuple(bwd_format_tuple)
-    query, key, value = (fwd_format.quantise(t) for t in (query, key, value))
+    fwd_format = tuple_to_format(fwd_format_tuple)
+    bwd_format = tuple_to_format(bwd_format_tuple)
+    query, key, value = (fwd_format.quantise_fwd(t) for t in (query, key, value))
     output = U.scaled_dot_product_attention(query, key, value, **kwargs)
     return bwd_format.quantise_bwd(output)
 
@@ -104,7 +104,9 @@ def _replace_with_quantised(
     if len(node.args) == 2:  # pragma: no cover
         args.append(None)
     # Breaks when I pass in FPFormat objects, so convert to tuple and back
-    args = args[:3] + [fwd_format.to_tuple(), bwd_format.to_tuple()] + args[3:]
+    args = (
+        args[:3] + [format_to_tuple(fwd_format), format_to_tuple(bwd_format)] + args[3:]
+    )
 
     assert callable(node.target)
     quantised_fn = _replacement_map[node.target]
