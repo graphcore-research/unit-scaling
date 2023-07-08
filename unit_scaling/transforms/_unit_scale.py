@@ -20,14 +20,24 @@ T = TypeVar("T")
 logger = logging.getLogger(__name__)
 
 
-def _add_dependency_meta(n: Node) -> Set[Node]:
-    if "dependencies" in n.meta:
-        return n.meta["dependencies"]  # type: ignore[no-any-return]
-    deps = set(n.all_input_nodes)
-    for parent in n.all_input_nodes:
-        deps.update(_add_dependency_meta(parent))
-    n.meta["dependencies"] = deps
-    return deps
+def _add_dependency_meta(graph: Graph, recalculate: bool = False) -> None:
+    def recurse(n: Node) -> Set[Node]:
+        if "dependencies" in n.meta:
+            return n.meta["dependencies"]  # type: ignore[no-any-return]
+        deps = set(n.all_input_nodes)
+        for parent in n.all_input_nodes:
+            deps.update(recurse(parent))
+        n.meta["dependencies"] = deps
+        return deps
+
+    if recalculate:
+        for n in graph.nodes:
+            if "dependencies" in n.meta:
+                del n.meta["dependencies"]
+
+    for n in graph.nodes:
+        if n.op == "output":
+            recurse(n)
 
 
 def _is_add(n: Node) -> bool:
@@ -65,7 +75,6 @@ def _unit_scale_residual(
     with graph.inserting_after(split):
         new_skip = graph.call_function(_getitem, args=(split, 1))
     replace_node_with_function(graph, add, U.residual_add, args=(residual, new_skip))
-    graph.lint()
 
 
 def _unconstrain_node(node: Node) -> None:
@@ -102,9 +111,7 @@ def unit_scaling_backend(
                     replace_node_with_function(graph, node, target_fn)
 
         # Add metadata denoting the dependencies of every node in the graph
-        for node in graph.nodes:
-            if node.op == "output":
-                _add_dependency_meta(node)
+        _add_dependency_meta(graph)
 
         # Go through and mark nodes which represent residual-adds
         residual_layer_number = 1
@@ -130,27 +137,28 @@ def unit_scaling_backend(
                     logger.info("unit scaling function: %s", node)
                     args = (*node.args, None)  # None denotes unconstrained
                     replace_node_with_function(graph, node, U.add, args=args)
-        num_residuals = residual_layer_number - 1
 
         # Replace nodes marked as residual-adds with unit scaled equivalent
-        final_residual_reached = num_residuals == 0
         for node in graph.nodes:
             residual_add = node.meta.get("residual_add", None)
             if residual_add is not None:
                 logger.info("unit scaling function: %s (residual-add)", node)
                 _unit_scale_residual(graph, node, **residual_add)
-                if residual_add["layer_number"] == num_residuals:
-                    final_residual_reached = True
-            elif final_residual_reached:
-                node.meta["after_final_residual"] = True
+
+        _add_dependency_meta(graph, recalculate=True)
+        for node in graph.nodes:
+            if node.target == U.residual_add:
+                node.meta["has_residual_successor"] = True
+                dependencies = node.meta.get("dependencies", [])
+                for d in dependencies:
+                    d.meta["has_residual_successor"] = True
 
         for node in graph.nodes:
-            if "after_final_residual" in node.meta:
+            if "has_residual_successor" not in node.meta:
                 _unconstrain_node(node)
 
         graph.lint()
-        new_gm = GraphModule(gm, graph)
-        return new_gm  # type: ignore[no-any-return]
+        return GraphModule(gm, graph)  # type: ignore[no-any-return]
 
     return inner_backend
 

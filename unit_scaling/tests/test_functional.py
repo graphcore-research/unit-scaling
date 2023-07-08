@@ -2,7 +2,7 @@
 
 import pytest
 import torch.nn.functional as F
-from torch import Tensor, randint, randn, zeros
+from torch import Tensor, randint, randn, tensor, zeros
 
 from ..functional import (
     add,
@@ -284,6 +284,15 @@ def test_add_geo_mean() -> None:
 
 
 def test_add_broadcast() -> None:
+    left = tensor(5.0, requires_grad=True)
+    right = randn(2**8, 2**10, requires_grad=True)
+    output = add(left, right, constraint=None)
+    unit_backward(output)
+
+    assert left.grad is not None
+    assert 0.0001 < left.grad.abs() < 5  # Reasonable bounds based on folded normal dist
+    assert_unit_scaled(output, right.grad)
+
     left = randn(2**10, requires_grad=True)
     right = randn(2**8, 2**10, requires_grad=True)
     output = add(left, right, constraint=None)

@@ -211,17 +211,15 @@ def add(
     out: Optional[Tensor] = None,
 ) -> Tensor:
     # Adding a constant shouldn't change scale
-    if (
-        isinstance(input, (int, float))
-        or isinstance(other, (int, float))
-        or input.numel() == 1
-        or other.numel() == 1
-    ):
+    if isinstance(input, (int, float)) or isinstance(other, (int, float)):
         return torch.add(input, other, out=out)
     input_broadcast_size, other_broadcast_size = _get_broadcast_sizes(input, other)
     input_grad_scale = input_broadcast_size**-0.5
     other_grad_scale = other_broadcast_size**-0.5
-    output_scale = 2**-0.5
+    scalar_input = input.numel() == 1 or other.numel() == 1
+
+    # If the input is a scalar the output std doesn't change, and hence we don't scale
+    output_scale = 2**-0.5 if not scalar_input else 1.0
 
     output_scale, input_grad_scale, other_grad_scale = apply_constraint(
         constraint, output_scale, input_grad_scale, other_grad_scale
