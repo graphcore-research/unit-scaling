@@ -7,8 +7,10 @@ scaling."""
 # Removing the `--no-implicit-reexport` option ought to fix this, but doesn't appear to.
 
 from ._simulate_format import simulate_format, simulate_fp8
+from ._unit_scale import unit_scale
 
 __all__ = [
     "simulate_format",
     "simulate_fp8",
+    "unit_scale",
 ]

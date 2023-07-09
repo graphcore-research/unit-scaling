@@ -24,11 +24,11 @@ class Format:
         """The number of bits used by the format."""
         return 1 + self.exponent_bits + self.mantissa_bits
 
-    def count_bits(self, shape: Shape) -> int:
+    def count_bits(self, shape: Shape) -> int:  # pragma: no cover
         """The number of bits used by a tensor of shape `shape` in the format."""
         return self.bits * math.prod(shape)
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # pragma: no cover
         return f"E{self.exponent_bits}M{self.mantissa_bits}"
 
 

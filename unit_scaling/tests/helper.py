@@ -21,11 +21,11 @@ def unit_backward(tensor: Tensor) -> Tensor:
     return gradient
 
 
-def assert_unit_scaled(*tensors: Optional[Tensor]) -> None:
+def assert_unit_scaled(*tensors: Optional[Tensor], abs: float = 0.1) -> None:
     for t in tensors:
         assert t is not None
         t = t.detach()
-        approx_1 = pytest.approx(1, abs=0.1)
+        approx_1 = pytest.approx(1, abs=abs)
         assert t.std() == approx_1, f"std={t.std():.3f}, shape={list(t.shape)}"
 
 

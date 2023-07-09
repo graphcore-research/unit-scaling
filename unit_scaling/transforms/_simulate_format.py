@@ -1,9 +1,7 @@
 # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 import logging
-from copy import deepcopy
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar
 
-import torch._dynamo
 import torch.nn.functional as F
 from torch import Tensor, nn
 from torch.fx.graph import Graph
@@ -13,13 +11,9 @@ from torch.fx.node import Node
 from .. import functional as U
 from .._internal_utils import generate__all__
 from ..formats import FPFormat, format_to_tuple, tuple_to_format
-from .utils import patch_to_expand_modules, replace_node_with_function
+from .utils import Backend, apply_transform, replace_node_with_function
 
 logger = logging.getLogger(__name__)
-
-Backend = Callable[[GraphModule, List[Tensor]], Callable[..., Any]]
-
-unit_scaled_functions = [getattr(U, f) for f in U.__all__]
 
 
 # These functions currently have to be defined explicitly to make PyTorch happy
@@ -110,26 +104,28 @@ def _replace_with_quantised(
 
     assert callable(node.target)
     quantised_fn = _replacement_map[node.target]
-    logger.info("Quantising function: %s", node)
+    logger.info("quantising function: %s", node)
     replace_node_with_function(graph, node, quantised_fn, args=tuple(args))
 
 
 def _quantisation_backend(fwd_format: FPFormat, bwd_format: FPFormat) -> Backend:
     def backend_fn(gm: GraphModule, example_inputs: List[Tensor]) -> GraphModule:
-        logger.info("Running quantisation backend")
+        logger.info("running quantisation backend")
         graph = gm.graph
         for node in graph.nodes:
             if node.op == "call_function" and node.target in _replacement_map:
                 _replace_with_quantised(graph, node, fwd_format, bwd_format)
+        graph.lint()
         return GraphModule(gm, graph)  # type: ignore[no-any-return]
 
     return backend_fn
 
 
-def simulate_format(
-    module: nn.Module, fwd_format: FPFormat, bwd_format: FPFormat
-) -> nn.Module:
-    """[Experimental] Given a module, uses torch.dynamo to return a new module which
+M = TypeVar("M", bound=nn.Module)
+
+
+def simulate_format(module: M, fwd_format: FPFormat, bwd_format: FPFormat) -> M:
+    """**[Experimental]** Given a module, uses TorchDynamo to return a new module which
     simulates the effect of using the supplied formats for matmuls.
 
     Specifically, before each :func:`torch.nn.functional.linear` and
@@ -140,7 +136,7 @@ def simulate_format(
 
     The same is true for the backward pass, where an op is inserted to quantise to the
     `bwd_format`. Models which use modules that contain these functions internally
-    (such as :class:`torch.Linear`) will be inspected by torch.dynamo and have the
+    (such as :class:`torch.nn.Linear`) will be inspected by TorchDynamo and have the
     correct quantisation ops inserted.
 
     If the equivalent unit-scaled functions from :mod:`unit_scaling.functional` are
@@ -160,19 +156,13 @@ def simulate_format(
     Returns:
         nn.Module: a new module which when used, will run using the simulated formats.
     """
-    module = deepcopy(module)
-    torch._dynamo.reset()  # type: ignore[no-untyped-call]
-    quantised_module = torch._dynamo.optimize(  # type: ignore[no-untyped-call]
-        backend=_quantisation_backend(fwd_format, bwd_format)
-    )(module)
-    quantised_module.forward = patch_to_expand_modules(
-        quantised_module.forward, non_recurse_functions=unit_scaled_functions
+    return apply_transform(  # type: ignore[no-any-return]
+        module, _quantisation_backend(fwd_format, bwd_format)
     )
-    return quantised_module  # type: ignore[no-any-return]
 
 
-def simulate_fp8(module: nn.Module) -> nn.Module:
-    """[Experimental] Given a module, uses torch.dynamo to return a new module which
+def simulate_fp8(module: M) -> M:
+    """**[Experimental]** Given a module, uses TorchDynamo to return a new module which
     simulates the effect of running matmuls in FP8. As is standard in the literature
     (Noune et al., 2022; Micikevicius et al., 2022), we use the FP8 E4 format in the
     forwards pass, and FP8 E5 in the backward pass.
@@ -185,7 +175,7 @@ def simulate_fp8(module: nn.Module) -> nn.Module:
 
     The same is true for the backward pass.
     Models which use modules that contain these functions internally
-    (such as :class:`torch.Linear`) will be inspected by torch.dynamo and have the
+    (such as :class:`torch.nn.Linear`) will be inspected by TorchDynamo and have the
     correct quantisation ops inserted.
 
     If the equivalent unit-scaled functions from :mod:`unit_scaling.functional` are
