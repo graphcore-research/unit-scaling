@@ -17,7 +17,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4.7. unit_scaling.transforms.utils" href="unit_scaling.transforms.utils.html" />
+    <link rel="next" title="4.6.3. unit_scaling.transforms.unit_scale" href="unit_scaling.transforms.unit_scale.html" />
     <link rel="prev" title="4.6.1. unit_scaling.transforms.simulate_format" href="unit_scaling.transforms.simulate_format.html" /> 
 </head>
 
@@ -57,6 +57,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#unit_scaling.transforms.simulate_fp8"><code class="docutils literal notranslate"><span class="pre">simulate_fp8()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.unit_scale.html">4.6.3. unit_scaling.transforms.unit_scale</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">4.7. unit_scaling.transforms.utils</a></li>
@@ -95,8 +96,8 @@
 <h1><span class="section-number">4.6.2. </span>unit_scaling.transforms.simulate_fp8<a class="headerlink" href="#unit-scaling-transforms-simulate-fp8" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="unit_scaling.transforms.simulate_fp8">
-<span class="sig-prename descclassname"><span class="pre">unit_scaling.transforms.</span></span><span class="sig-name descname"><span class="pre">simulate_fp8</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.0)"><span class="pre">Module</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.0)"><span class="pre">Module</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/transforms/_simulate_format.html#simulate_fp8"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.transforms.simulate_fp8" title="Permalink to this definition"></a></dt>
-<dd><p>[Experimental] Given a module, uses torch.dynamo to return a new module which
+<span class="sig-prename descclassname"><span class="pre">unit_scaling.transforms.</span></span><span class="sig-name descname"><span class="pre">simulate_fp8</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">M</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">M</span></span></span><a class="reference internal" href="../_modules/unit_scaling/transforms/_simulate_format.html#simulate_fp8"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.transforms.simulate_fp8" title="Permalink to this definition"></a></dt>
+<dd><p><strong>[Experimental]</strong> Given a module, uses TorchDynamo to return a new module which
 simulates the effect of running matmuls in FP8. As is standard in the literature
 (Noune et al., 2022; Micikevicius et al., 2022), we use the FP8 E4 format in the
 forwards pass, and FP8 E5 in the backward pass.</p>
@@ -107,7 +108,7 @@ reduces the range of values to that of the format, and (stochastically) rounds
 values to only those representable by the format.</p>
 <p>The same is true for the backward pass.
 Models which use modules that contain these functions internally
-(such as <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Linear</span></code>) will be inspected by torch.dynamo and have the
+(such as <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Linear</span></code></a>) will be inspected by TorchDynamo and have the
 correct quantisation ops inserted.</p>
 <p>If the equivalent unit-scaled functions from <a class="reference internal" href="unit_scaling.functional.html#module-unit_scaling.functional" title="unit_scaling.functional"><code class="xref py py-mod docutils literal notranslate"><span class="pre">unit_scaling.functional</span></code></a> are
 used in the module, these too will be quantised.</p>
@@ -134,7 +135,7 @@ in FP8.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="unit_scaling.transforms.simulate_format.html" class="btn btn-neutral float-left" title="4.6.1. unit_scaling.transforms.simulate_format" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.transforms.utils.html" class="btn btn-neutral float-right" title="4.7. unit_scaling.transforms.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.transforms.unit_scale.html" class="btn btn-neutral float-right" title="4.6.3. unit_scaling.transforms.unit_scale" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

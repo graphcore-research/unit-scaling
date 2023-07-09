@@ -54,6 +54,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">4.6. unit_scaling.transforms</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_format.html">4.6.1. unit_scaling.transforms.simulate_format</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html">4.6.2. unit_scaling.transforms.simulate_fp8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.unit_scale.html">4.6.3. unit_scaling.transforms.unit_scale</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">4.7. unit_scaling.transforms.utils</a></li>
@@ -95,10 +96,13 @@ scaling.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.transforms.simulate_format.html#unit_scaling.transforms.simulate_format" title="unit_scaling.transforms.simulate_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate_format</span></code></a>(module, fwd_format, bwd_format)</p></td>
-<td><p>[Experimental] Given a module, uses torch.dynamo to return a new module which simulates the effect of using the supplied formats for matmuls.</p></td>
+<td><p><strong>[Experimental]</strong> Given a module, uses TorchDynamo to return a new module which simulates the effect of using the supplied formats for matmuls.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html#unit_scaling.transforms.simulate_fp8" title="unit_scaling.transforms.simulate_fp8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate_fp8</span></code></a>(module)</p></td>
-<td><p>[Experimental] Given a module, uses torch.dynamo to return a new module which simulates the effect of running matmuls in FP8.</p></td>
+<td><p><strong>[Experimental]</strong> Given a module, uses TorchDynamo to return a new module which simulates the effect of running matmuls in FP8.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.transforms.unit_scale.html#unit_scaling.transforms.unit_scale" title="unit_scaling.transforms.unit_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scale</span></code></a>(module[, replace])</p></td>
+<td><p><strong>[Experimental]</strong> Returns a unit-scaled version of the input model.</p></td>
 </tr>
 </tbody>
 </table>

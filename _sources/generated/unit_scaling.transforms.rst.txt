@@ -23,6 +23,7 @@ unit\_scaling.transforms
    
       simulate_format
       simulate_fp8
+      unit_scale
    
 
    

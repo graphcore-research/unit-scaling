@@ -76,8 +76,10 @@
 
 <span class="sd">&quot;&quot;&quot;Unit-scaled versions of common `torch.nn.functional` functions.&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">prod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
@@ -274,16 +276,22 @@
     <span class="n">add_args</span><span class="o">=</span><span class="p">[</span><span class="n">ternary_constraint_docstring</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
-    <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
-    <span class="n">other</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
     <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;gmean&quot;</span><span class="p">,</span>
     <span class="n">alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="c1"># Adding a constant shouldn&#39;t change scale</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
     <span class="n">input_broadcast_size</span><span class="p">,</span> <span class="n">other_broadcast_size</span> <span class="o">=</span> <span class="n">_get_broadcast_sizes</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
     <span class="n">input_grad_scale</span> <span class="o">=</span> <span class="n">input_broadcast_size</span><span class="o">**-</span><span class="mf">0.5</span>
     <span class="n">other_grad_scale</span> <span class="o">=</span> <span class="n">other_broadcast_size</span><span class="o">**-</span><span class="mf">0.5</span>
-    <span class="n">output_scale</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**-</span><span class="mf">0.5</span>
+    <span class="n">scalar_input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span>
+
+    <span class="c1"># If the input is a scalar the output std doesn&#39;t change, and hence we don&#39;t scale</span>
+    <span class="n">output_scale</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**-</span><span class="mf">0.5</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="mf">1.0</span>
 
     <span class="n">output_scale</span><span class="p">,</span> <span class="n">input_grad_scale</span><span class="p">,</span> <span class="n">other_grad_scale</span> <span class="o">=</span> <span class="n">apply_constraint</span><span class="p">(</span>
         <span class="n">constraint</span><span class="p">,</span> <span class="n">output_scale</span><span class="p">,</span> <span class="n">input_grad_scale</span><span class="p">,</span> <span class="n">other_grad_scale</span>
@@ -318,7 +326,7 @@
     <span class="k">return</span> <span class="n">residual</span><span class="p">,</span> <span class="n">skip</span></div>
 
 
-<div class="viewcode-block" id="residual_add"><a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add">[docs]</a><span class="k">def</span> <span class="nf">residual_add</span><span class="p">(</span><span class="n">residual</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+<div class="viewcode-block" id="residual_add"><a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add">[docs]</a><span class="k">def</span> <span class="nf">residual_add</span><span class="p">(</span><span class="n">residual</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds a residual connection and skip connection together, with a relative</span>
 <span class="sd">    weighting `tau` applied to the residual branch. Should be used in conjunction with</span>
 <span class="sd">    `residual_split`.</span>
@@ -444,7 +452,23 @@
     <span class="k">return</span> <span class="n">loss</span></div>
 
 
+<span class="k">def</span> <span class="nf">_gen_torch_function_map</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">FunctionType</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">]:</span>
+    <span class="n">torch_objects</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">torch</span><span class="p">)}</span>
+    <span class="n">torch_objects</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">torch_objects</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">F</span><span class="p">)}}</span>
+    <span class="n">current_module</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span>
+    <span class="n">function_map</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">unit_fn_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">current_module</span><span class="p">):</span>
+        <span class="n">unit_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">current_module</span><span class="p">,</span> <span class="n">unit_fn_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">unit_fn</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">)</span> <span class="ow">and</span> <span class="n">unit_fn_name</span> <span class="ow">in</span> <span class="n">torch_objects</span><span class="p">:</span>
+            <span class="n">torch_fn</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">FunctionType</span><span class="p">,</span> <span class="n">torch_objects</span><span class="p">[</span><span class="n">unit_fn_name</span><span class="p">])</span>
+            <span class="n">function_map</span><span class="p">[</span><span class="n">torch_fn</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit_fn</span>
+    <span class="k">return</span> <span class="n">function_map</span>
+
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="n">generate__all__</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="n">torch_map</span> <span class="o">=</span> <span class="n">_gen_torch_function_map</span><span class="p">()</span>
 </pre></div>
 
            </div>

@@ -74,18 +74,35 @@
 
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Iterable</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Set</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">no_type_check</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">patch</span>
 
 <span class="kn">import</span> <span class="nn">torch._dynamo</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">torch.fx.graph</span> <span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span> <span class="nn">torch.fx.graph_module</span> <span class="kn">import</span> <span class="n">GraphModule</span>
 <span class="kn">from</span> <span class="nn">torch.fx.node</span> <span class="kn">import</span> <span class="n">Node</span>
 
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">U</span>
 <span class="kn">from</span> <span class="nn">.._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+<span class="n">Backend</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">GraphModule</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]],</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+
+<span class="n">_unit_scaled_functions</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">U</span><span class="o">.</span><span class="n">__all__</span><span class="p">]</span>
 
 
 <span class="k">def</span> <span class="nf">_get_patched_allowed_function_ids</span><span class="p">(</span>
@@ -102,7 +119,12 @@
     <span class="k">return</span> <span class="n">allowed_function_ids</span>  <span class="c1"># type: ignore[no-any-return]</span>
 
 
-<span class="k">def</span> <span class="nf">_patched_call_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># type: ignore[no-untyped-def]</span>
+<span class="k">def</span> <span class="nf">_patched_call_function</span><span class="p">(</span>  <span class="c1"># type: ignore[no-untyped-def]</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">args</span><span class="p">,</span>
+    <span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>  <span class="c1"># pragma: no cover</span>
     <span class="k">if</span> <span class="n">tx</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">is_root_tracer</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">_dynamo</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">NNModuleVariable</span>
     <span class="p">):</span>
@@ -137,7 +159,7 @@
 <div class="viewcode-block" id="patch_to_expand_modules"><a class="viewcode-back" href="../../../generated/unit_scaling.transforms.utils.patch_to_expand_modules.html#unit_scaling.transforms.utils.patch_to_expand_modules">[docs]</a><span class="k">def</span> <span class="nf">patch_to_expand_modules</span><span class="p">(</span>
     <span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">non_recurse_functions</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">()</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;By default torch.dynamo doesn&#39;t recurse into :mod:`torch.nn` modules or</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;By default TorchDynamo doesn&#39;t recurse into :mod:`torch.nn` modules or</span>
 <span class="sd">    :mod:`torch.nn.functional` functions when capturing the FX graph.</span>
 <span class="sd">    Any function which is wrapped in</span>
 <span class="sd">    :func:`torch._dynamo.optimise` (or :func:`torch.compile`) and is then passed to</span>
@@ -199,6 +221,86 @@
         <span class="n">new_node</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">call_function</span><span class="p">(</span><span class="n">target_fn</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">type_expr</span><span class="p">)</span>
         <span class="n">source</span><span class="o">.</span><span class="n">replace_all_uses_with</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
         <span class="n">graph</span><span class="o">.</span><span class="n">erase_node</span><span class="p">(</span><span class="n">source</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_compose_backends</span><span class="p">(</span><span class="n">backends</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Backend</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Backend</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">composite_backend</span><span class="p">(</span>
+        <span class="n">gm</span><span class="p">:</span> <span class="n">GraphModule</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">backends</span><span class="p">:</span>
+            <span class="n">gm</span> <span class="o">=</span> <span class="n">b</span><span class="p">(</span><span class="n">gm</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">)</span>  <span class="c1"># type: ignore[assignment]</span>
+        <span class="k">return</span> <span class="n">gm</span>
+
+    <span class="k">return</span> <span class="n">composite_backend</span>
+
+
+<span class="n">M</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="apply_transform"><a class="viewcode-back" href="../../../generated/unit_scaling.transforms.utils.apply_transform.html#unit_scaling.transforms.utils.apply_transform">[docs]</a><span class="nd">@no_type_check</span>
+<span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span>
+    <span class="n">module</span><span class="p">:</span> <span class="n">M</span><span class="p">,</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="n">Backend</span><span class="p">,</span>
+    <span class="n">non_recurse_functions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies a graph transformation to a module.</span>
+
+<span class="sd">    The user-supplied `backend` represents a transformation of a</span>
+<span class="sd">    :class:`torch.fx.graph_module.GraphModule`. `apply_transform()` uses</span>
+<span class="sd">    :func:`torch._dynamo.optimize` to apply this transformation to the module,</span>
+<span class="sd">    returning a new transformed module.</span>
+
+<span class="sd">    Note that the current version of TorchDynamo (or :mod:`torch.compile`, which is a</span>
+<span class="sd">    wrapper around TorchDynamo) doesn&#39;t support nested transforms, so we implement our</span>
+<span class="sd">    own system here. This makes it easy to nest transforms:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        module = apply_transform(apply_transform(module, backend_1), backend_2)</span>
+
+<span class="sd">    However, it should be noted these transforms are not interoperable with the standard</span>
+<span class="sd">    :mod:`torch.compile` interface.</span>
+
+<span class="sd">    This nesting system is implemented by moving the call to</span>
+<span class="sd">    :func:`torch._dynamo.optimize` within the `forward()` method of the module</span>
+<span class="sd">    (though it is only executed on the first call to the module, or if a new transform</span>
+<span class="sd">    is applied, the optimised call being cached thereafter). This differs from the</span>
+<span class="sd">    standard approach used with :func:`torch._dynamo.optimize`, but enables this</span>
+<span class="sd">    convenient nesting functionality.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        _module (nn.Module): the module to be transformed.</span>
+<span class="sd">        backend (Backend): the graph transformation to be applied.</span>
+<span class="sd">        non_recurse_functions (Iterable[Callable[..., Any]], optional): functions which</span>
+<span class="sd">            the user does not wish to be recursed into. Defaults to list().</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nn.Module: the transformed module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;backends&quot;</span><span class="p">):</span>
+        <span class="n">module</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">module</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;non_recurse_functions&quot;</span><span class="p">):</span>
+        <span class="n">module</span><span class="o">.</span><span class="n">non_recurse_functions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_unit_scaled_functions</span><span class="p">)</span>
+    <span class="n">module</span><span class="o">.</span><span class="n">non_recurse_functions</span> <span class="o">+=</span> <span class="n">non_recurse_functions</span>
+    <span class="n">backend</span> <span class="o">=</span> <span class="n">_compose_backends</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">backends</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">new_forward</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">module</span><span class="o">.</span><span class="n">rerun_transform</span><span class="p">:</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">_dynamo</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="n">dynamo_module</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">_dynamo</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">backend</span><span class="p">)(</span><span class="n">module</span><span class="p">)</span>
+            <span class="n">module</span><span class="o">.</span><span class="n">dynamo_forward</span> <span class="o">=</span> <span class="n">patch_to_expand_modules</span><span class="p">(</span>
+                <span class="n">dynamo_module</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="n">module</span><span class="o">.</span><span class="n">non_recurse_functions</span>
+            <span class="p">)</span>
+            <span class="n">module</span><span class="o">.</span><span class="n">rerun_transform</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="n">module</span><span class="o">.</span><span class="n">base_forward</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">module</span><span class="o">.</span><span class="n">dynamo_forward</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">module</span><span class="o">.</span><span class="n">rerun_transform</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">module</span><span class="o">.</span><span class="n">base_forward</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;base_forward&quot;</span><span class="p">,</span> <span class="n">module</span><span class="o">.</span><span class="n">forward</span><span class="p">)</span>
+    <span class="n">module</span><span class="o">.</span><span class="n">forward</span> <span class="o">=</span> <span class="n">new_forward</span>
+    <span class="k">return</span> <span class="n">module</span></div>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="n">generate__all__</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>

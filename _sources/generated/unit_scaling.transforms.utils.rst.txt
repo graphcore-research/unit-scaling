@@ -21,6 +21,7 @@ unit\_scaling.transforms.utils
    .. autosummary::
       :toctree:
    
+      apply_transform
       patch_to_expand_modules
       replace_node_with_function
    
