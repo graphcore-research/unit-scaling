@@ -1,6 +1,5 @@
 # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 
-import math
 from dataclasses import dataclass
 from typing import Tuple, cast
 
@@ -9,35 +8,38 @@ from torch import Tensor
 
 from ._internal_utils import generate__all__
 
+try:  # pragma: no cover
+    import poptorch
+    import poptorch_experimental_addons as pea
+
+    _poptorch_available = True
+except ImportError:  # pragma: no cover
+    _poptorch_available = False
+
 Shape = Tuple[int, ...]
 
 
 @dataclass
-class Format:
-    """Generic representation of a number format."""
+class FPFormat:
+    """Generic representation of a floating-point number format."""
 
     exponent_bits: int
     mantissa_bits: int
+    rounding: str = "stochastic"  # "stochastic|nearest"
+
+    def __post_init__(self) -> None:
+        assert self.exponent_bits >= 2, "FPFormat requires at least 2 exponent bits"
 
     @property
     def bits(self) -> int:
         """The number of bits used by the format."""
         return 1 + self.exponent_bits + self.mantissa_bits
 
-    def count_bits(self, shape: Shape) -> int:  # pragma: no cover
-        """The number of bits used by a tensor of shape `shape` in the format."""
-        return self.bits * math.prod(shape)
-
     def __str__(self) -> str:  # pragma: no cover
-        return f"E{self.exponent_bits}M{self.mantissa_bits}"
-
-
-@dataclass
-class FPFormat(Format):
-    """Generic representation of a floating-point number format."""
-
-    def __post_init__(self) -> None:
-        assert self.exponent_bits >= 2, "FPFormat requires at least 2 exponent bits"
+        return (
+            f"E{self.exponent_bits}M{self.mantissa_bits}-"
+            + dict(stochastic="SR", nearest="RN")[self.rounding]
+        )
 
     @property
     def max_absolute_value(self) -> float:
@@ -58,21 +60,44 @@ class FPFormat(Format):
 
     def quantise(self, x: Tensor) -> Tensor:
         """Non-differentiably quantise the given tensor in this format."""
+        if _poptorch_available and poptorch.isRunningOnIpu():
+            return pea.quantise_fpx(  # type: ignore[no-any-return]
+                x,
+                exponent_bits=self.exponent_bits,
+                mantissa_bits=self.mantissa_bits,
+                rounding=self.rounding,
+            )
+
         absmax = self.max_absolute_value
         downscale = 2.0 ** (127 - 2 ** (self.exponent_bits - 1))
         mask = torch.tensor(2 ** (23 - self.mantissa_bits) - 1, device=x.device)
-        sr_mask = torch.randint(  # type: ignore[call-overload]
-            0, mask + 1, x.shape, dtype=torch.int32, device=x.device
-        )
+        if self.rounding == "stochastic":
+            offset = torch.randint(  # type: ignore[call-overload]
+                0, mask + 1, x.shape, dtype=torch.int32, device=x.device
+            )
+        elif self.rounding == "nearest":
+            offset = mask // 2
+        else:
+            raise ValueError(
+                f'Unexpected FPFormat(rounding="{self.rounding}"),'
+                ' expected "stochastic" or "nearest"'
+            )
         q = x.to(torch.float32)
         q = torch.clip(x, -absmax, absmax)
         q /= downscale
-        q = ((q.view(torch.int32) + sr_mask) & ~mask).view(torch.float32)
+        q = ((q.view(torch.int32) + offset) & ~mask).view(torch.float32)
         q *= downscale
         return q.to(x.dtype)
 
     def quantise_fwd(self, x: Tensor) -> Tensor:
         """Quantise the given tensor in the forward pass only."""
+        if _poptorch_available and poptorch.isRunningOnIpu():
+            return pea.quantise_fpx_ste(  # type: ignore[no-any-return]
+                x,
+                exponent_bits=self.exponent_bits,
+                mantissa_bits=self.mantissa_bits,
+                rounding=self.rounding,
+            )
 
         class QuantiseForward(torch.autograd.Function):
             @staticmethod
@@ -91,6 +116,13 @@ class FPFormat(Format):
 
     def quantise_bwd(self, x: Tensor) -> Tensor:
         """Quantise the given tensor in the backward pass only."""
+        if _poptorch_available and poptorch.isRunningOnIpu():
+            return pea.quantise_fpx_grad(  # type: ignore[no-any-return]
+                x,
+                exponent_bits=self.exponent_bits,
+                mantissa_bits=self.mantissa_bits,
+                rounding=self.rounding,
+            )
 
         class QuantiseBackward(torch.autograd.Function):
             @staticmethod

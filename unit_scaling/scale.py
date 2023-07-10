@@ -16,7 +16,7 @@ try:  # pragma: no cover
     import poptorch_experimental_addons as pea
 
     _poptorch_available = True
-except (ImportError, ModuleNotFoundError):  # pragma: no cover
+except ImportError:  # pragma: no cover
     _poptorch_available = False
 
 

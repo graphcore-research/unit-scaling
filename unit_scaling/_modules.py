@@ -22,17 +22,23 @@ from .docs import (
 @inherit_docstring(
     short_description="Applies a **unit-scaled** Gaussian Error Linear Units function:",
     add_args=[binary_constraint_docstring],
+    unsupported_args=["approximate"],
 )
 class GELU(nn.GELU):
     def __init__(
         self,
+        approximate: str = "none",
         constraint: Optional[str] = "gmean",
     ) -> None:
-        super().__init__()
+        super().__init__(approximate=approximate)
         self.constraint = constraint
 
     def forward(self, input: Tensor) -> Tensor:
-        return U.gelu(input, self.constraint)  # type: ignore
+        return U.gelu(  # type: ignore
+            input,
+            approximate=self.approximate,
+            constraint=self.constraint,
+        )
 
 
 @inherit_docstring(
