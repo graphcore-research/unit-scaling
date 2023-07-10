@@ -51,14 +51,3 @@ unit\_scaling
 
 
 
-.. rubric:: Modules
-
-.. autosummary::
-   :toctree:
-   :template: custom-module-template.rst
-   :recursive:
-
-   
-      unit_scaling.transforms
-   
-
