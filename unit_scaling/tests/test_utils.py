@@ -30,7 +30,7 @@ def forward(self, input : Tensor) -> Tensor:
     linear_1_weight = self.linear_1.weight;  (-> 1.0, <- 0.716)
     linear_1_bias = self.linear_1.bias;  (-> 0.0, <- 0.714)
     linear = U.linear(input_1, linear_1_weight, linear_1_bias, 'gmean');  (-> 0.707, <- 0.717)
-    gelu = U.gelu(linear, 'gmean');  (-> 0.641, <- 0.708)
+    gelu = U.gelu(linear, approximate = 'none', constraint = 'gmean');  (-> 0.641, <- 0.708)
     linear_2_weight = self.linear_2.weight;  (-> 1.0, <- 0.691)
     linear_2_bias = self.linear_2.bias;  (-> 0.0, <- 0.998)
     linear_1 = U.linear(gelu, linear_2_weight, linear_2_bias, 'gmean');  (-> 0.973, <- 1.0)
