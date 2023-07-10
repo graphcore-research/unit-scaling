@@ -81,6 +81,7 @@ def _unconstrain_node(node: Node) -> None:
     if (
         node.op == "call_function"
         and callable(node.target)
+        and not isinstance(node.target, BuiltinFunctionType)
         and "constraint" in signature(node.target).parameters
     ):
         logger.info("unconstraining node: %s", node)
