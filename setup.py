@@ -18,6 +18,6 @@ except ImportError:
 setuptools.setup(
     name="unit-scaling",
     description="A library for unit scaling in PyTorch.",
-    packages=["unit_scaling"],
+    packages=["unit_scaling", "unit_scaling.transforms"],
     install_requires=requirements,
 )
