@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.8.3. unit_scaling.utils.ScaleTracker &mdash; unit-scaling  documentation</title>
+  <title>4.7.3. unit_scaling.utils.ScaleTracker &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,8 +17,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4.8.4. unit_scaling.utils.ScaleTrackingInterpreter" href="unit_scaling.utils.ScaleTrackingInterpreter.html" />
-    <link rel="prev" title="4.8.2. unit_scaling.utils.ScalePair" href="unit_scaling.utils.ScalePair.html" /> 
+    <link rel="next" title="4.7.4. unit_scaling.utils.ScaleTrackingInterpreter" href="unit_scaling.utils.ScaleTrackingInterpreter.html" />
+    <link rel="prev" title="4.7.2. unit_scaling.utils.ScalePair" href="unit_scaling.utils.ScalePair.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,16 +51,16 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">4.3. unit_scaling.formats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">4.4. unit_scaling.functional</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.5. unit_scaling.scale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">4.6. unit_scaling.transforms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">4.7. unit_scaling.transforms.utils</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.utils.html">4.8. unit_scaling.utils</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.analyse_module.html">4.8.1. unit_scaling.utils.analyse_module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScalePair.html">4.8.2. unit_scaling.utils.ScalePair</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">4.8.3. unit_scaling.utils.ScaleTracker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">4.1.12. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">4.6. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.utils.html">4.7. unit_scaling.utils</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.analyse_module.html">4.7.1. unit_scaling.utils.analyse_module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScalePair.html">4.7.2. unit_scaling.utils.ScalePair</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.7.3. unit_scaling.utils.ScaleTracker</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#unit_scaling.utils.ScaleTracker"><code class="docutils literal notranslate"><span class="pre">ScaleTracker</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScaleTrackingInterpreter.html">4.8.4. unit_scaling.utils.ScaleTrackingInterpreter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScaleTrackingInterpreter.html">4.7.4. unit_scaling.utils.ScaleTrackingInterpreter</a></li>
 </ul>
 </li>
 </ul>
@@ -82,8 +82,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
-          <li class="breadcrumb-item"><a href="unit_scaling.utils.html"><span class="section-number">4.8. </span>unit_scaling.utils</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4.8.3. </span>unit_scaling.utils.ScaleTracker</li>
+          <li class="breadcrumb-item"><a href="unit_scaling.utils.html"><span class="section-number">4.7. </span>unit_scaling.utils</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.7.3. </span>unit_scaling.utils.ScaleTracker</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/generated/unit_scaling.utils.ScaleTracker.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -94,7 +94,7 @@
            <div itemprop="articleBody">
              
   <section id="unit-scaling-utils-scaletracker">
-<h1><span class="section-number">4.8.3. </span>unit_scaling.utils.ScaleTracker<a class="headerlink" href="#unit-scaling-utils-scaletracker" title="Permalink to this heading"></a></h1>
+<h1><span class="section-number">4.7.3. </span>unit_scaling.utils.ScaleTracker<a class="headerlink" href="#unit-scaling-utils-scaletracker" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTracker">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.utils.</span></span><span class="sig-name descname"><span class="pre">ScaleTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/utils.html#ScaleTracker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.utils.ScaleTracker" title="Permalink to this definition"></a></dt>
@@ -444,8 +444,8 @@ output has the vmapped dimension and what index it is in.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.utils.ScalePair.html" class="btn btn-neutral float-left" title="4.8.2. unit_scaling.utils.ScalePair" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.utils.ScaleTrackingInterpreter.html" class="btn btn-neutral float-right" title="4.8.4. unit_scaling.utils.ScaleTrackingInterpreter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.utils.ScalePair.html" class="btn btn-neutral float-left" title="4.7.2. unit_scaling.utils.ScalePair" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.utils.ScaleTrackingInterpreter.html" class="btn btn-neutral float-right" title="4.7.4. unit_scaling.utils.ScaleTrackingInterpreter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
