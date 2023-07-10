@@ -34,7 +34,6 @@ unit\_scaling.formats
       :template: custom-class-template.rst
    
       FPFormat
-      Format
    
    
 

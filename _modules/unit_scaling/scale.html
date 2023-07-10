@@ -88,7 +88,7 @@
     <span class="kn">import</span> <span class="nn">poptorch_experimental_addons</span> <span class="k">as</span> <span class="nn">pea</span>
 
     <span class="n">_poptorch_available</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">ModuleNotFoundError</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="n">_poptorch_available</span> <span class="o">=</span> <span class="kc">False</span>
 
 

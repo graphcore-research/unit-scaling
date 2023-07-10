@@ -140,16 +140,18 @@
     <span class="n">F</span><span class="o">.</span><span class="n">gelu</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** GELU function.&quot;</span><span class="p">,</span>
     <span class="n">add_args</span><span class="o">=</span><span class="p">[</span><span class="n">binary_constraint_docstring</span><span class="p">],</span>
+    <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;approximate&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="k">def</span> <span class="nf">gelu</span><span class="p">(</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">approximate</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
     <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;gmean&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
     <span class="c1"># Scale factors determined empirically, assuming unit scaled input &amp; grad</span>
     <span class="n">output_scale</span> <span class="o">=</span> <span class="mf">0.588</span><span class="o">**-</span><span class="mi">1</span>
     <span class="n">grad_input_scale</span> <span class="o">=</span> <span class="mf">0.675</span><span class="o">**-</span><span class="mi">1</span>
     <span class="n">scaled_gelu</span> <span class="o">=</span> <span class="n">scale_elementwise</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">gelu</span><span class="p">,</span> <span class="n">output_scale</span><span class="p">,</span> <span class="n">grad_input_scale</span><span class="p">,</span> <span class="n">constraint</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">scaled_gelu</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">scaled_gelu</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">approximate</span><span class="o">=</span><span class="n">approximate</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="softmax"><a class="viewcode-back" href="../../generated/unit_scaling.functional.softmax.html#unit_scaling.functional.softmax">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
