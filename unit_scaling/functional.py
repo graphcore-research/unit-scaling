@@ -68,16 +68,18 @@ def _get_broadcast_sizes(*args: Tensor) -> Tuple[int, ...]:
     F.gelu,
     short_description="Applies a **unit-scaled** GELU function.",
     add_args=[binary_constraint_docstring],
+    unsupported_args=["approximate"],
 )
 def gelu(
     input: Tensor,
+    approximate: str = "none",
     constraint: Optional[str] = "gmean",
 ) -> Tensor:
     # Scale factors determined empirically, assuming unit scaled input & grad
     output_scale = 0.588**-1
     grad_input_scale = 0.675**-1
     scaled_gelu = scale_elementwise(F.gelu, output_scale, grad_input_scale, constraint)
-    return scaled_gelu(input)
+    return scaled_gelu(input, approximate=approximate)
 
 
 @docstring_from(
