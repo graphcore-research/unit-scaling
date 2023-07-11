@@ -21,20 +21,30 @@ def unit_backward(tensor: Tensor) -> Tensor:
     return gradient
 
 
+def assert_scale(*tensors: Optional[Tensor], target: float, abs: float = 0.1) -> None:
+    for t in tensors:
+        assert t is not None
+        t = t.detach()
+        approx_target = pytest.approx(target, abs=abs)
+        assert t.std() == approx_target, f"std={t.std():.3f}, shape={list(t.shape)}"
+
+
+def assert_not_scale(
+    *tensors: Optional[Tensor], target: float, abs: float = 0.1
+) -> None:
+    for t in tensors:
+        assert t is not None
+        t = t.detach()
+        approx_target = pytest.approx(target, abs=abs)
+        assert t.std() != approx_target, f"std={t.std():.3f}, shape={list(t.shape)}"
+
+
 def assert_unit_scaled(*tensors: Optional[Tensor], abs: float = 0.1) -> None:
-    for t in tensors:
-        assert t is not None
-        t = t.detach()
-        approx_1 = pytest.approx(1, abs=abs)
-        assert t.std() == approx_1, f"std={t.std():.3f}, shape={list(t.shape)}"
+    return assert_scale(*tensors, target=1.0, abs=abs)
 
 
-def assert_not_unit_scaled(*tensors: Optional[Tensor]) -> None:
-    for t in tensors:
-        assert t is not None
-        t = t.detach()
-        approx_1 = pytest.approx(1, abs=0.1)
-        assert t.std() != approx_1, f"std={t.std():.3f}, shape={list(t.shape)}"
+def assert_not_unit_scaled(*tensors: Optional[Tensor], abs: float = 0.1) -> None:
+    return assert_not_scale(*tensors, target=1.0, abs=abs)
 
 
 def assert_zeros(*tensors: Optional[Tensor]) -> None:

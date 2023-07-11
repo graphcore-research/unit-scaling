@@ -12,7 +12,7 @@ from torch import Tensor, nn, randn
 from .. import _modules as uu
 from .. import functional as U
 from ..transforms import simulate_fp8, unit_scale
-from .helper import assert_unit_scaled
+from .helper import assert_scale, assert_unit_scaled
 
 
 def test_simulate_fp8_linear(caplog: LogCaptureFixture) -> None:
@@ -137,7 +137,8 @@ def test_unit_scale(caplog: LogCaptureFixture) -> None:
             input = F.dropout(input, 0.2)
             return input, input.sum()
 
-    input = randn(2**6, 2**10, requires_grad=True)
+    b = 2**6
+    input = randn(b, 2**10, requires_grad=True)
     model = MLPLayer(2**10)
     model = unit_scale(model, replace={custom_gelu: F.gelu})
     output, loss = model(input)
@@ -146,10 +147,13 @@ def test_unit_scale(caplog: LogCaptureFixture) -> None:
     assert_unit_scaled(
         output,
         input.grad,
+        abs=0.2,
+    )
+    assert_scale(
         model.layer_norm.weight.grad,
         model.l1.weight.grad,
         model.l2.weight.grad,
-        abs=0.2,
+        target=b**-0.25,
     )
 
     expected_logs = [

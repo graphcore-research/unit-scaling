@@ -162,7 +162,7 @@ def linear(
 
     output_scale = fan_in**-0.5
     grad_input_scale = fan_out**-0.5
-    grad_weight_scale = grad_bias_scale = batch_size**-0.5
+    grad_weight_scale = grad_bias_scale = batch_size**-0.75
 
     output_scale, grad_input_scale = apply_constraint(
         constraint, output_scale, grad_input_scale
@@ -191,7 +191,7 @@ def layer_norm(
 ) -> Tensor:
     grad_weight_scale = grad_bias_scale = (
         prod(normalized_shape) / input.numel()
-    ) ** 0.5
+    ) ** 0.75
     if weight is not None:
         weight = scale_bwd(weight, grad_weight_scale)
     if bias is not None:
@@ -233,7 +233,7 @@ def add(
     return scale_fwd(out, output_scale)
 
 
-def residual_split(input: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
+def residual_split(input: Tensor, tau: float = 0.1) -> Tuple[Tensor, Tensor]:
     """Splits a tensor into an `residual` and `skip` tensor, prior to being used
     in a residual layer, with a relative weighting `tau` applied to the residual branch.
     Should be used in conjunction with `residual_add`.
@@ -246,7 +246,7 @@ def residual_split(input: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
     Args:
         input (Tensor): the tensor to which the residual layer is to be applied.
         tau (float, optional): the weighting of the residual branch relative to the skip
-            connection. Defaults to 0.2.
+            connection. Defaults to 0.1.
 
     Returns:
         Tuple[Tensor, Tensor]: resulting tensors in the order: `residual, skip`.
@@ -265,7 +265,7 @@ def residual_add(residual: Tensor, skip: Tensor, tau: float = 0.1) -> Tensor:
         residual (Tensor): the tensor coming out of the residual connection.
         skip (Tensor): the tensor coming out of the skip connection.
         tau (float, optional): the weighting of the residual branch relative to the skip
-            connection. Defaults to 0.2.
+            connection. Defaults to 0.1.
 
     Returns:
         Tensor: the result of the combined residual and skip tensors.
@@ -293,7 +293,7 @@ def embedding(
     sparse: bool = False,
 ) -> Tensor:
     batch_size = prod(input.shape)
-    weight = scale_bwd(weight, (weight.shape[0] / batch_size) ** 0.5)
+    weight = scale_bwd(weight, (weight.shape[0] / batch_size) ** 0.75)
     return F.embedding(
         input, weight, padding_idx, max_norm, norm_type, scale_grad_by_freq, sparse
     )
