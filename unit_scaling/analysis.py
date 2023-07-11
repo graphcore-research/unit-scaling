@@ -67,7 +67,6 @@ def plot(
     xmin: Optional[float] = None,
     xmax: Optional[float] = None,
 ) -> matplotlib.axes.Axes:
-    # To save fig, do p.figure.savefig(filename)
     assert metric in Metrics.names() + Metrics.full_names(), (
         f"metric '{metric}' must be one of {Metrics.names()} (these correspond to"
         f" {Metrics.full_names()})"
@@ -148,13 +147,15 @@ def plot(
         size=9,
     )
 
+    # Cycle through the graph's nodes and give each an index (for the y-axis)
     i = 0
     node_idxs = {}
     for node in g.nodes:
-        name = node.meta["clean_name"]
-        if name not in node_idxs:
-            node_idxs[name] = i
-            i += 1
+        if node.name != "output":
+            name = node.meta["clean_name"]
+            if name not in node_idxs:
+                node_idxs[name] = i
+                i += 1
 
     min_scale, max_scale = plt.gca().get_xlim()
     if xmin is not None:

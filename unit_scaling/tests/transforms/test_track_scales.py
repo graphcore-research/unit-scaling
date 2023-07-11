@@ -38,7 +38,9 @@ def test_track_scales() -> None:
 
     assert "metrics" in meta_map["x"]
     assert meta_map["x"]["metrics"].bwd is None
-    assert meta_map["x"]["metrics"].fwd.mean_abs == pytest.approx(sqrt(2 / pi), abs=0.01)
+    assert meta_map["x"]["metrics"].fwd.mean_abs == pytest.approx(
+        sqrt(2 / pi), abs=0.01
+    )
     assert meta_map["x"]["metrics"].fwd.abs_mean == pytest.approx(0, abs=0.01)
     assert meta_map["x"]["metrics"].fwd.std == pytest.approx(1, abs=0.01)
     assert meta_map["x"]["metrics"].fwd.numel == 2**14
@@ -265,15 +267,3 @@ def test_prune_selected_nodes() -> None:
     graph_targets = set(node.target for node in graph.nodes)
     expected_targets -= {torch.abs, F.relu}
     assert graph_targets == expected_targets
-
-
-# TODO:
-# then write simple tests (what?)
-# then go through code and tidy where appropriate
-# then fight dev script and push pr
-
-# then maybe look again at grad_w scales...
-
-# sketch the notebook - code first, then text
-# then clean up docs
-# finally plan PR push
