@@ -62,7 +62,7 @@ class Metrics:
             "std": "standard deviation",
             "abs_max": "absolute maximum",
             "abs_min": "absolute minimum",
-            "numel": "numer of elements",
+            "numel": "number of elements",
         }[short_name]
 
     @staticmethod
