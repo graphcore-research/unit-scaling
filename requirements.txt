@@ -1,4 +1,6 @@
 docstring-parser
 einops
 numpy
+seaborn
+tabulate
 torch
