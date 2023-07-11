@@ -162,7 +162,7 @@ def linear(
 
     output_scale = fan_in**-0.5
     grad_input_scale = fan_out**-0.5
-    grad_weight_scale = grad_bias_scale = batch_size**-0.5
+    grad_weight_scale = grad_bias_scale = batch_size**-0.75
 
     output_scale, grad_input_scale = apply_constraint(
         constraint, output_scale, grad_input_scale
@@ -191,7 +191,7 @@ def layer_norm(
 ) -> Tensor:
     grad_weight_scale = grad_bias_scale = (
         prod(normalized_shape) / input.numel()
-    ) ** 0.5
+    ) ** 0.75
     if weight is not None:
         weight = scale_bwd(weight, grad_weight_scale)
     if bias is not None:
@@ -293,7 +293,7 @@ def embedding(
     sparse: bool = False,
 ) -> Tensor:
     batch_size = prod(input.shape)
-    weight = scale_bwd(weight, (weight.shape[0] / batch_size) ** 0.5)
+    weight = scale_bwd(weight, (weight.shape[0] / batch_size) ** 0.75)
     return F.embedding(
         input, weight, padding_idx, max_norm, norm_type, scale_grad_by_freq, sparse
     )
