@@ -66,7 +66,7 @@ class FPFormat:
                 exponent_bits=self.exponent_bits,
                 mantissa_bits=self.mantissa_bits,
                 rounding=self.rounding,
-            )
+            )  # pragma: no cover
 
         absmax = self.max_absolute_value
         downscale = 2.0 ** (127 - 2 ** (self.exponent_bits - 1))
@@ -77,7 +77,7 @@ class FPFormat:
             )
         elif self.rounding == "nearest":
             offset = mask // 2
-        else:
+        else:  # pragma: no cover
             raise ValueError(
                 f'Unexpected FPFormat(rounding="{self.rounding}"),'
                 ' expected "stochastic" or "nearest"'
@@ -97,7 +97,7 @@ class FPFormat:
                 exponent_bits=self.exponent_bits,
                 mantissa_bits=self.mantissa_bits,
                 rounding=self.rounding,
-            )
+            )  # pragma: no cover
 
         class QuantiseForward(torch.autograd.Function):
             @staticmethod
@@ -122,7 +122,7 @@ class FPFormat:
                 exponent_bits=self.exponent_bits,
                 mantissa_bits=self.mantissa_bits,
                 rounding=self.rounding,
-            )
+            )  # pragma: no cover
 
         class QuantiseBackward(torch.autograd.Function):
             @staticmethod

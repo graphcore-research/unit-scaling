@@ -2,6 +2,7 @@
 
 import operator
 from math import pi, sqrt
+from typing import Tuple
 
 import pytest
 import torch
@@ -18,7 +19,7 @@ from ...transforms import (
 
 def test_track_scales() -> None:
     class Model(nn.Module):
-        def forward(self, x: Tensor) -> Tensor:
+        def forward(self, x: Tensor) -> Tensor:  # pragma: no cover
             x = F.relu(x)
             y = torch.ones_like(x, dtype=x.dtype)
             z = x + y
@@ -26,12 +27,12 @@ def test_track_scales() -> None:
 
     model = Model()
     model = track_scales(model)
-    assert len(model.scales_graph().nodes) == 0
+    assert len(model.scales_graph().nodes) == 0  # type: ignore[operator]
 
     input = randn(2**4, 2**10, requires_grad=True)
     loss = model(input)
 
-    graph = model.scales_graph()
+    graph = model.scales_graph()  # type: ignore[operator]
 
     assert all("outputs_float_tensor" in n.meta for n in graph.nodes)
     meta_map = {node.target: node.meta for node in graph.nodes}
@@ -71,7 +72,7 @@ def test_track_scales() -> None:
     assert meta_map["sum"]["metrics"].fwd.numel == 1
 
     loss.backward()
-    graph = model.scales_graph()
+    graph = model.scales_graph()  # type: ignore[operator]
 
     meta_map = {node.target: node.meta for node in graph.nodes}
 
@@ -94,12 +95,12 @@ def test_track_scales() -> None:
 
 def test_prune_non_float_tensors() -> None:
     class Model(nn.Module):
-        def __init__(self, emb, dim) -> None:
+        def __init__(self, emb_size: int, dim: int) -> None:
             super().__init__()
-            self.emb = nn.Embedding(emb, dim)
+            self.emb = nn.Embedding(emb_size, dim)
             self.linear = nn.Linear(dim, dim)
 
-        def forward(self, idxs: Tensor) -> Tensor:
+        def forward(self, idxs: Tensor) -> Tuple[Tensor, Tensor]:  # pragma: no cover
             x = self.emb(idxs)
             scores = F.softmax(self.linear(x), dim=-1)
             top_idx = torch.argmax(scores, dim=-1)
@@ -113,7 +114,7 @@ def test_prune_non_float_tensors() -> None:
     model = track_scales(model)
     model(idxs)
 
-    graph = model.scales_graph()
+    graph = model.scales_graph()  # type: ignore[operator]
     expected_targets = {
         "idxs",
         "self_emb_weight",
@@ -140,12 +141,12 @@ def test_prune_non_float_tensors() -> None:
 
 def test_prune_same_scale_tensors() -> None:
     class Model(nn.Module):
-        def __init__(self, emb, dim) -> None:
+        def __init__(self, emb_size: int, dim: int) -> None:
             super().__init__()
-            self.emb = nn.Embedding(emb, dim)
+            self.emb = nn.Embedding(emb_size, dim)
             self.linear = nn.Linear(dim, dim // 2)
 
-        def forward(self, idxs: Tensor) -> Tensor:
+        def forward(self, idxs: Tensor) -> Tuple[Tensor, Tensor]:  # pragma: no cover
             # idxs has 0 args -> shouldn't be pruned
             x = self.emb(idxs)  # emb has 1 float arg (weights) -> depends on tol
             _x = x.flatten(start_dim=0, end_dim=-1)  # 1 float, same scale -> prune
@@ -163,7 +164,7 @@ def test_prune_same_scale_tensors() -> None:
     model = track_scales(model)
     model(idxs)
 
-    graph = model.scales_graph()
+    graph = model.scales_graph()  # type: ignore[operator]
     expected_targets = {
         "idxs",
         "self_emb_weight",
@@ -197,7 +198,7 @@ def test_prune_same_scale_tensors() -> None:
 
 def test_prune_same_scale_tensors_with_grad() -> None:
     class Model(nn.Module):
-        def forward(self, a: Tensor) -> Tensor:
+        def forward(self, a: Tensor) -> Tensor:  # pragma: no cover
             b = a / 1.0  # same scale fwd & bwd
             c = b * 1.0  # same scale fwd, as b sums grads -> different scale bwd
             d = F.relu(c)  # different scale fwd & bwd
@@ -210,7 +211,7 @@ def test_prune_same_scale_tensors_with_grad() -> None:
     model = track_scales(model)
     loss = model(input)
 
-    graph = model.scales_graph()
+    graph = model.scales_graph()  # type: ignore[operator]
     expected_targets = {
         "a",
         operator.truediv,
@@ -231,7 +232,7 @@ def test_prune_same_scale_tensors_with_grad() -> None:
     # The mul still has the same scale before & after in the fwd pass, but the same is
     # not true for its grads. It should no longer be pruned after `loss.backward`.
     loss.backward()
-    graph = model.scales_graph()
+    graph = model.scales_graph()  # type: ignore[operator]
     graph = prune_same_scale_tensors(graph)
     graph_targets = set(node.target for node in graph.nodes)
     expected_targets.add(operator.mul)
@@ -240,7 +241,7 @@ def test_prune_same_scale_tensors_with_grad() -> None:
 
 def test_prune_selected_nodes() -> None:
     class Model(nn.Module):
-        def forward(self, x: Tensor) -> Tensor:
+        def forward(self, x: Tensor) -> Tensor:  # pragma: no cover
             x = x + 1
             x = F.relu(x)
             x = torch.abs(x)
@@ -251,7 +252,7 @@ def test_prune_selected_nodes() -> None:
     model = track_scales(model)
     model(input)
 
-    graph = model.scales_graph()
+    graph = model.scales_graph()  # type: ignore[operator]
     expected_targets = {
         "x",
         operator.add,

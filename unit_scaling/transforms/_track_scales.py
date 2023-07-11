@@ -3,10 +3,9 @@
 import logging
 from copy import deepcopy
 from dataclasses import dataclass
-from math import isclose, isinf
-from operator import getitem
+from math import isclose
 from types import MethodType
-from typing import Any, Callable, Dict, Iterable, List, Tuple, TypeVar
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, TypeVar
 
 import torch
 from tabulate import tabulate
@@ -14,7 +13,7 @@ from torch import Tensor, nn
 from torch.fx import Interpreter
 from torch.fx.graph import Graph
 from torch.fx.graph_module import GraphModule
-from torch.fx.node import Node
+from torch.fx.node import Node, Target
 
 from .utils import Backend, apply_transform
 
@@ -34,13 +33,13 @@ class Metrics:
 
     def __init__(self, fwd_tensor: Tensor) -> None:
         self.fwd = self.from_tensor(fwd_tensor)
-        self.bwd = None
+        self.bwd: Optional[Metrics.DirectionMetrics] = None
 
     def set_bwd(self, bwd_tensor: Tensor) -> None:
         self.bwd = self.from_tensor(bwd_tensor)
 
     def __str__(self) -> str:
-        return f"fwd: {self.fwd}, bwd: {self.bwd}"
+        return f"fwd: {self.fwd}, bwd: {self.bwd}"  # pragma: no cover
 
     @staticmethod
     def from_tensor(t: Tensor) -> "Metrics.DirectionMetrics":
@@ -74,22 +73,22 @@ class Metrics:
         return [Metrics.get_full_name(m) for m in Metrics.names()]
 
 
-def directions_same_scale(
-    a: Metrics.DirectionMetrics, b: Metrics.DirectionMetrics, rel_tol=2**-16
-):
+def _directions_same_scale(
+    a: Metrics.DirectionMetrics, b: Metrics.DirectionMetrics, rel_tol: float = 2**-16
+) -> bool:
     # We're just going to look at the mean_abs here
     return isclose(a.mean_abs, b.mean_abs, rel_tol=rel_tol)
 
 
-def metrics_same_scale(a: Metrics, b: Metrics, rel_tol=2**-16) -> bool:
+def _metrics_same_scale(a: Metrics, b: Metrics, rel_tol: float = 2**-16) -> bool:
     # Both are None
     if a.bwd is None and b.bwd is None:
-        return directions_same_scale(a.fwd, b.fwd, rel_tol)
+        return _directions_same_scale(a.fwd, b.fwd, rel_tol)
     # Only one is None
-    if a.bwd is None or b.bwd is None:
+    if a.bwd is None or b.bwd is None:  # pragma: no cover
         return False
     # Neither is None
-    return directions_same_scale(a.fwd, b.fwd, rel_tol) and directions_same_scale(
+    return _directions_same_scale(a.fwd, b.fwd, rel_tol) and _directions_same_scale(
         a.bwd, b.bwd, rel_tol
     )
 
@@ -113,7 +112,7 @@ class _Track(torch.autograd.Function):
         return t.clone(), None, None
 
 
-def _tabulate_graph_data(g: Graph) -> str:
+def _tabulate_graph_data(g: Graph) -> str:  # pragma: no cover
     meta_ignore_fields = [
         "creation_timestamp",
         "stack_trace",
@@ -151,7 +150,7 @@ def _tabulate_graph_data(g: Graph) -> str:
 def _add_tabular_html_display(g: Graph) -> None:
     """When `_repr_html_()` is called on `g` (e.g. if it's displayed in a Jupyter
     cell), return a tabulated view of the graph's data, including relevant metadata."""
-    g._repr_html_ = MethodType(_tabulate_graph_data, g)
+    g._repr_html_ = MethodType(_tabulate_graph_data, g)  # type: ignore[attr-defined]
 
 
 def _clean_node_name(name: str) -> str:
@@ -180,7 +179,7 @@ class _Tracker(Interpreter):
         n.meta.update(_get_tracking_meta(n, out))
         if n.meta["outputs_float_tensor"]:
             logger.info("adding tracking to node: %s", n)
-            out = _Track.apply(out, n.meta)
+            out = _Track.apply(out, n.meta)  # type: ignore
         return out
 
 
@@ -189,7 +188,7 @@ def scale_tracking_backend(graph_holder: List[Graph]) -> Backend:
         gm: GraphModule, example_inputs: List[Tensor]
     ) -> Callable[..., Any]:
         _add_tabular_html_display(gm.graph)  # displays full info in notebooks
-        return _Tracker(gm, graph_holder).run
+        return _Tracker(gm, graph_holder).run  # type: ignore[no-any-return]
 
     return inner_backend
 
@@ -198,20 +197,21 @@ def track_scales(module: M) -> M:
     graph_holder = [Graph()]
     tracking_module = apply_transform(module, scale_tracking_backend(graph_holder))
 
-    def scales_graph(self) -> Graph:
-        return graph_holder[0]
+    def scales_graph(self) -> Graph:  # type: ignore
+        return graph_holder[0]  # type: ignore
 
     tracking_module.scales_graph = MethodType(scales_graph, tracking_module)
-    return tracking_module
+    return tracking_module  # type: ignore[no-any-return]
 
 
-def _prune(graph: Graph, node: Node, replacement_arg=None) -> None:
+def _prune(graph: Graph, node: Node, replacement_arg: Optional[Node] = None) -> None:
     for user in list(node.users):
         # output node's args are a tuple of tuples, so need special handling
         if user.name == "output":
             user.args = tuple(
                 (tuple(None if a == node else a for a in outputs))
                 for outputs in user.args
+                if isinstance(outputs, Iterable)
             )
         else:
             user.args = tuple(replacement_arg if a == node else a for a in user.args)
@@ -222,7 +222,7 @@ def _prune(graph: Graph, node: Node, replacement_arg=None) -> None:
 
 
 def prune_non_float_tensors(graph: Graph) -> Graph:
-    if "clean_name" not in list(graph.nodes)[0].meta:
+    if "clean_name" not in list(graph.nodes)[0].meta:  # pragma: no cover
         raise RuntimeError(
             "supplied graph must be a result of running"
             " `unit_scaling.transforms.track_scales` (and extracting"
@@ -248,7 +248,7 @@ def prune_non_float_tensors(graph: Graph) -> Graph:
     return graph
 
 
-def prune_same_scale_tensors(graph: Graph, rel_tol=2**-16) -> Graph:
+def prune_same_scale_tensors(graph: Graph, rel_tol: float = 2**-16) -> Graph:
     graph = deepcopy(graph)
     for n in graph.nodes:
         if n.name == "output" or not n.meta.get("outputs_float_tensor", False):
@@ -263,13 +263,13 @@ def prune_same_scale_tensors(graph: Graph, rel_tol=2**-16) -> Graph:
             a = float_tensor_args[0]
             a_metrics = a.meta["metrics"]
             n_metrics = n.meta["metrics"]
-            if metrics_same_scale(n_metrics, a_metrics, rel_tol):
+            if _metrics_same_scale(n_metrics, a_metrics, rel_tol):
                 logger.info("pruning same-scale node: %s", n)
                 _prune(graph, n, replacement_arg=a)
     return graph
 
 
-def prune_selected_nodes(graph: Graph, targets: Iterable):
+def prune_selected_nodes(graph: Graph, targets: Iterable[Target]) -> Graph:
     for n in graph.nodes:
         if n.target in targets:
             logger.info("pruning non-float node: %s", n)

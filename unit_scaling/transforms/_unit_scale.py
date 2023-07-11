@@ -4,7 +4,7 @@ import logging
 from inspect import signature
 from operator import getitem
 from types import BuiltinFunctionType
-from typing import Any, Callable, Dict, List, Set, Tuple, TypeVar
+from typing import Any, Callable, Dict, List, Set, TypeVar
 
 import torch
 import torch._dynamo
