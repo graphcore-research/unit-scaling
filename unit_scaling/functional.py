@@ -233,7 +233,7 @@ def add(
     return scale_fwd(out, output_scale)
 
 
-def residual_split(input: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
+def residual_split(input: Tensor, tau: float = 0.1) -> Tuple[Tensor, Tensor]:
     """Splits a tensor into an `residual` and `skip` tensor, prior to being used
     in a residual layer, with a relative weighting `tau` applied to the residual branch.
     Should be used in conjunction with `residual_add`.
@@ -246,7 +246,7 @@ def residual_split(input: Tensor, tau: float = 0.2) -> Tuple[Tensor, Tensor]:
     Args:
         input (Tensor): the tensor to which the residual layer is to be applied.
         tau (float, optional): the weighting of the residual branch relative to the skip
-            connection. Defaults to 0.2.
+            connection. Defaults to 0.1.
 
     Returns:
         Tuple[Tensor, Tensor]: resulting tensors in the order: `residual, skip`.
@@ -265,7 +265,7 @@ def residual_add(residual: Tensor, skip: Tensor, tau: float = 0.1) -> Tensor:
         residual (Tensor): the tensor coming out of the residual connection.
         skip (Tensor): the tensor coming out of the skip connection.
         tau (float, optional): the weighting of the residual branch relative to the skip
-            connection. Defaults to 0.2.
+            connection. Defaults to 0.1.
 
     Returns:
         Tensor: the result of the combined residual and skip tensors.
