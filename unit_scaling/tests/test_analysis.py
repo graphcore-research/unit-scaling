@@ -15,10 +15,10 @@ def test_graph_to_dataframe() -> None:
             self.dim = dim
             self.linear = nn.Linear(dim, dim // 2)
 
-        def forward(self, x: Tensor) -> Tensor:
+        def forward(self, x: Tensor) -> Tensor:  # pragma: no covers
             y = F.relu(x)
             z = self.linear(y)
-            return z.sum()
+            return z.sum()  # type: ignore[no-any-return]
 
     b, dim = 2**4, 2**8
     input = randn(b, dim, requires_grad=True)
@@ -27,7 +27,7 @@ def test_graph_to_dataframe() -> None:
     loss = model(input)
     loss.backward()
 
-    graph = model.scales_graph()
+    graph = model.scales_graph()  # type: ignore[operator]
     df = graph_to_dataframe(graph)
 
     expected = pd.DataFrame.from_dict(
@@ -114,10 +114,10 @@ def test_plot() -> None:
             self.dim = dim
             self.linear = nn.Linear(dim, dim // 2)
 
-        def forward(self, x: Tensor) -> Tensor:
+        def forward(self, x: Tensor) -> Tensor:  # pragma: no cover
             y = F.relu(x)
             z = self.linear(y)
-            return z.sum()
+            return z.sum()  # type: ignore[no-any-return]
 
     b, dim = 2**4, 2**8
     input = randn(b, dim, requires_grad=True)
@@ -126,6 +126,6 @@ def test_plot() -> None:
     loss = model(input)
     loss.backward()
 
-    graph = model.scales_graph()
-    axes = plot(graph)
+    graph = model.scales_graph()  # type: ignore[operator]
+    axes = plot(graph, "demo", xmin=2**-20, xmax=2**10)
     assert axes

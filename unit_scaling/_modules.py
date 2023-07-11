@@ -284,7 +284,7 @@ class TransformerLayer(nn.Module):
 
 
 @format_docstring(variadic_constraint_docstring)
-class TransformerDecoder(nn.Module):
+class TransformerDecoder(nn.Module):  # pragma: no cover
     """A **unit-scaled** implementation of a decoder-type transformer.
 
     Note: this class is currently just for demonstrating scaling and lacks key

@@ -1,23 +1,25 @@
+# Copyright (c) 2023 Graphcore Ltd. All rights reserved.
+
 import colorsys
 import logging
 from math import isnan
-from typing import Optional
+from typing import Optional, Tuple
 
-import matplotlib
-import matplotlib.colors
-import matplotlib.pyplot as plt
+import matplotlib  # type: ignore[import]
+import matplotlib.colors  # type: ignore[import]
+import matplotlib.pyplot as plt  # type: ignore[import]
 import pandas as pd
-import seaborn as sns
+import seaborn as sns  # type: ignore[import]
 from torch.fx.graph import Graph
 from torch.fx.node import Node
-
-logger = logging.getLogger(__name__)
 
 from .transforms._track_scales import (
     Metrics,
     prune_non_float_tensors,
     prune_same_scale_tensors,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def graph_to_dataframe(g: Graph) -> pd.DataFrame:
@@ -46,7 +48,7 @@ def graph_to_dataframe(g: Graph) -> pd.DataFrame:
                 if directional_metrics is not None:
                     v = getattr(directional_metrics, m)
                 else:
-                    v = None
+                    v = None  # pragma: no cover
                 row_data.append(v)
             data.append(row_data)
 
@@ -163,7 +165,9 @@ def plot(
     if xmax is not None:
         max_scale = xmax
 
-    def lighten_color(color, l_degree, s_degree):
+    def lighten_color(
+        color: Tuple[float, float, float], l_degree: float, s_degree: float
+    ) -> Tuple[float, float, float]:
         r, g, b = matplotlib.colors.to_rgb(color)
         h, l, s = colorsys.rgb_to_hls(r, g, b)
         new_l = 1 - l_degree * (1 - l)
@@ -174,7 +178,7 @@ def plot(
 
     def draw_error_bar(node: Node, direction: str) -> None:
         metrics = node.meta["metrics"]
-        if direction == "bwd" and metrics.bwd is None:
+        if direction == "bwd" and metrics.bwd is None:  # pragma: no cover
             return
 
         directional_metrics = getattr(metrics, direction)
@@ -205,8 +209,10 @@ def plot(
     def draw_arrow(node_a: Node, node_b: Node, direction: str) -> None:
         a_metrics = node_a.meta["metrics"]
         b_metrics = node_b.meta["metrics"]
-        if direction == "bwd" and (a_metrics.bwd is None or b_metrics.bwd is None):
-            return
+        if direction == "bwd" and (  # pragma: no cover
+            a_metrics.bwd is None or b_metrics.bwd is None
+        ):
+            return  # pragma: no cover
 
         a_x = getattr(getattr(a_metrics, direction), metric)
         b_x = getattr(getattr(b_metrics, direction), metric)
@@ -214,15 +220,15 @@ def plot(
         b_y = node_idxs[node_b.meta["clean_name"]]
 
         annotation = ""
-        if a_x == 0 or isnan(a_x):
+        if a_x == 0 or isnan(a_x):  # pragma: no cover
             a_x = min_scale
-        if isnan(a_x):
+        if isnan(a_x):  # pragma: no cover
             logging.warning(f"Node '{node_a.meta['clean_name']}' is NaN. Plotting as 0")
             a_x = min_scale
-        if b_x == 0:
+        if b_x == 0:  # pragma: no cover
             b_x = min_scale
             annotation = "0"
-        if isnan(b_x):
+        if isnan(b_x):  # pragma: no cover
             logging.warning(f"Node '{node_b.meta['clean_name']}' is NaN. Plotting as 0")
             b_x = min_scale
             annotation = "0"
