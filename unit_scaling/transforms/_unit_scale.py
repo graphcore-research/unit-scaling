@@ -115,7 +115,7 @@ def unit_scaling_backend(
 ) -> Backend:
     def inner_backend(
         gm: GraphModule, example_inputs: List[Tensor]
-    ) -> Callable[..., Any]:
+    ) -> GraphModule:
         logger.info("running unit scaling backend")
         graph = gm.graph
         # Replace function nodes with those in `replacement_map` or with their
