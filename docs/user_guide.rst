@@ -1,10 +1,6 @@
 User guide
 ==========
 
-.. Warning:: this library is currently in its *alpha* release. This means it's
-   missing some functionality and should not be expected to work seamlessly.
-   We're keen to help early users with any problems they encounter.
-
 Installation
 ------------
 
@@ -17,6 +13,10 @@ To install the :code:`unit-scaling` library, run:
 For those who wish to develop on the :code:`unit-scaling` codebase, clone or fork our
 `GitHub repo <https://github.com/graphcore-research/unit-scaling.git>`_ and follow the
 instructions in our :doc:`developer guide <development>`.
+
+.. Note:: This library is currently in its *beta* release.
+    Some features have yet to be implemented and occasional bugs may be present.
+    We're keen to help users with any problems they encounter.
 
 What is unit scaling?
 ---------------------
