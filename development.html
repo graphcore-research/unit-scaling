@@ -44,8 +44,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">1. User guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">2. Developer guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#development">2.1. Development</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#license">2.2. License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">2.1. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-unit-scaling">2.2. What is unit scaling?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development">2.3. Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">2.4. License</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="limitations.html">3. Limitations</a></li>
@@ -82,11 +84,26 @@
 <a class="reference external" href="https://arxiv.org/abs/2303.11257">Unit Scaling: Out-of-the-Box Low-Precision Training</a>.</p>
 <p>Documentation can be found at
 <a class="reference external" href="https://graphcore-research.github.io/unit-scaling">https://graphcore-research.github.io/unit-scaling</a>.</p>
-<p><strong>Warning:</strong> this library is currently in its <em>alpha</em> release. This means it’s
-missing some functionality and should not be expected to work seamlessly.
-We’re keen to help early users with any problems they encounter.</p>
+<p><strong>Note:</strong> This library is currently in its <em>beta</em> release.
+Some features have yet to be implemented and occasional bugs may be present.
+We’re keen to help users with any problems they encounter.</p>
+<section id="installation">
+<h2><span class="section-number">2.1. </span>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<p>To install the <code class="docutils literal notranslate"><span class="pre">unit-scaling</span></code> library, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">graphcore</span><span class="o">-</span><span class="n">research</span><span class="o">/</span><span class="n">unit</span><span class="o">-</span><span class="n">scaling</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+</section>
+<section id="what-is-unit-scaling">
+<h2><span class="section-number">2.2. </span>What is unit scaling?<a class="headerlink" href="#what-is-unit-scaling" title="Permalink to this heading"></a></h2>
+<p>For a high-level introduction to unit scaling, see our blog post
+<a class="reference external" href="https://www.graphcore.ai/posts/simple-fp16-and-fp8-training-with-unit-scaling">Simple FP16 and FP8 training with Unit Scaling</a>.</p>
+<p>For a more in-depth explanation, consult our paper
+<a class="reference external" href="https://arxiv.org/abs/2303.11257">Unit Scaling: Out-of-the-Box Low-Precision Training</a>.</p>
+<p>And for a practical introduction to using the library, see our <a class="reference external" href="https://graphcore-research.github.io/unit-scaling/user_guide.html">User Guide</a>.</p>
+</section>
 <section id="development">
-<h2><span class="section-number">2.1. </span>Development<a class="headerlink" href="#development" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">2.3. </span>Development<a class="headerlink" href="#development" title="Permalink to this heading"></a></h2>
 <p>For users who wish to develop using this codebase, the following setup is required:</p>
 <p><strong>First-time setup</strong>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
@@ -117,7 +134,7 @@ make<span class="w"> </span>html
 <p>then view <code class="docutils literal notranslate"><span class="pre">docs/_build/html/index.html</span></code> in your browser.</p>
 </section>
 <section id="license">
-<h2><span class="section-number">2.2. </span>License<a class="headerlink" href="#license" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">2.4. </span>License<a class="headerlink" href="#license" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2023 Graphcore Ltd. Licensed under the MIT License.</p>
 <p>See <a class="reference internal" href="#NOTICE.md"><span class="xref myst">NOTICE.md</span></a> for further details.</p>
 </section>
