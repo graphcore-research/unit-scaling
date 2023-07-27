@@ -6,9 +6,27 @@ A library for unit scaling in PyTorch, based on the paper
 Documentation can be found at
 [https://graphcore-research.github.io/unit-scaling](https://graphcore-research.github.io/unit-scaling).
 
-**Warning:** this library is currently in its *alpha* release. This means it's
-missing some functionality and should not be expected to work seamlessly.
-We're keen to help early users with any problems they encounter.
+**Note:** This library is currently in its *beta* release.
+Some features have yet to be implemented and occasional bugs may be present.
+We're keen to help users with any problems they encounter.
+
+## Installation
+
+To install the `unit-scaling` library, run:
+
+```
+pip install git+https://github.com/graphcore-research/unit-scaling.git
+```
+
+## What is unit scaling?
+
+For a high-level introduction to unit scaling, see our blog post
+[Simple FP16 and FP8 training with Unit Scaling](https://www.graphcore.ai/posts/simple-fp16-and-fp8-training-with-unit-scaling).
+
+For a more in-depth explanation, consult our paper
+[Unit Scaling: Out-of-the-Box Low-Precision Training](https://arxiv.org/abs/2303.11257).
+
+And for a practical introduction to using the library, see our [User Guide](https://graphcore-research.github.io/unit-scaling/user_guide.html).
 
 ## Development
 
@@ -36,10 +54,10 @@ source .venv/bin/activate
 
 **IDE recommendations**:
 
- - Python intepreter is set to `.venv/bin/python`
- - Format-on-save enabled
- - Consider a `.env` file for setting `PYTHONPATH`, for example `echo "PYTHONPATH=$(pwd)" > .env`
- (note that this will be a different path if using devcontainers)
+- Python intepreter is set to `.venv/bin/python`
+- Format-on-save enabled
+- Consider a `.env` file for setting `PYTHONPATH`, for example `echo "PYTHONPATH=$(pwd)" > .env`
+  (note that this will be a different path if using devcontainers)
 
 **Docs development**:
 
@@ -47,8 +65,8 @@ source .venv/bin/activate
 cd docs/
 make html
 ```
-then view `docs/_build/html/index.html` in your browser.
 
+then view `docs/_build/html/index.html` in your browser.
 
 ## License
 
