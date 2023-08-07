@@ -7,6 +7,7 @@ from typing import Any, Callable, Dict, List, Set, Tuple, TypeVar
 
 import torch
 import torch._dynamo
+import torch.nn.functional as F
 from torch import Tensor, nn
 from torch.fx.graph import Graph
 from torch.fx.graph_module import GraphModule
@@ -48,6 +49,26 @@ def _is_add(n: Node) -> bool:
     )
 
 
+def _is_self_attention(skip_node: Node, residual_node: Node) -> bool:
+    # Identify all operations on the residual branch
+    residual_fns = {residual_node.target}
+    parents = [*residual_node.all_input_nodes]
+    while parents:
+        p = parents.pop()
+        if p == skip_node:
+            continue
+        residual_fns.add(p.target)
+        parents += p.all_input_nodes
+    # Check if any of them are self-attention ops (softmax or fused self-attention)
+    self_attention_fns = {
+        F.scaled_dot_product_attention,
+        U.scaled_dot_product_attention,
+        F.softmax,
+        U.softmax,
+    }
+    return bool(residual_fns.intersection(self_attention_fns))
+
+
 def _getitem(tuple: Tuple[T, ...], idx: int) -> T:
     return tuple[idx]
 
@@ -56,16 +77,18 @@ def _unit_scale_residual(
     graph: Graph,
     add: Node,
     residual_arg_idx: int,
-    layer_number: int,
+    is_self_attention: bool,
 ) -> None:
     residual, skip = add.args[residual_arg_idx], add.args[1 - residual_arg_idx]
+    tau = 0.01 if is_self_attention else 0.5
+    logger.info("unit scaling function: %s (residual-add, tau=%s)", add, tau)
     old_start_residuals = [
         u for u in skip.users if u is not add  # type: ignore[union-attr]
     ]
     with graph.inserting_after(skip):
         split = graph.call_function(
             U.residual_split,
-            args=(skip,),
+            args=(skip, tau),
             type_expr=getattr(skip, "type", None),
         )
     with graph.inserting_after(split):
@@ -74,7 +97,9 @@ def _unit_scale_residual(
         old_start_residual.replace_input_with(skip, new_start_residual)
     with graph.inserting_after(split):
         new_skip = graph.call_function(_getitem, args=(split, 1))
-    replace_node_with_function(graph, add, U.residual_add, args=(residual, new_skip))
+    replace_node_with_function(
+        graph, add, U.residual_add, args=(residual, new_skip, tau)
+    )
 
 
 def _unconstrain_node(node: Node) -> None:
@@ -127,10 +152,12 @@ def unit_scaling_backend(
                         if l in r_deps or r in l_deps:
                             node.meta["residual_add"] = {
                                 "residual_arg_idx": 1 if l in r_deps else 0,
-                                "layer_number": residual_layer_number,
                             }
                             residual_layer_number += 1
                             is_residual_add = True
+                            skip_node, residual_node = (l, r) if l in r_deps else (r, l)
+                            is_sa = _is_self_attention(skip_node, residual_node)
+                            node.meta["residual_add"]["is_self_attention"] = is_sa
                 # Regular adds are not picked up by the unit scaling sweep above as
                 # the inbuilt + operation is handled differently when traced. It is
                 # instead substituted for its unit scaled equivalent here.
@@ -143,7 +170,6 @@ def unit_scaling_backend(
         for node in graph.nodes:
             residual_add = node.meta.get("residual_add", None)
             if residual_add is not None:
-                logger.info("unit scaling function: %s (residual-add)", node)
                 _unit_scale_residual(graph, node, **residual_add)
 
         _add_dependency_meta(graph, recalculate=True)

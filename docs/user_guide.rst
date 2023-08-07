@@ -290,7 +290,7 @@ The unit-scaled equivalent should be implemented as:
 .. code-block::
 
     class ResidualLayer(nn.Module):
-        def __init__(self, tau=0.2):
+        def __init__(self, tau=0.5):
             self.f = ...
             self.tau = tau
 
@@ -300,13 +300,19 @@ The unit-scaled equivalent should be implemented as:
             return U.residual_add(residual, skip, self.tau)
 
 This step is necessary because unit-scaled models give equal scale to the skip and
-residual connections. In contrast, non-unit-scaled models tend to down-scale activations
-as they go through the residual connection, meaning that when the residual is added
-to the skip connection, the skip connection dominates.
+residual connections. In contrast, non-unit-scaled models tend change the scale of
+activations as they go through the residual connection, meaning that when the residual
+connection is added to the skip connection the ratio of the two scales is not 50:50.
 
 The :code:`tau` hyperparameter is a scale-factor applied to the residual branch to
-correct for this. In practice you may be able to leave it at the default value of 0.2
+correct for this. In practice you may be able to leave it at the default value of 0.5
 without having to tune this as an additional hyperparameter.
+
+However in the case of self-attention layers, we find that tau must be dropped to
+approximately 0.01. The default of 0.5 (which weights the branches 50:50) causes
+significant degradation. This reflects the fact that in standard transformers the
+self-attention layer down-scales the residual branch. Note that for FFN layers the
+default tau=0.5 is sufficient.
 
 We also employ a trick to ensure that this scaling factor is delayed in the backward
 pass to keep values unit-scaled along the residual branch in both passes

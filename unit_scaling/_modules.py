@@ -254,29 +254,27 @@ class TransformerLayer(nn.Module):
         heads: int,
         dropout_p: float,
         act_fn: nn.Module = GELU(),
-        tau: float = 0.2,
         constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__()
         self.dropout_p = dropout_p
-        self.tau = tau
         self.mhsa_layer_norm = LayerNorm(hidden_size)
         self.mhsa = MHSA(hidden_size, heads, dropout_p, constraint=constraint)
         self.mlp_layer_norm = LayerNorm(hidden_size)
         self.mlp = MLP(hidden_size, act_fn, constraint=constraint)
 
     def forward(self, input: Tensor) -> Tensor:
-        input, skip = U.residual_split(input, self.tau)
+        input, skip = U.residual_split(input, tau=0.01)
         input = self.mhsa_layer_norm(input)
         input = self.mhsa(input)
         input = U.dropout(input, self.dropout_p, self.training)
-        input = U.residual_add(input, skip, self.tau)
+        input = U.residual_add(input, skip, tau=0.01)
 
-        input, skip = U.residual_split(input, self.tau)
+        input, skip = U.residual_split(input, tau=0.5)
         input = self.mlp_layer_norm(input)
         input = self.mlp(input)
         input = U.dropout(input, self.dropout_p, self.training)
-        return U.residual_add(input, skip, self.tau)
+        return U.residual_add(input, skip, tau=0.5)
 
 
 @format_docstring(variadic_constraint_docstring)
@@ -309,7 +307,6 @@ class TransformerDecoder(nn.Module):
         heads: int,
         dropout_p: float,
         act_fn: nn.Module = GELU(),
-        tau: float = 0.2,
         constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__()
@@ -318,7 +315,7 @@ class TransformerDecoder(nn.Module):
         self.initial_layer_norm = LayerNorm(hidden_size)
         self.transformer_layers = nn.Sequential(
             *(
-                TransformerLayer(hidden_size, heads, dropout_p, act_fn, tau, constraint)
+                TransformerLayer(hidden_size, heads, dropout_p, act_fn, constraint)
                 for _ in range(layers)
             )
         )

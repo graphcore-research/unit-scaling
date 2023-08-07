@@ -199,8 +199,8 @@ def test_unit_scale_residual_add(caplog: LogCaptureFixture) -> None:
     expected_logs = [
         "unit scaling function: add\n",
         "unit scaling function: iadd\n",
-        "unit scaling function: iadd_1 (residual-add)",
-        "unit scaling function: add_1 (residual-add)",
+        "unit scaling function: iadd_1 (residual-add, tau=0.5)",
+        "unit scaling function: add_1 (residual-add, tau=0.5)",
     ]
     print(caplog.text)
     for log_msg in expected_logs:
