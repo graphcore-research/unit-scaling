@@ -393,12 +393,12 @@
         <span class="n">dropout_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">is_causal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-        <span class="n">s</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
-        <span class="c1"># Fwd: s/1.31 * s**-0.5 = s**0.5/1.31</span>
-        <span class="c1"># Bwd: d**0.5[counter `scale`] * s**-0.5 * s/1.65 * (s**-0.5 * d**-0.5)**0.5</span>
-        <span class="c1">#    = d**0.25 * s**0.25 / 1.65</span>
-        <span class="c1"># GeoMean: s**0.375 * d**0.125 / 1.47</span>
-        <span class="n">scale_factor</span> <span class="o">=</span> <span class="n">s</span><span class="o">**</span><span class="mf">0.375</span> <span class="o">*</span> <span class="n">d</span><span class="o">**</span><span class="mf">0.125</span> <span class="o">/</span> <span class="mf">1.47</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="c1"># The scale is based on the assumption that softmax outputs follow a LogNormal</span>
+        <span class="c1"># distribution that is normalised in expectation.</span>
+        <span class="c1"># Conveniently, forward and backward scaling of attention are the same, so there</span>
+        <span class="c1"># is no need to consider constraints.</span>
+        <span class="n">scale_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">dropout_p</span><span class="p">))</span> <span class="o">**</span> <span class="mf">0.5</span>
         <span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">scale_bwd</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">scale_factor</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">scaled_dot_product_attention</span><span class="p">(</span>
             <span class="n">query</span><span class="p">,</span>
