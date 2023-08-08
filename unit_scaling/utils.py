@@ -206,6 +206,9 @@ class _DeepTracer(fx.Tracer):
         self.recurse_modules = recurse_modules
         self.target_to_function: Dict[str, FunctionType] = {}
         self.function_to_node: Dict[FunctionType, fx.Node] = {}
+        # Fixes: `TypeError: __annotations__ must be set to a dict object`
+        if id(FunctionType) in self._autowrap_function_ids:
+            self._autowrap_function_ids.remove(id(FunctionType))
 
     def is_leaf_module(self, m: nn.Module, module_qualified_name: str) -> bool:
         return not self.recurse_modules
