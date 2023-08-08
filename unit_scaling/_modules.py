@@ -243,8 +243,10 @@ class TransformerLayer(nn.Module):
         heads (int): the number of attention heads.
         dropout_p (float, optional): the probability of the post-softmax dropout.
         act_fn (nn.Module): the activation function module. Defaults to `GELU()`.
-        tau (float, optional): the weighting of the residual branch relative to the skip
-            connection. Defaults to 0.2.
+        mhsa_tau (float, optional): the weighting of the multi-head-self-attention
+            branch relative to the skip connection. Defaults to 0.01.
+        mlp_tau (float, optional): the weighting of the MLP
+            branch relative to the skip connection. Defaults to 0.5.
         {0}
     """
 
@@ -254,29 +256,31 @@ class TransformerLayer(nn.Module):
         heads: int,
         dropout_p: float,
         act_fn: nn.Module = GELU(),
-        tau: float = 0.2,
+        mhsa_tau: float = 0.01,
+        mlp_tau: float = 0.5,
         constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__()
         self.dropout_p = dropout_p
-        self.tau = tau
+        self.mhsa_tau = mhsa_tau
+        self.mlp_tau = mlp_tau
         self.mhsa_layer_norm = LayerNorm(hidden_size)
         self.mhsa = MHSA(hidden_size, heads, dropout_p, constraint=constraint)
         self.mlp_layer_norm = LayerNorm(hidden_size)
         self.mlp = MLP(hidden_size, act_fn, constraint=constraint)
 
     def forward(self, input: Tensor) -> Tensor:
-        input, skip = U.residual_split(input, self.tau)
+        input, skip = U.residual_split(input, tau=self.mhsa_tau)
         input = self.mhsa_layer_norm(input)
         input = self.mhsa(input)
         input = U.dropout(input, self.dropout_p, self.training)
-        input = U.residual_add(input, skip, self.tau)
+        input = U.residual_add(input, skip, tau=self.mhsa_tau)
 
-        input, skip = U.residual_split(input, self.tau)
+        input, skip = U.residual_split(input, tau=self.mlp_tau)
         input = self.mlp_layer_norm(input)
         input = self.mlp(input)
         input = U.dropout(input, self.dropout_p, self.training)
-        return U.residual_add(input, skip, self.tau)
+        return U.residual_add(input, skip, tau=self.mlp_tau)
 
 
 @format_docstring(variadic_constraint_docstring)
@@ -296,8 +300,10 @@ class TransformerDecoder(nn.Module):
         heads (int): the number of attention heads.
         dropout_p (float, optional): the probability of the post-softmax dropout.
         act_fn (nn.Module): the activation function module. Defaults to `GELU()`.
-        tau (float, optional): the weighting of the residual branch relative to the skip
-            connection. Defaults to 0.2.
+        mhsa_tau (float, optional): the weighting of the multi-head-self-attention
+            branch relative to the skip connection. Defaults to 0.01.
+        mlp_tau (float, optional): the weighting of the MLP
+            branch relative to the skip connection. Defaults to 0.5.
         {0}
     """
 
@@ -309,7 +315,8 @@ class TransformerDecoder(nn.Module):
         heads: int,
         dropout_p: float,
         act_fn: nn.Module = GELU(),
-        tau: float = 0.2,
+        mhsa_tau: float = 0.01,
+        mlp_tau: float = 0.5,
         constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__()
@@ -318,7 +325,9 @@ class TransformerDecoder(nn.Module):
         self.initial_layer_norm = LayerNorm(hidden_size)
         self.transformer_layers = nn.Sequential(
             *(
-                TransformerLayer(hidden_size, heads, dropout_p, act_fn, tau, constraint)
+                TransformerLayer(
+                    hidden_size, heads, dropout_p, act_fn, mhsa_tau, mlp_tau, constraint
+                )
                 for _ in range(layers)
             )
         )
