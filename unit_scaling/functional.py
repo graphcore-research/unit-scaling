@@ -321,12 +321,12 @@ if hasattr(F, "scaled_dot_product_attention"):
         dropout_p: float = 0.0,
         is_causal: bool = False,
     ) -> Tensor:
-        s, d = value.shape[-2:]
-        # Fwd: s/1.31 * s**-0.5 = s**0.5/1.31
-        # Bwd: d**0.5[counter `scale`] * s**-0.5 * s/1.65 * (s**-0.5 * d**-0.5)**0.5
-        #    = d**0.25 * s**0.25 / 1.65
-        # GeoMean: s**0.375 * d**0.125 / 1.47
-        scale_factor = s**0.375 * d**0.125 / 1.47
+        s = value.shape[-2]
+        # The scale is based on the assumption that softmax outputs follow a LogNormal
+        # distribution that is normalised in expectation.
+        # Conveniently, forward and backward scaling of attention are the same, so there
+        # is no need to consider constraints.
+        scale_factor = (s / torch.e * (1 - dropout_p)) ** 0.5
         query, key, value = (scale_bwd(t, scale_factor) for t in (query, key, value))
         out = F.scaled_dot_product_attention(
             query,
