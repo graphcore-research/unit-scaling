@@ -305,20 +305,31 @@
     <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">output_scale</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="residual_split"><a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split">[docs]</a><span class="k">def</span> <span class="nf">residual_split</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]:</span>
+<div class="viewcode-block" id="residual_split"><a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split">[docs]</a><span class="k">def</span> <span class="nf">residual_split</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Splits a tensor into an `residual` and `skip` tensor, prior to being used</span>
-<span class="sd">    in a residual layer, with a relative weighting `tau` applied to the residual branch.</span>
-<span class="sd">    Should be used in conjunction with `residual_add`.</span>
+<span class="sd">    in a residual layer, with a relative weighting tau applied to the residual branch.</span>
+<span class="sd">    Should be used in conjunction with :py:func:`unit_scaling.functional.residual_add`.</span>
 
 <span class="sd">    This is necessary as unit scaling delays the residual branch scaling in the backward</span>
-<span class="sd">    pass such that residual gradients are still unit-scaled. The need for a relative</span>
-<span class="sd">    weighting between the two branches is a result of unit-scaling normalising the</span>
-<span class="sd">    scales of the two branches, which in standard networks are typically not equal.</span>
+<span class="sd">    pass such that residual gradients are still unit-scaled.</span>
+
+<span class="sd">    The need for a relative weighting between the two branches (tau) is a result of</span>
+<span class="sd">    unit-scaling normalising the scales of the two branches. In non-unit-scaled models</span>
+<span class="sd">    the two branches may have different scales, which can be beneficial to training.</span>
+<span class="sd">    The tau factor allows unit scaling to behave as though the branches have different</span>
+<span class="sd">    scales.</span>
+
+<span class="sd">    For MLP layers tau=0.5 is recommended, and for self-attention layers tau=0.01.</span>
+
+<span class="sd">    These values reflect the relative scales of the skip-vs-residual branches in a</span>
+<span class="sd">    standard transformer. Empirically, the self-attention tau is fairly insensitive</span>
+<span class="sd">    (i.e. tau=0.1 or tau=0.001 work well), but the default tau=0.5 causes significant</span>
+<span class="sd">    degradation.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        input (Tensor): the tensor to which the residual layer is to be applied.</span>
 <span class="sd">        tau (float, optional): the weighting of the residual branch relative to the skip</span>
-<span class="sd">            connection. Defaults to 0.1.</span>
+<span class="sd">            connection. Defaults to 0.5.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Tuple[Tensor, Tensor]: resulting tensors in the order: `residual, skip`.</span>
@@ -328,16 +339,23 @@
     <span class="k">return</span> <span class="n">residual</span><span class="p">,</span> <span class="n">skip</span></div>
 
 
-<div class="viewcode-block" id="residual_add"><a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add">[docs]</a><span class="k">def</span> <span class="nf">residual_add</span><span class="p">(</span><span class="n">residual</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+<div class="viewcode-block" id="residual_add"><a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add">[docs]</a><span class="k">def</span> <span class="nf">residual_add</span><span class="p">(</span><span class="n">residual</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds a residual connection and skip connection together, with a relative</span>
-<span class="sd">    weighting `tau` applied to the residual branch. Should be used in conjunction with</span>
-<span class="sd">    `residual_split`.</span>
+<span class="sd">    weighting tau applied to the residual branch. Should be used in conjunction with</span>
+<span class="sd">    :py:func:`unit_scaling.functional.residual_split`.</span>
+
+<span class="sd">    For MLP layers tau=0.5 is recommended, and for self-attention layers tau=0.01.</span>
+
+<span class="sd">    These values reflect the relative scales of the skip-vs-residual branches in a</span>
+<span class="sd">    standard transformer. Empirically, the self-attention tau is fairly insensitive</span>
+<span class="sd">    (i.e. tau=0.1 or tau=0.001 work well), but the default tau=0.5 causes significant</span>
+<span class="sd">    degradation.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        residual (Tensor): the tensor coming out of the residual connection.</span>
 <span class="sd">        skip (Tensor): the tensor coming out of the skip connection.</span>
 <span class="sd">        tau (float, optional): the weighting of the residual branch relative to the skip</span>
-<span class="sd">            connection. Defaults to 0.1.</span>
+<span class="sd">            connection. Defaults to 0.5.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Tensor: the result of the combined residual and skip tensors.</span>

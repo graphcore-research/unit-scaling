@@ -106,20 +106,28 @@
 <h1><span class="section-number">4.4.10. </span>unit_scaling.functional.residual_split<a class="headerlink" href="#unit-scaling-functional-residual-split" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="unit_scaling.functional.residual_split">
-<span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">residual_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.11)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#residual_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.residual_split" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">residual_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.11)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#residual_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.residual_split" title="Permalink to this definition"></a></dt>
 <dd><p>Splits a tensor into an <cite>residual</cite> and <cite>skip</cite> tensor, prior to being used
-in a residual layer, with a relative weighting <cite>tau</cite> applied to the residual branch.
-Should be used in conjunction with <cite>residual_add</cite>.</p>
+in a residual layer, with a relative weighting tau applied to the residual branch.
+Should be used in conjunction with <a class="reference internal" href="unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add" title="unit_scaling.functional.residual_add"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_scaling.functional.residual_add()</span></code></a>.</p>
 <p>This is necessary as unit scaling delays the residual branch scaling in the backward
-pass such that residual gradients are still unit-scaled. The need for a relative
-weighting between the two branches is a result of unit-scaling normalising the
-scales of the two branches, which in standard networks are typically not equal.</p>
+pass such that residual gradients are still unit-scaled.</p>
+<p>The need for a relative weighting between the two branches (tau) is a result of
+unit-scaling normalising the scales of the two branches. In non-unit-scaled models
+the two branches may have different scales, which can be beneficial to training.
+The tau factor allows unit scaling to behave as though the branches have different
+scales.</p>
+<p>For MLP layers tau=0.5 is recommended, and for self-attention layers tau=0.01.</p>
+<p>These values reflect the relative scales of the skip-vs-residual branches in a
+standard transformer. Empirically, the self-attention tau is fairly insensitive
+(i.e. tau=0.1 or tau=0.001 work well), but the default tau=0.5 causes significant
+degradation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input</strong> (<em>Tensor</em>) – the tensor to which the residual layer is to be applied.</p></li>
 <li><p><strong>tau</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – the weighting of the residual branch relative to the skip
-connection. Defaults to 0.1.</p></li>
+connection. Defaults to 0.5.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
