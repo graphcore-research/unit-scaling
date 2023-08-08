@@ -311,7 +311,7 @@ without having to tune this as an additional hyperparameter.
 However in the case of self-attention layers, we find that tau must be dropped to
 approximately 0.01. The default of 0.5 (which weights the branches 50:50) causes
 significant degradation. This reflects the fact that in standard transformers the
-self-attention layer down-scales the residual branch. Note that for FFN layers the
+self-attention layer down-scales the residual branch. Note that for MLP layers the
 default tau=0.5 is sufficient.
 
 We also employ a trick to ensure that this scaling factor is delayed in the backward

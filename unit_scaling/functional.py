@@ -247,7 +247,7 @@ def residual_split(input: Tensor, tau: float = 0.5) -> Tuple[Tensor, Tensor]:
     The tau factor allows unit scaling to behave as though the branches have different
     scales.
 
-    For FFN layers tau=0.5 is recommended, and for self-attention layers tau=0.01.
+    For MLP layers tau=0.5 is recommended, and for self-attention layers tau=0.01.
 
     These values reflect the relative scales of the skip-vs-residual branches in a
     standard transformer. Empirically, the self-attention tau is fairly insensitive
@@ -272,7 +272,7 @@ def residual_add(residual: Tensor, skip: Tensor, tau: float = 0.5) -> Tensor:
     weighting tau applied to the residual branch. Should be used in conjunction with
     :py:func:`unit_scaling.functional.residual_split`.
 
-    For FFN layers tau=0.5 is recommended, and for self-attention layers tau=0.01.
+    For MLP layers tau=0.5 is recommended, and for self-attention layers tau=0.01.
 
     These values reflect the relative scales of the skip-vs-residual branches in a
     standard transformer. Empirically, the self-attention tau is fairly insensitive
