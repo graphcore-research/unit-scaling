@@ -21,7 +21,7 @@ def test_graph_to_dataframe() -> None:
             return z.sum()  # type: ignore[no-any-return]
 
     b, dim = 2**4, 2**8
-    input = randn(b, dim, requires_grad=True)
+    input = randn(b, dim)
     model = Model(dim)
     model = track_scales(model)
     loss = model(input)
@@ -120,7 +120,7 @@ def test_plot() -> None:
             return z.sum()  # type: ignore[no-any-return]
 
     b, dim = 2**4, 2**8
-    input = randn(b, dim, requires_grad=True)
+    input = randn(b, dim)
     model = Model(dim)
     model = track_scales(model)
     loss = model(input)

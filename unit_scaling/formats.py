@@ -1,5 +1,7 @@
 # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 
+"""Classes for simulating (non-standard) number formats."""
+
 from dataclasses import dataclass
 from typing import Tuple, cast
 

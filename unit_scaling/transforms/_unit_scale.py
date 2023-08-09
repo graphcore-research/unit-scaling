@@ -113,9 +113,7 @@ def _unconstrain_node(node: Node) -> None:
 def unit_scaling_backend(
     replacement_map: Dict[Callable[..., Any], Callable[..., Any]] = dict()
 ) -> Backend:
-    def inner_backend(
-        gm: GraphModule, example_inputs: List[Tensor]
-    ) -> GraphModule:
+    def inner_backend(gm: GraphModule, example_inputs: List[Tensor]) -> GraphModule:
         logger.info("running unit scaling backend")
         graph = gm.graph
         # Replace function nodes with those in `replacement_map` or with their

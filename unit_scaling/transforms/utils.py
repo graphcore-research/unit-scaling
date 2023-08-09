@@ -1,5 +1,7 @@
 # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 
+"""Utilities for working with transforms."""
+
 import functools
 from contextlib import contextmanager
 from copy import copy, deepcopy

@@ -52,8 +52,8 @@ def test_unit_scale(caplog: LogCaptureFixture) -> None:
     )
     assert_scale(
         model.layer_norm.weight.grad,
-        # model.l1.weight.grad,
-        # model.l2.weight.grad,
+        model.l1.weight.grad,
+        model.l2.weight.grad,
         target=b**-0.25,
     )
 

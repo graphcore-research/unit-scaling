@@ -1,5 +1,7 @@
 # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
 
+"""Tools for analysing scale (and other metrics) within PyTorch models."""
+
 import colorsys
 import logging
 from math import isnan
@@ -13,6 +15,7 @@ import seaborn as sns  # type: ignore[import]
 from torch.fx.graph import Graph
 from torch.fx.node import Node
 
+from ._internal_utils import generate__all__
 from .transforms import Metrics, prune_non_float_tensors, prune_same_scale_tensors
 
 logger = logging.getLogger(__name__)
@@ -95,12 +98,11 @@ def plot(
         from unit_scaling.transforms import track_scales
         from unit_scaling.analysis import plot
 
-        input = ...
+        inpt = ...
         model = ...
 
-        input.requires_grad_()
         model = track_scales(model)
-        loss = model(input)
+        loss = model(inpt)
         loss.backward()
 
         graph = model.scales_graph()
@@ -146,7 +148,7 @@ def plot(
     df = graph_to_dataframe(g)
 
     plot_height = len(df["layer"].unique())
-    plt.figure(figsize=(10, plot_height // 4))
+    plt.figure(figsize=(10, plot_height / 4))
 
     colors = sns.color_palette("colorblind")
     sns.set_palette(colors)
@@ -328,3 +330,6 @@ def plot(
                     draw_error_bar(n, direction)
 
     return p
+
+
+__all__ = generate__all__(__name__)

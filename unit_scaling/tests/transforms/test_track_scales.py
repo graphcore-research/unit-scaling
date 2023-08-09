@@ -29,7 +29,7 @@ def test_track_scales() -> None:
     model = track_scales(model)
     assert len(model.scales_graph().nodes) == 0  # type: ignore[operator]
 
-    input = randn(2**4, 2**10, requires_grad=True)
+    input = randn(2**4, 2**10)
     loss = model(input)
 
     graph = model.scales_graph()  # type: ignore[operator]
@@ -190,7 +190,7 @@ def test_prune_same_scale_tensors() -> None:
     expected_targets -= {"flatten", "view"}
     assert graph_targets == expected_targets
 
-    graph = prune_same_scale_tensors(graph, rel_tol=2**-4)
+    graph = prune_same_scale_tensors(graph, rtol=2**-4)
     graph_targets = set(node.target for node in graph.nodes)
     expected_targets -= {torch.gather, F.embedding}
     assert graph_targets == expected_targets
@@ -206,7 +206,7 @@ def test_prune_same_scale_tensors_with_grad() -> None:
             f = e.sum()  # different scale fwd & bwd
             return f
 
-    input = randn(2**6, 2**8, requires_grad=True)
+    input = randn(2**6, 2**8)
     model = Model()
     model = track_scales(model)
     loss = model(input)

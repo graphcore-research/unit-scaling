@@ -35,6 +35,7 @@ Click below for the full documentation:
    :recursive:
 
    unit_scaling
+   unit_scaling.analysis
    unit_scaling.constraints
    unit_scaling.formats
    unit_scaling.functional
