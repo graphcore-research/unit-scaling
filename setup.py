@@ -10,7 +10,7 @@ try:
 
     # This should match requirements-dev-ipu.txt
     requirements.append(
-        "git+https://github.com/graphcore-research/poptorch-experimental-addons@beb12678d1e7ea2c033bd061d32167be262dfa58"
+        "poptorch-experimental-addons @ git+https://github.com/graphcore-research/poptorch-experimental-addons@beb12678d1e7ea2c033bd061d32167be262dfa58"
     )
 except ImportError:
     pass
