@@ -5,7 +5,7 @@
 import colorsys
 import logging
 from math import isnan
-from typing import Any, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 
 import matplotlib  # type: ignore[import]
 import matplotlib.colors  # type: ignore[import]
@@ -16,7 +16,6 @@ from datasets import load_dataset  # type: ignore[import]
 from torch import Tensor, nn
 from torch.fx.graph import Graph
 from torch.fx.node import Node
-from transformers.tokenization_utils_base import PreTrainedTokenizerBase  # type: ignore
 
 from ._internal_utils import generate__all__
 from .transforms import (
@@ -25,6 +24,11 @@ from .transforms import (
     prune_same_scale_tensors,
     track_scales,
 )
+
+if TYPE_CHECKING:
+    from transformers.tokenization_utils_base import (  # type: ignore
+        PreTrainedTokenizerBase,
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +49,7 @@ def _example_seqs(
 
 
 def _create_batch(
-    tokenizer: PreTrainedTokenizerBase,
+    tokenizer: "PreTrainedTokenizerBase",
     seqs: List[str],
     seq_len: int,
 ) -> Tuple[Tensor, Tensor, Tensor]:
@@ -61,7 +65,7 @@ def _create_batch(
 
 
 def example_batch(
-    tokenizer: PreTrainedTokenizerBase,
+    tokenizer: "PreTrainedTokenizerBase",
     batch_size: int,
     seq_len: int,
     dataset_path: str = "wikitext",
@@ -411,7 +415,7 @@ def plot(
 
 def visualiser(
     model: nn.Module,
-    tokenizer: PreTrainedTokenizerBase,
+    tokenizer: "PreTrainedTokenizerBase",
     batch_size: int,
     seq_len: int,
     backward: bool = True,
