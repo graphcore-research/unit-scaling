@@ -55,9 +55,7 @@ def _patched_call_function(  # type: ignore[no-untyped-def]
     args,
     kwargs,
 ):  # pragma: no cover
-    if tx.output.is_root_tracer() and isinstance(
-        self.obj, torch._dynamo.variables.NNModuleVariable
-    ):
+    if isinstance(self.obj, torch._dynamo.variables.NNModuleVariable):
         module_attr = getattr(self.fn, "__module__", "")
         if (
             module_attr is not None

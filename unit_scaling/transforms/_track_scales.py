@@ -360,7 +360,7 @@ def prune_non_float_tensors(graph: Graph) -> Graph:
 def prune_same_scale_tensors(graph: Graph, rtol: float = 2**-16) -> Graph:
     """Given an FX Graph, prunes all nodes with the same scale as the previous node.
 
-    This is indended to remove non-informative nodes from the graph such as
+    This is intended to remove non-informative nodes from the graph such as
     reshapes. Nodes with multiple floating-point tensors as inputs are never pruned.
 
     Certain operations (such as slices) may change the scale slightly, but

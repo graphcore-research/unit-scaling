@@ -1,6 +1,8 @@
+datasets
 docstring-parser
 einops
 numpy
 seaborn
 tabulate
 torch
+transformers
