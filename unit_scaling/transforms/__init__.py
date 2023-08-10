@@ -7,10 +7,22 @@ scaling."""
 # Removing the `--no-implicit-reexport` option ought to fix this, but doesn't appear to.
 
 from ._simulate_format import simulate_format, simulate_fp8
+from ._track_scales import (
+    Metrics,
+    prune_non_float_tensors,
+    prune_same_scale_tensors,
+    prune_selected_nodes,
+    track_scales,
+)
 from ._unit_scale import unit_scale
 
 __all__ = [
+    "Metrics",
+    "prune_non_float_tensors",
+    "prune_same_scale_tensors",
+    "prune_selected_nodes",
     "simulate_format",
     "simulate_fp8",
+    "track_scales",
     "unit_scale",
 ]

@@ -2,8 +2,9 @@
 
 import logging
 from inspect import signature
+from operator import getitem
 from types import BuiltinFunctionType
-from typing import Any, Callable, Dict, List, Set, Tuple, TypeVar
+from typing import Any, Callable, Dict, List, Set, TypeVar
 
 import torch
 import torch._dynamo
@@ -69,10 +70,6 @@ def _is_self_attention(skip_node: Node, residual_node: Node) -> bool:
     return bool(residual_fns.intersection(self_attention_fns))
 
 
-def _getitem(tuple: Tuple[T, ...], idx: int) -> T:
-    return tuple[idx]
-
-
 def _unit_scale_residual(
     graph: Graph,
     add: Node,
@@ -92,11 +89,11 @@ def _unit_scale_residual(
             type_expr=getattr(skip, "type", None),
         )
     with graph.inserting_after(split):
-        new_start_residual = graph.call_function(_getitem, args=(split, 0))
+        new_start_residual = graph.call_function(getitem, args=(split, 0))
     for old_start_residual in old_start_residuals:
         old_start_residual.replace_input_with(skip, new_start_residual)
     with graph.inserting_after(split):
-        new_skip = graph.call_function(_getitem, args=(split, 1))
+        new_skip = graph.call_function(getitem, args=(split, 1))
     replace_node_with_function(
         graph, add, U.residual_add, args=(residual, new_skip, tau)
     )
@@ -116,9 +113,7 @@ def _unconstrain_node(node: Node) -> None:
 def unit_scaling_backend(
     replacement_map: Dict[Callable[..., Any], Callable[..., Any]] = dict()
 ) -> Backend:
-    def inner_backend(
-        gm: GraphModule, example_inputs: List[Tensor]
-    ) -> Callable[..., Any]:
+    def inner_backend(gm: GraphModule, example_inputs: List[Tensor]) -> GraphModule:
         logger.info("running unit scaling backend")
         graph = gm.graph
         # Replace function nodes with those in `replacement_map` or with their

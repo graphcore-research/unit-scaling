@@ -18,6 +18,7 @@ from ._modules import (
     TransformerDecoder,
     TransformerLayer,
 )
+from .analysis import visualiser
 
 __all__ = [
     "GELU",
@@ -31,4 +32,5 @@ __all__ = [
     "Softmax",
     "TransformerDecoder",
     "TransformerLayer",
+    "visualiser",
 ]
