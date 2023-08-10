@@ -1,0 +1,6 @@
+unit\_scaling.analysis.graph\_to\_dataframe
+===========================================
+
+.. currentmodule:: unit_scaling.analysis
+
+.. autofunction:: graph_to_dataframe

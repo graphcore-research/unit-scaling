@@ -1,0 +1,6 @@
+unit\_scaling.analysis.plot
+===========================
+
+.. currentmodule:: unit_scaling.analysis
+
+.. autofunction:: plot

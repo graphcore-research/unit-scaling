@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>unit_scaling.analysis &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">4. API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">unit_scaling.analysis</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for unit_scaling.analysis</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2023 Graphcore Ltd. All rights reserved.</span>
+
+<span class="sd">&quot;&quot;&quot;Tools for analysing scale (and other metrics) within PyTorch models.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">colorsys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">isnan</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib</span>  <span class="c1"># type: ignore[import]</span>
+<span class="kn">import</span> <span class="nn">matplotlib.colors</span>  <span class="c1"># type: ignore[import]</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>  <span class="c1"># type: ignore[import]</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>  <span class="c1"># type: ignore[import]</span>
+<span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_dataset</span>  <span class="c1"># type: ignore[import]</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
+<span class="kn">from</span> <span class="nn">torch.fx.graph</span> <span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span> <span class="nn">torch.fx.node</span> <span class="kn">import</span> <span class="n">Node</span>
+
+<span class="kn">from</span> <span class="nn">._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
+<span class="kn">from</span> <span class="nn">.transforms</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Metrics</span><span class="p">,</span>
+    <span class="n">prune_non_float_tensors</span><span class="p">,</span>
+    <span class="n">prune_same_scale_tensors</span><span class="p">,</span>
+    <span class="n">track_scales</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">transformers.tokenization_utils_base</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># type: ignore</span>
+        <span class="n">PreTrainedTokenizerBase</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_example_seqs</span><span class="p">(</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">min_seq_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">dataset_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wikitext&quot;</span><span class="p">,</span>
+    <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wikitext-103-v1&quot;</span><span class="p">,</span>
+    <span class="n">shuffle_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10_000</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1472</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">streaming</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">shuffled_dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="n">shuffle_buffer_size</span><span class="p">)</span>
+    <span class="n">filtered_dataset</span> <span class="o">=</span> <span class="n">shuffled_dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">min_seq_len</span><span class="p">)</span>
+    <span class="n">batch</span> <span class="o">=</span> <span class="n">filtered_dataset</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_create_batch</span><span class="p">(</span>
+    <span class="n">tokenizer</span><span class="p">:</span> <span class="s2">&quot;PreTrainedTokenizerBase&quot;</span><span class="p">,</span>
+    <span class="n">seqs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">seq_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">eos_token</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span>
+        <span class="n">seqs</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">seq_len</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">input_idxs</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">][:,</span> <span class="p">:</span><span class="n">seq_len</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="n">attn_mask</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;attention_mask&quot;</span><span class="p">][:,</span> <span class="p">:</span><span class="n">seq_len</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">][:,</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">seq_len</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">input_idxs</span><span class="p">,</span> <span class="n">attn_mask</span><span class="p">,</span> <span class="n">labels</span>
+
+
+<div class="viewcode-block" id="example_batch"><a class="viewcode-back" href="../../generated/unit_scaling.analysis.example_batch.html#unit_scaling.analysis.example_batch">[docs]</a><span class="k">def</span> <span class="nf">example_batch</span><span class="p">(</span>
+    <span class="n">tokenizer</span><span class="p">:</span> <span class="s2">&quot;PreTrainedTokenizerBase&quot;</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">seq_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">dataset_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wikitext&quot;</span><span class="p">,</span>
+    <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wikitext-103-v1&quot;</span><span class="p">,</span>
+    <span class="n">shuffle_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10_000</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1472</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a batch of token IDs from a given dataset, along with an attention mask</span>
+<span class="sd">    and labels (just the shifted token IDs).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tokenizer (PreTrainedTokenizerBase): the tokenizer applied to the text data.</span>
+<span class="sd">        batch_size (int): the batch size of the returned tensor.</span>
+<span class="sd">        seq_len (int): the sequence length (number of IDs) of the returned tensor.</span>
+<span class="sd">        dataset_path (str, optional): huggingface path of the dataset to use for</span>
+<span class="sd">            visualisation. Defaults to &quot;wikitext&quot;.</span>
+<span class="sd">        dataset_name (str, optional): huggingface name of the dataset to use for</span>
+<span class="sd">            visualisation. Defaults to &quot;wikitext-103-v1&quot;.</span>
+<span class="sd">        shuffle_buffer_size (int, optional): the tokenized data is a random sample from</span>
+<span class="sd">            a chunk of the full dataset. This determines the chunk size.</span>
+<span class="sd">            Defaults to 10_000.</span>
+<span class="sd">        seed (int, optional): shuffle seed. Defaults to 1472.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple[Tensor]: a tuple of (input_idxs, attn_mask, labels)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">seqs</span> <span class="o">=</span> <span class="n">_example_seqs</span><span class="p">(</span>
+        <span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="n">dataset_path</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">,</span> <span class="n">shuffle_buffer_size</span><span class="p">,</span> <span class="n">seed</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_create_batch</span><span class="p">(</span>
+        <span class="n">tokenizer</span><span class="p">,</span>
+        <span class="n">seqs</span><span class="p">,</span>
+        <span class="n">seq_len</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="graph_to_dataframe"><a class="viewcode-back" href="../../generated/unit_scaling.analysis.graph_to_dataframe.html#unit_scaling.analysis.graph_to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">graph_to_dataframe</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a :class:`torch.fx.Graph` with annotated</span>
+<span class="sd">    :class:`unit_scaling.transforms.Metrics` into a :class:`pandas.DataFrame`.</span>
+
+<span class="sd">    This graph is indended to have been generated by applying</span>
+<span class="sd">    :func:`unit_scaling.transforms.track_scales` to an arbitrary</span>
+<span class="sd">    :class:`torch.nn.Module`, running a forward (and possibly backward) pass,</span>
+<span class="sd">    then calling the `module.scales_graph()` function.</span>
+
+<span class="sd">    The resulting dataframe contains all the metrics information for the module,</span>
+<span class="sd">    and is used internally by the :func:`unit_scaling.analysis.plot` function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        g (Graph): the input graph.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: the metrics dataframe.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;layer&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;weight tensor&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;direction&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tensor type&quot;</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">+</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">full_names</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="c1"># &#39;output&#39; has to be kept from previous stages to keep fx happy. We drop it here</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fwd&quot;</span><span class="p">,</span> <span class="s2">&quot;bwd&quot;</span><span class="p">]:</span>
+            <span class="n">tensor_type_prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;fwd&quot;</span> <span class="k">else</span> <span class="s2">&quot;grad_&quot;</span>
+            <span class="n">tensor_type_suffix</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span> <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;requires_grad&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;x&quot;</span>
+            <span class="n">row_data</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;clean_name&quot;</span><span class="p">],</span>
+                <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;requires_grad&quot;</span><span class="p">],</span>
+                <span class="n">direction</span><span class="p">,</span>
+                <span class="n">tensor_type_prefix</span> <span class="o">+</span> <span class="n">tensor_type_suffix</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">names</span><span class="p">():</span>
+                <span class="n">directional_metrics</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;metrics&quot;</span><span class="p">],</span> <span class="n">direction</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">directional_metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">directional_metrics</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># pragma: no cover</span>
+                <span class="n">row_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row_data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
+        <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">row</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">)},</span>
+        <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span>
+        <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot"><a class="viewcode-back" href="../../generated/unit_scaling.analysis.plot.html#unit_scaling.analysis.plot">[docs]</a><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mean_abs&quot;</span><span class="p">,</span>
+    <span class="n">prune_same_scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_error_bars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">xmin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">xmax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a :mod:`matplotlib` plot visualising the scales in the forward (and</span>
+<span class="sd">    optionally backward) pass of all tensors in an arbitrary FX graph.</span>
+
+<span class="sd">    The input graph is intended to have been generated by applying</span>
+<span class="sd">    :func:`unit_scaling.transforms.track_scales` to an arbitrary</span>
+<span class="sd">    :class:`torch.nn.Module`, running a forward (and possibly backward) pass,</span>
+<span class="sd">    then calling the `module.scales_graph()` function:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from unit_scaling.transforms import track_scales</span>
+<span class="sd">        from unit_scaling.analysis import plot</span>
+
+<span class="sd">        inpt = ...</span>
+<span class="sd">        model = ...</span>
+
+<span class="sd">        model = track_scales(model)</span>
+<span class="sd">        loss = model(inpt)</span>
+<span class="sd">        loss.backward()</span>
+
+<span class="sd">        graph = model.scales_graph()</span>
+<span class="sd">        plot(graph)</span>
+
+<span class="sd">    Operations that don&#39;t output floating-point tensors are automatically pruned from</span>
+<span class="sd">    the visualised graph, as they are deemed unlikely to be relevant from the</span>
+<span class="sd">    perspective of model numerics.</span>
+
+<span class="sd">    Faint coloured horizontal lines for each row represent error bars indicating</span>
+<span class="sd">    the maximum and minimum values seen in each tensor during tracking.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        g (Graph): the graph to visualise.</span>
+<span class="sd">        title (str, optional): title for the generated plot. Defaults to &quot;&quot;.</span>
+<span class="sd">        metric (str, optional): the metric to show on the x-axis. Can be any of:</span>
+<span class="sd">            (&quot;mean_abs&quot;, &quot;abs_mean&quot;, &quot;std&quot;, &quot;abs_max&quot;, &quot;abs_min&quot;, &quot;numel&quot;).</span>
+<span class="sd">            Defaults to &quot;mean_abs&quot;.</span>
+<span class="sd">        prune_same_scale (bool, optional): prune operations that don&#39;t change the scale</span>
+<span class="sd">            of their input tensors. In practice this means that views / reshapes are not</span>
+<span class="sd">            shown, making the resulting visualisation clearer. Defaults to True.</span>
+<span class="sd">        show_arrows (bool, optional): show arrows between operations,</span>
+<span class="sd">            denoting dependencies. Defaults to True.</span>
+<span class="sd">        show_error_bars (bool, optional): show max/min error bars. Defaults to True.</span>
+<span class="sd">        xmin (Optional[float], optional): the minimum x-value to display.</span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">        xmax (Optional[float], optional): the maximum x-value to display.</span>
+<span class="sd">            Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matplotlib.axes.Axes: the axes representing the generated plot.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">names</span><span class="p">()</span> <span class="o">+</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">full_names</span><span class="p">(),</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;metric &#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; must be one of </span><span class="si">{</span><span class="n">Metrics</span><span class="o">.</span><span class="n">names</span><span class="p">()</span><span class="si">}</span><span class="s2"> (these correspond to&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">Metrics</span><span class="o">.</span><span class="n">full_names</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="p">)</span>
+    <span class="n">full_metric</span> <span class="o">=</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">get_full_name</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">prune_non_float_tensors</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">prune_same_scale</span><span class="p">:</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">prune_same_scale_tensors</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">graph_to_dataframe</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+
+    <span class="n">plot_height</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;layer&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">plot_height</span> <span class="o">/</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;colorblind&quot;</span><span class="p">)</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
+
+    <span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">()</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">full_metric</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="s2">&quot;layer&quot;</span><span class="p">,</span>
+        <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;direction&quot;</span><span class="p">,</span>
+        <span class="n">hue_order</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fwd&quot;</span><span class="p">,</span> <span class="s2">&quot;bwd&quot;</span><span class="p">],</span>
+        <span class="n">style</span><span class="o">=</span><span class="s2">&quot;weight tensor&quot;</span><span class="p">,</span>
+        <span class="n">style_order</span><span class="o">=</span><span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="n">dashes</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+        <span class="n">markers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">],</span>
+        <span class="n">markersize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+        <span class="n">estimator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">p</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">plot_height</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s2">&quot;top&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_label_position</span><span class="p">(</span><span class="s2">&quot;top&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">2</span><span class="o">**-</span><span class="mi">14</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">dashes</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">2</span><span class="o">**-</span><span class="mi">7</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">dashes</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">240</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">dashes</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">16</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">dashes</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+        <span class="mi">2</span><span class="o">**-</span><span class="mi">14</span><span class="p">,</span>
+        <span class="n">plot_height</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="s2">&quot;FP16 min,</span><span class="se">\n</span><span class="s2">FP8 E5 min</span><span class="se">\n</span><span class="s2">(normal)&quot;</span><span class="p">,</span>
+        <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="n">va</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+        <span class="mi">2</span><span class="o">**-</span><span class="mi">7</span><span class="p">,</span>
+        <span class="n">plot_height</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="s2">&quot;FP8 E4 min</span><span class="se">\n</span><span class="s2">(normal)&quot;</span><span class="p">,</span>
+        <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="n">va</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+        <span class="mi">240</span><span class="p">,</span>
+        <span class="n">plot_height</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="s2">&quot;FP8 E4 max&quot;</span><span class="p">,</span>
+        <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="n">va</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+        <span class="mi">2</span><span class="o">**</span><span class="mi">16</span><span class="p">,</span>
+        <span class="n">plot_height</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="s2">&quot;FP16 max,</span><span class="se">\n</span><span class="s2">FP8 E5 max&quot;</span><span class="p">,</span>
+        <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="n">va</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Cycle through the graph&#39;s nodes and give each an index (for the y-axis)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">node_idxs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;clean_name&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_idxs</span><span class="p">:</span>
+                <span class="n">node_idxs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">min_scale</span><span class="p">,</span> <span class="n">max_scale</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">xmin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">min_scale</span> <span class="o">=</span> <span class="n">xmin</span>
+    <span class="k">if</span> <span class="n">xmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">max_scale</span> <span class="o">=</span> <span class="n">xmax</span>
+
+    <span class="k">def</span> <span class="nf">lighten_color</span><span class="p">(</span>
+        <span class="n">color</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">l_degree</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">s_degree</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">h</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">colorsys</span><span class="o">.</span><span class="n">rgb_to_hls</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="n">new_l</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">l_degree</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">l</span><span class="p">)</span>
+        <span class="n">new_s</span> <span class="o">=</span> <span class="n">s_degree</span> <span class="o">*</span> <span class="n">s</span>
+        <span class="k">return</span> <span class="n">colorsys</span><span class="o">.</span><span class="n">hls_to_rgb</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">new_l</span><span class="p">,</span> <span class="n">new_s</span><span class="p">)</span>
+
+    <span class="n">light_colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">lighten_color</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">l_degree</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">s_degree</span><span class="o">=</span><span class="mf">0.45</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">draw_error_bar</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;bwd&quot;</span> <span class="ow">and</span> <span class="n">metrics</span><span class="o">.</span><span class="n">bwd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">return</span>
+
+        <span class="n">directional_metrics</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">directional_metrics</span><span class="o">.</span><span class="n">abs_min</span><span class="p">,</span> <span class="n">directional_metrics</span><span class="o">.</span><span class="n">abs_max</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">node_idxs</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;clean_name&quot;</span><span class="p">]]</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.1</span> <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;fwd&quot;</span> <span class="k">else</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">light_colors</span><span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;fwd&quot;</span> <span class="k">else</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">]:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">],</span>
+                <span class="p">[</span><span class="n">y</span> <span class="o">-</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">min_scale</span><span class="p">,</span> <span class="n">max_scale</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">draw_arrow</span><span class="p">(</span><span class="n">node_a</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">node_b</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">a_metrics</span> <span class="o">=</span> <span class="n">node_a</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span>
+        <span class="n">b_metrics</span> <span class="o">=</span> <span class="n">node_b</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;bwd&quot;</span> <span class="ow">and</span> <span class="p">(</span>  <span class="c1"># pragma: no cover</span>
+            <span class="n">a_metrics</span><span class="o">.</span><span class="n">bwd</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b_metrics</span><span class="o">.</span><span class="n">bwd</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">return</span>  <span class="c1"># pragma: no cover</span>
+
+        <span class="n">a_x</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">a_metrics</span><span class="p">,</span> <span class="n">direction</span><span class="p">),</span> <span class="n">metric</span><span class="p">)</span>
+        <span class="n">b_x</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">b_metrics</span><span class="p">,</span> <span class="n">direction</span><span class="p">),</span> <span class="n">metric</span><span class="p">)</span>
+        <span class="n">a_y</span> <span class="o">=</span> <span class="n">node_idxs</span><span class="p">[</span><span class="n">node_a</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;clean_name&quot;</span><span class="p">]]</span>
+        <span class="n">b_y</span> <span class="o">=</span> <span class="n">node_idxs</span><span class="p">[</span><span class="n">node_b</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;clean_name&quot;</span><span class="p">]]</span>
+
+        <span class="n">annotation</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">a_x</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">isnan</span><span class="p">(</span><span class="n">a_x</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+            <span class="n">a_x</span> <span class="o">=</span> <span class="n">min_scale</span>
+        <span class="k">if</span> <span class="n">isnan</span><span class="p">(</span><span class="n">a_x</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node &#39;</span><span class="si">{</span><span class="n">node_a</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;clean_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; is NaN. Plotting as 0&quot;</span><span class="p">)</span>
+            <span class="n">a_x</span> <span class="o">=</span> <span class="n">min_scale</span>
+        <span class="k">if</span> <span class="n">b_x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="n">b_x</span> <span class="o">=</span> <span class="n">min_scale</span>
+            <span class="n">annotation</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+        <span class="k">if</span> <span class="n">isnan</span><span class="p">(</span><span class="n">b_x</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node &#39;</span><span class="si">{</span><span class="n">node_b</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;clean_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; is NaN. Plotting as 0&quot;</span><span class="p">)</span>
+            <span class="n">b_x</span> <span class="o">=</span> <span class="n">min_scale</span>
+            <span class="n">annotation</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+
+        <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;fwd&quot;</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;bwd&quot;</span><span class="p">,</span> <span class="n">direction</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">colors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">a_x</span><span class="p">,</span> <span class="n">a_y</span><span class="p">,</span> <span class="n">b_x</span><span class="p">,</span> <span class="n">b_y</span> <span class="o">=</span> <span class="n">b_x</span><span class="p">,</span> <span class="n">b_y</span><span class="p">,</span> <span class="n">a_x</span><span class="p">,</span> <span class="n">a_y</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+            <span class="n">annotation</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+            <span class="n">xy</span><span class="o">=</span><span class="p">((</span><span class="n">a_x</span><span class="p">,</span> <span class="n">a_y</span><span class="p">)),</span>
+            <span class="n">xytext</span><span class="o">=</span><span class="p">((</span><span class="n">b_x</span><span class="p">,</span> <span class="n">b_y</span><span class="p">)),</span>
+            <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_arrows</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fwd&quot;</span><span class="p">,</span> <span class="s2">&quot;bwd&quot;</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+                            <span class="n">draw_arrow</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_error_bars</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fwd&quot;</span><span class="p">,</span> <span class="s2">&quot;bwd&quot;</span><span class="p">]:</span>
+                    <span class="n">draw_error_bar</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="visualiser"><a class="viewcode-back" href="../../generated/unit_scaling.visualiser.html#unit_scaling.analysis.visualiser">[docs]</a><span class="k">def</span> <span class="nf">visualiser</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+    <span class="n">tokenizer</span><span class="p">:</span> <span class="s2">&quot;PreTrainedTokenizerBase&quot;</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">seq_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">backward</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">dataset_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wikitext&quot;</span><span class="p">,</span>
+    <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wikitext-103-v1&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;[Experimental] Generate a plot visualising the scales in the forward (and</span>
+<span class="sd">    optionally backward) pass of all tensors in an arbitrary :class:`torch.nn.Module`.</span>
+
+<span class="sd">    This is a convenience method which combines</span>
+<span class="sd">    :func:`unit_scaling.analysis.example_batch`,</span>
+<span class="sd">    :func:`unit_scaling.transforms.track_scales` and</span>
+<span class="sd">    :func:`unit_scaling.analysis.plot`.</span>
+
+<span class="sd">    Warning: this method is experimental and may not work for a wide range of</span>
+<span class="sd">    models. It currently only supports models that use the following interface:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        output, loss = model(inputs, labels)</span>
+
+<span class="sd">    Future versions will support standard huggingface interfaces. For now we recommend</span>
+<span class="sd">    users with models providing different interfaces to re-implement this method for</span>
+<span class="sd">    their use case, based on the following template:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        inputs, attn_mask, labels = example_batch(</span>
+<span class="sd">            tokenizer, batch_size, seq_len, dataset_path, dataset_name</span>
+<span class="sd">        )</span>
+<span class="sd">        tracked_model = track_scales(model)</span>
+<span class="sd">        loss = ... # code to call model with (inputs, attn_mask, labels), returning loss</span>
+<span class="sd">        if backward:</span>
+<span class="sd">            loss.backward()</span>
+<span class="sd">        graph = tracked_model.scales_graph()</span>
+<span class="sd">        return plot(graph, **plot_kwargs)</span>
+
+<span class="sd">    Operations that don&#39;t output floating-point tensors are automatically pruned from</span>
+<span class="sd">    the visualised graph, as they are deemed unlikely to be relevant from the</span>
+<span class="sd">    perspective of model numerics.</span>
+
+<span class="sd">    Faint coloured horizontal lines for each row represent error bars indicating</span>
+<span class="sd">    the maximum and minimum values seen in each tensor during tracking.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model (nn.Module): the model to visualise</span>
+<span class="sd">        tokenizer (PreTrainedTokenizerBase): the tokenizer corresponding to the model.</span>
+<span class="sd">        batch_size (int): the batch size for the visualisation</span>
+<span class="sd">        seq_len (int): the sequence length for the visualisation</span>
+<span class="sd">        backward (bool, optional): visualise scales in the backward pass.</span>
+<span class="sd">            Defaults to True.</span>
+<span class="sd">        dataset_path (str, optional): huggingface path of the dataset to use for</span>
+<span class="sd">            visualisation. Defaults to &quot;wikitext&quot;.</span>
+<span class="sd">        dataset_name (str, optional): huggingface name of the dataset to use for</span>
+<span class="sd">            visualisation. Defaults to &quot;wikitext-103-v1&quot;.</span>
+<span class="sd">        plot_kwargs (Any): keyword args passed to :func:`unit_scaling.analysis.plot`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matplotlib.axes.Axes: the axes representing the generated plot.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">inputs</span><span class="p">,</span> <span class="n">attn_mask</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">example_batch</span><span class="p">(</span>
+        <span class="n">tokenizer</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">dataset_path</span><span class="p">,</span> <span class="n">dataset_name</span>
+    <span class="p">)</span>
+    <span class="n">tracked_model</span> <span class="o">=</span> <span class="n">track_scales</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">loss</span> <span class="o">=</span> <span class="n">tracked_model</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">backward</span><span class="p">:</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">tracked_model</span><span class="o">.</span><span class="n">scales_graph</span><span class="p">()</span>  <span class="c1"># type: ignore[operator]</span>
+    <span class="k">return</span> <span class="n">plot</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="n">generate__all__</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

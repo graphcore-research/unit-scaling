@@ -1,0 +1,6 @@
+unit\_scaling.analysis.example\_batch
+=====================================
+
+.. currentmodule:: unit_scaling.analysis
+
+.. autofunction:: example_batch

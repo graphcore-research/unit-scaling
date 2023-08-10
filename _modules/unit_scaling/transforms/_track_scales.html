@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>unit_scaling.transforms._track_scales &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">4. API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">unit_scaling.transforms._track_scales</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for unit_scaling.transforms._track_scales</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2023 Graphcore Ltd. All rights reserved.</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">isclose</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
+<span class="kn">from</span> <span class="nn">torch.fx</span> <span class="kn">import</span> <span class="n">Interpreter</span>
+<span class="kn">from</span> <span class="nn">torch.fx.graph</span> <span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span> <span class="nn">torch.fx.graph_module</span> <span class="kn">import</span> <span class="n">GraphModule</span>
+<span class="kn">from</span> <span class="nn">torch.fx.node</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Target</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">Backend</span><span class="p">,</span> <span class="n">apply_transform</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Metrics"><a class="viewcode-back" href="../../../generated/unit_scaling.transforms.Metrics.html#unit_scaling.transforms.Metrics">[docs]</a><span class="k">class</span> <span class="nc">Metrics</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A set of metrics representing useful information about a tensor, in the forward</span>
+<span class="sd">    and backward pass.</span>
+
+<span class="sd">    :code:`metrics.fwd`, and optionally :code:`metrics.bwd`, are objects of type</span>
+<span class="sd">    :code:`Data`, containing metrics about the</span>
+<span class="sd">    tensor in the forward pass and its gradient in the backward pass.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Metrics.Data"><a class="viewcode-back" href="../../../generated/unit_scaling.transforms.Metrics.html#unit_scaling.transforms.Metrics.Data">[docs]</a>    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Data</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Data representing key metrics for a tensor.&quot;&quot;&quot;</span>
+
+        <span class="n">mean_abs</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="n">abs_mean</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="n">std</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="n">abs_max</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="n">abs_min</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="n">numel</span><span class="p">:</span> <span class="nb">int</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fwd_tensor</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fwd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_tensor</span><span class="p">(</span><span class="n">fwd_tensor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bwd</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Metrics</span><span class="o">.</span><span class="n">Data</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">set_bwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bwd_tensor</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bwd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_tensor</span><span class="p">(</span><span class="n">bwd_tensor</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;fwd: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fwd</span><span class="si">}</span><span class="s2">, bwd: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bwd</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># pragma: no cover</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_tensor</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Metrics.Data&quot;</span><span class="p">:</span>
+        <span class="n">abs_t</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">Data</span><span class="p">(</span>
+            <span class="n">mean_abs</span><span class="o">=</span><span class="n">abs_t</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="n">abs_mean</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="n">std</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="n">abs_max</span><span class="o">=</span><span class="n">abs_t</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="n">abs_min</span><span class="o">=</span><span class="n">abs_t</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="n">numel</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">numel</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_full_name</span><span class="p">(</span><span class="n">short_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;mean_abs&quot;</span><span class="p">:</span> <span class="s2">&quot;mean absolute value&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;abs_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;absolute mean value&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;std&quot;</span><span class="p">:</span> <span class="s2">&quot;standard deviation&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;abs_max&quot;</span><span class="p">:</span> <span class="s2">&quot;absolute maximum&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;abs_min&quot;</span><span class="p">:</span> <span class="s2">&quot;absolute minimum&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;numel&quot;</span><span class="p">:</span> <span class="s2">&quot;number of elements&quot;</span><span class="p">,</span>
+        <span class="p">}[</span><span class="n">short_name</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">names</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">Metrics</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">__dataclass_fields__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">full_names</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Metrics</span><span class="o">.</span><span class="n">get_full_name</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">names</span><span class="p">()]</span></div>
+
+
+<span class="k">def</span> <span class="nf">_directions_same_scale</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">Data</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Metrics</span><span class="o">.</span><span class="n">Data</span><span class="p">,</span> <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**-</span><span class="mi">16</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="c1"># We&#39;re just going to look at the mean_abs here</span>
+    <span class="k">return</span> <span class="n">isclose</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">mean_abs</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">mean_abs</span><span class="p">,</span> <span class="n">rel_tol</span><span class="o">=</span><span class="n">rtol</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_metrics_same_scale</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Metrics</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Metrics</span><span class="p">,</span> <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**-</span><span class="mi">16</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="c1"># Both are None</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">bwd</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">bwd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_directions_same_scale</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">fwd</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">fwd</span><span class="p">,</span> <span class="n">rtol</span><span class="p">)</span>
+    <span class="c1"># Only one is None</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">bwd</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">bwd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="c1"># Neither is None</span>
+    <span class="k">return</span> <span class="n">_directions_same_scale</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">fwd</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">fwd</span><span class="p">,</span> <span class="n">rtol</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_directions_same_scale</span><span class="p">(</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">bwd</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">bwd</span><span class="p">,</span> <span class="n">rtol</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_make_input_tensors_require_grad</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">old_forward</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">forward</span>
+
+    <span class="k">def</span> <span class="nf">new_forward</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">_is_float_tensor</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">old_forward</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">module</span><span class="o">.</span><span class="n">forward</span> <span class="o">=</span> <span class="n">new_forward</span>
+
+
+<span class="k">class</span> <span class="nc">_Track</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
+        <span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span>
+        <span class="n">t</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">node_meta</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">node_meta</span><span class="p">[</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Metrics</span><span class="p">(</span><span class="n">fwd_tensor</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">node_meta</span> <span class="o">=</span> <span class="n">node_meta</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
+        <span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Tensor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">node_meta</span><span class="p">[</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_bwd</span><span class="p">(</span><span class="n">bwd_tensor</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">_tabulate_graph_data</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">meta_ignore_fields</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;creation_timestamp&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;stack_trace&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;example_value&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tensor_dict&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;grapharg&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;opcode&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="p">,</span> <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="s2">&quot;input_nodes&quot;</span><span class="p">]</span>
+    <span class="n">meta_headers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta_headers</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta_ignore_fields</span><span class="p">:</span>
+                <span class="n">meta_headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="n">node_data</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">op</span><span class="p">,</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">_input_nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+        <span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">meta_headers</span><span class="p">]</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tabulate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span> <span class="o">+</span> <span class="n">meta_headers</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;html&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_add_tabular_html_display</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;When `_repr_html_()` is called on `g` (e.g. if it&#39;s displayed in a Jupyter</span>
+<span class="sd">    cell), return a tabulated view of the graph&#39;s data, including relevant metadata.&quot;&quot;&quot;</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">_repr_html_</span> <span class="o">=</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">_tabulate_graph_data</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>  <span class="c1"># type: ignore[attr-defined]</span>
+
+
+<span class="k">def</span> <span class="nf">_clean_node_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;l__self___&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;l_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_is_float_tensor</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">is_floating_point</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_get_tracking_meta</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;clean_name&quot;</span><span class="p">:</span> <span class="n">_clean_node_name</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+        <span class="s2">&quot;outputs_float_tensor&quot;</span><span class="p">:</span> <span class="n">_is_float_tensor</span><span class="p">(</span><span class="n">out</span><span class="p">),</span>
+        <span class="s2">&quot;requires_grad&quot;</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">)</span> <span class="ow">and</span> <span class="n">out</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="k">class</span> <span class="nc">_Tracker</span><span class="p">(</span><span class="n">Interpreter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gm</span><span class="p">:</span> <span class="n">GraphModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">gm</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">run_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">run_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_get_tracking_meta</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">out</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;outputs_float_tensor&quot;</span><span class="p">]:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;adding tracking to node: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">_Track</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="k">def</span> <span class="nf">scale_tracking_backend</span><span class="p">(</span><span class="n">graph_holder</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Graph</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Backend</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">inner_backend</span><span class="p">(</span>
+        <span class="n">gm</span><span class="p">:</span> <span class="n">GraphModule</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="n">_add_tabular_html_display</span><span class="p">(</span><span class="n">gm</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>  <span class="c1"># displays full info in notebooks</span>
+        <span class="n">graph_holder</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">graph</span>  <span class="c1"># allows graph to be accessed from outside</span>
+        <span class="k">return</span> <span class="n">_Tracker</span><span class="p">(</span><span class="n">gm</span><span class="p">)</span><span class="o">.</span><span class="n">run</span>  <span class="c1"># type: ignore[no-any-return]</span>
+
+    <span class="k">return</span> <span class="n">inner_backend</span>
+
+
+<span class="k">def</span> <span class="nf">_prune</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">replacement_arg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">users</span><span class="p">):</span>
+        <span class="c1"># output node&#39;s args are a tuple of tuples, so need special handling</span>
+        <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">replacement_arg</span> <span class="k">if</span> <span class="n">o</span> <span class="o">==</span> <span class="n">node</span> <span class="k">else</span> <span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">out</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="p">(</span><span class="n">replacement_arg</span> <span class="k">if</span> <span class="n">out</span> <span class="o">==</span> <span class="n">node</span> <span class="k">else</span> <span class="n">out</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">out</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">args</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">replacement_arg</span> <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">node</span> <span class="k">else</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">replacement_arg</span> <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">node</span> <span class="k">else</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">erase_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_filter_float_tensors</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Node</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">a</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Node</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;outputs_float_tensor&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="p">]</span>
+
+
+<div class="viewcode-block" id="track_scales"><a class="viewcode-back" href="../../../generated/unit_scaling.transforms.track_scales.html#unit_scaling.transforms.track_scales">[docs]</a><span class="k">def</span> <span class="nf">track_scales</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="n">M</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a version of the input module which tracks internal tensor metrics.</span>
+
+<span class="sd">    When the :code:`forward()` and :code:`backward()` methods of the resulting module</span>
+<span class="sd">    are called, internally various metrics (such as scale) are recorded for each</span>
+<span class="sd">    intermediate tensor used. These can be accessed using an additional method</span>
+<span class="sd">    :code:`module.scales_graph()` which is added to the module. The returned object</span>
+<span class="sd">    is an instance of :external+pytorch:py:class:`torch.fx.Graph`, where each node</span>
+<span class="sd">    representing a floating-point tensor now has a :code:`node.meta[&quot;metrics&quot;]` object</span>
+<span class="sd">    of type :class:`unit_scaling.transforms.Metrics` associated with it. Note that if</span>
+<span class="sd">    :code:`forward()` or :code:`backward()` are not called, tensor metrics will not</span>
+<span class="sd">    be available.</span>
+
+<span class="sd">    The unit scaling library also provides a method to visualise FX Graphs,</span>
+<span class="sd">    via the :func:`unit_scaling.analysis.plot` function. This is intended to be used</span>
+<span class="sd">    as follows:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from unit_scaling.transforms import track_scales</span>
+<span class="sd">        from unit_scaling.analysis import plot</span>
+
+<span class="sd">        inpt = ...</span>
+<span class="sd">        model = ...</span>
+
+<span class="sd">        model = track_scales(model)</span>
+<span class="sd">        loss = model(inpt)</span>
+<span class="sd">        loss.backward()</span>
+
+<span class="sd">        graph = model.scales_graph()</span>
+<span class="sd">        plot(graph)</span>
+
+<span class="sd">    The :code:`inpt` tensor(s) provided to any model transformed by</span>
+<span class="sd">    :code:`track_scales()` will automatically have :code:`inpt.requires_grad_()` set</span>
+<span class="sd">    (this is required for full scale tracking in the backward pass), so the user need</span>
+<span class="sd">    not specify this.</span>
+
+<span class="sd">    :code:`track_scales()` can be used in conjunction with other graph transforms</span>
+<span class="sd">    provided, but should always be the final transform in a chain. E.g.</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from unit_scaling.transforms import simulate_fp8, track_scales, unit_scale</span>
+
+<span class="sd">        model = track_scales(unit_scale(simulate_fp8(model)))</span>
+
+<span class="sd">    The full FX graph returned by this transform may contain more information than the</span>
+<span class="sd">    user requires for the sake of analysis. For this reason the functions</span>
+<span class="sd">    :func:`unit_scaling.transforms.prune_non_float_tensors` and</span>
+<span class="sd">    :func:`unit_scaling.transforms.prune_same_scale_tensors` are provided, which in</span>
+<span class="sd">    practice tend to limit the graph to only key tensors.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        module (M): the input module to be tracked.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        M: a new version of the input module which tracks tensor metrics when used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph_holder</span> <span class="o">=</span> <span class="p">[</span><span class="n">Graph</span><span class="p">()]</span>
+    <span class="n">tracking_module</span> <span class="o">=</span> <span class="n">apply_transform</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">scale_tracking_backend</span><span class="p">(</span><span class="n">graph_holder</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">scales_graph</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">graph_holder</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+
+    <span class="n">tracking_module</span><span class="o">.</span><span class="n">scales_graph</span> <span class="o">=</span> <span class="n">scales_graph</span>
+    <span class="n">_make_input_tensors_require_grad</span><span class="p">(</span><span class="n">tracking_module</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tracking_module</span>  <span class="c1"># type: ignore[no-any-return]</span></div>
+
+
+<div class="viewcode-block" id="prune_non_float_tensors"><a class="viewcode-back" href="../../../generated/unit_scaling.transforms.prune_non_float_tensors.html#unit_scaling.transforms.prune_non_float_tensors">[docs]</a><span class="k">def</span> <span class="nf">prune_non_float_tensors</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given an FX Graph, prunes all nodes which don&#39;t output floating-point tensors.</span>
+
+<span class="sd">    The supplied graph must have been generated via the :code:`module.scales_graph()`</span>
+<span class="sd">    method, called on a module with :func:`unit_scaling.transforms.track_scales`</span>
+<span class="sd">    applied. This is necessary as the scale-tracking process is what identifies which</span>
+<span class="sd">    tensors have floating-point values. E.g.</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from unit_scaling.transforms import track_scales, prune_non_float_tensors</span>
+
+<span class="sd">        inpt = ...</span>
+<span class="sd">        model = ...</span>
+
+<span class="sd">        model = track_scales(model)</span>
+<span class="sd">        loss = model(inpt)</span>
+<span class="sd">        loss.backward()</span>
+
+<span class="sd">        graph = model.scales_graph()</span>
+<span class="sd">        pruned_graph = prune_non_float_tensors(graph)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        graph (Graph): the FX graph to be pruned.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Graph: the pruned graph containing only nodes outputting floating-point tensors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;clean_name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;supplied graph must be a result of running&quot;</span>
+            <span class="s2">&quot; `unit_scaling.transforms.track_scales` (and extracting&quot;</span>
+            <span class="s2">&quot; the `scales_graph`). Arbitrary fx graphs lack metadata&quot;</span>
+            <span class="s2">&quot; about the types of node outputs so cannot be pruned.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;outputs_float_tensor&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">float_tensor_args</span> <span class="o">=</span> <span class="n">_filter_float_tensors</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">float_tensor_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">float_tensor_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;pruning non-float node: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+            <span class="n">_prune</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">replacement_arg</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">lint</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="prune_same_scale_tensors"><a class="viewcode-back" href="../../../generated/unit_scaling.transforms.prune_same_scale_tensors.html#unit_scaling.transforms.prune_same_scale_tensors">[docs]</a><span class="k">def</span> <span class="nf">prune_same_scale_tensors</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**-</span><span class="mi">16</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given an FX Graph, prunes all nodes with the same scale as the previous node.</span>
+
+<span class="sd">    This is intended to remove non-informative nodes from the graph such as</span>
+<span class="sd">    reshapes. Nodes with multiple floating-point tensors as inputs are never pruned.</span>
+
+<span class="sd">    Certain operations (such as slices) may change the scale slightly, but</span>
+<span class="sd">    negligibly—in this case we provide a tolerance parameter which can be used</span>
+<span class="sd">    to specify the relative change that is deemed significant.</span>
+
+<span class="sd">    The supplied graph must have been generated via the :code:`module.scales_graph()`</span>
+<span class="sd">    method, called on a module with :func:`unit_scaling.transforms.track_scales`</span>
+<span class="sd">    applied. E.g.</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from unit_scaling.transforms import track_scales, prune_same_scale_tensors</span>
+
+<span class="sd">        inpt = ...</span>
+<span class="sd">        model = ...</span>
+
+<span class="sd">        model = track_scales(model)</span>
+<span class="sd">        loss = model(inpt)</span>
+<span class="sd">        loss.backward()</span>
+
+<span class="sd">        graph = model.scales_graph()</span>
+<span class="sd">        pruned_graph = prune_same_scale_tensors(graph)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        graph (Graph): the FX graph to be pruned.</span>
+<span class="sd">        rtol (float, optional): the relative tolerance for &quot;same scale&quot;.</span>
+<span class="sd">            Defaults to 2**-16.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Graph: the pruned graph with nodes that don&#39;t change their input scale removed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;output&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;outputs_float_tensor&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">float_tensor_args</span> <span class="o">=</span> <span class="n">_filter_float_tensors</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">float_tensor_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">float_tensor_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">a_metrics</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span>
+            <span class="n">n_metrics</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;metrics&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">_metrics_same_scale</span><span class="p">(</span><span class="n">n_metrics</span><span class="p">,</span> <span class="n">a_metrics</span><span class="p">,</span> <span class="n">rtol</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;pruning same-scale node: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+                <span class="n">_prune</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">replacement_arg</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="prune_selected_nodes"><a class="viewcode-back" href="../../../generated/unit_scaling.transforms.prune_selected_nodes.html#unit_scaling.transforms.prune_selected_nodes">[docs]</a><span class="k">def</span> <span class="nf">prune_selected_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">targets</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Target</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given an FX Graph, prunes all nodes with functions in the set of target nodes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        graph (Graph): the FX graph to prune.</span>
+<span class="sd">        targets (Iterable[Target]): the functions which will not be represented by nodes</span>
+<span class="sd">            once pruning is complete.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Graph: the pruned graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">target</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;pruning node: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+            <span class="n">_prune</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">lint</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">graph</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+unit\_scaling.transforms.prune\_non\_float\_tensors
+===================================================
+
+.. currentmodule:: unit_scaling.transforms
+
+.. autofunction:: prune_non_float_tensors

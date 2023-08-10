@@ -21,12 +21,24 @@ unit\_scaling.transforms
    .. autosummary::
       :toctree:
    
+      prune_non_float_tensors
+      prune_same_scale_tensors
+      prune_selected_nodes
       simulate_format
       simulate_fp8
+      track_scales
       unit_scale
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      Metrics
    
    
 

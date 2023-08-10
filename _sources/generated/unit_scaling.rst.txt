@@ -21,6 +21,7 @@ unit\_scaling
    .. autosummary::
       :toctree:
    
+      visualiser
    
 
    

@@ -1,0 +1,6 @@
+unit\_scaling.transforms.prune\_selected\_nodes
+===============================================
+
+.. currentmodule:: unit_scaling.transforms
+
+.. autofunction:: prune_selected_nodes

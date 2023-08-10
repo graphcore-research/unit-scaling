@@ -72,6 +72,8 @@
   <h1>Source code for unit_scaling.formats</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Copyright (c) 2023 Graphcore Ltd. All rights reserved.</span>
 
+<span class="sd">&quot;&quot;&quot;Classes for simulating (non-standard) number formats.&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">cast</span>
 
@@ -138,7 +140,7 @@
                 <span class="n">exponent_bits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span><span class="p">,</span>
                 <span class="n">mantissa_bits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mantissa_bits</span><span class="p">,</span>
                 <span class="n">rounding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rounding</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="p">)</span>  <span class="c1"># pragma: no cover</span>
 
         <span class="n">absmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_absolute_value</span>
         <span class="n">downscale</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">**</span> <span class="p">(</span><span class="mi">127</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
@@ -149,7 +151,7 @@
             <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rounding</span> <span class="o">==</span> <span class="s2">&quot;nearest&quot;</span><span class="p">:</span>
             <span class="n">offset</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">//</span> <span class="mi">2</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;Unexpected FPFormat(rounding=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rounding</span><span class="si">}</span><span class="s1">&quot;),&#39;</span>
                 <span class="s1">&#39; expected &quot;stochastic&quot; or &quot;nearest&quot;&#39;</span>
@@ -169,7 +171,7 @@
                 <span class="n">exponent_bits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span><span class="p">,</span>
                 <span class="n">mantissa_bits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mantissa_bits</span><span class="p">,</span>
                 <span class="n">rounding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rounding</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="p">)</span>  <span class="c1"># pragma: no cover</span>
 
         <span class="k">class</span> <span class="nc">QuantiseForward</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
             <span class="nd">@staticmethod</span>
@@ -194,7 +196,7 @@
                 <span class="n">exponent_bits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span><span class="p">,</span>
                 <span class="n">mantissa_bits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mantissa_bits</span><span class="p">,</span>
                 <span class="n">rounding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rounding</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="p">)</span>  <span class="c1"># pragma: no cover</span>
 
         <span class="k">class</span> <span class="nc">QuantiseBackward</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
             <span class="nd">@staticmethod</span>

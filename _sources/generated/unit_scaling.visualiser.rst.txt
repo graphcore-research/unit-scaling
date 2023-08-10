@@ -1,0 +1,6 @@
+unit\_scaling.visualiser
+========================
+
+.. currentmodule:: unit_scaling
+
+.. autofunction:: visualiser
