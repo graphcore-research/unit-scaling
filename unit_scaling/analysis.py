@@ -25,7 +25,7 @@ from .transforms import (
     track_scales,
 )
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from transformers.tokenization_utils_base import (  # type: ignore
         PreTrainedTokenizerBase,
     )

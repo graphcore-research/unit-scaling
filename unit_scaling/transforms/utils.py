@@ -173,12 +173,12 @@ def apply_transform(
 ) -> M:
     """Applies a graph transformation to a module.
 
-    The user-supplied `backend` represents a transformation of a
-    :class:`torch.fx.graph_module.GraphModule`. `apply_transform()` uses
+    The user-supplied :code:`backend` represents a transformation of a
+    :class:`torch.fx.graph_module.GraphModule`. :code:`apply_transform()` uses
     :func:`torch._dynamo.optimize` to apply this transformation to the module,
     returning a new transformed module.
 
-    Note that the current version of TorchDynamo (or :mod:`torch.compile`, which is a
+    Note that the current version of TorchDynamo (or :func:`torch.compile`, which is a
     wrapper around TorchDynamo) doesn't support nested transforms, so we implement our
     own system here. This makes it easy to nest transforms:
 
@@ -187,10 +187,10 @@ def apply_transform(
         module = apply_transform(apply_transform(module, backend_1), backend_2)
 
     However, it should be noted these transforms are not interoperable with the standard
-    :mod:`torch.compile` interface.
+    :func:`torch.compile` interface.
 
     This nesting system is implemented by moving the call to
-    :func:`torch._dynamo.optimize` within the `forward()` method of the module
+    :func:`torch._dynamo.optimize` within the :code:`forward()` method of the module
     (though it is only executed on the first call to the module, or if a new transform
     is applied, the optimised call being cached thereafter). This differs from the
     standard approach used with :func:`torch._dynamo.optimize`, but enables this

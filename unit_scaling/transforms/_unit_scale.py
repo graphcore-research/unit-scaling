@@ -227,12 +227,12 @@ def unit_scale(
     """**[Experimental]** Returns a unit-scaled version of the input model.
 
     Uses TorchDynamo to trace and transform the user-supplied module.
-    This transformation identifies all :mod:`torch.nn.functional` uses in the input
+    This transformation identifies all :class:`torch.nn.functional` uses in the input
     module, and replaces them with their unit-scaled equivalents, should they exist.
 
     The tracing procedure automatically recurses into modules
     (whether defined in libraries, or by the user), identifying inner calls to any
-    :mod:`torch.nn.functional` operations, to build a graph of fundamental operations.
+    :class:`torch.nn.functional` operations, to build a graph of fundamental operations.
     Unit scaling is then applied as a transformation on top of this graph.
 
     This transformation proceeds in five stages:
