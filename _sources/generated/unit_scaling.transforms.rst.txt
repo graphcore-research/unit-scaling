@@ -21,6 +21,7 @@ unit\_scaling.transforms
    .. autosummary::
       :toctree:
    
+      compile
       prune_non_float_tensors
       prune_same_scale_tensors
       prune_selected_nodes

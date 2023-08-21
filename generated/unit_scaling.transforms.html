@@ -17,7 +17,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4.7.1. unit_scaling.transforms.prune_non_float_tensors" href="unit_scaling.transforms.prune_non_float_tensors.html" />
+    <link rel="next" title="4.7.1. unit_scaling.transforms.compile" href="unit_scaling.transforms.compile.html" />
     <link rel="prev" title="4.6.2. unit_scaling.scale.scale_fwd" href="unit_scaling.scale.scale_fwd.html" /> 
 </head>
 
@@ -53,14 +53,15 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">4.5. unit_scaling.functional</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.6. unit_scaling.scale</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">4.7. unit_scaling.transforms</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_non_float_tensors.html">4.7.1. unit_scaling.transforms.prune_non_float_tensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_same_scale_tensors.html">4.7.2. unit_scaling.transforms.prune_same_scale_tensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_selected_nodes.html">4.7.3. unit_scaling.transforms.prune_selected_nodes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_format.html">4.7.4. unit_scaling.transforms.simulate_format</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html">4.7.5. unit_scaling.transforms.simulate_fp8</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.track_scales.html">4.7.6. unit_scaling.transforms.track_scales</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.unit_scale.html">4.7.7. unit_scaling.transforms.unit_scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.Metrics.html">4.7.8. unit_scaling.transforms.Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.compile.html">4.7.1. unit_scaling.transforms.compile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_non_float_tensors.html">4.7.2. unit_scaling.transforms.prune_non_float_tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_same_scale_tensors.html">4.7.3. unit_scaling.transforms.prune_same_scale_tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_selected_nodes.html">4.7.4. unit_scaling.transforms.prune_selected_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_format.html">4.7.5. unit_scaling.transforms.simulate_format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html">4.7.6. unit_scaling.transforms.simulate_fp8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.track_scales.html">4.7.7. unit_scaling.transforms.track_scales</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.unit_scale.html">4.7.8. unit_scaling.transforms.unit_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.Metrics.html">4.7.9. unit_scaling.transforms.Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">4.8. unit_scaling.transforms.utils</a></li>
@@ -101,25 +102,28 @@ scaling.</p>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.transforms.prune_non_float_tensors.html#unit_scaling.transforms.prune_non_float_tensors" title="unit_scaling.transforms.prune_non_float_tensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prune_non_float_tensors</span></code></a>(graph)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.transforms.compile.html#unit_scaling.transforms.compile" title="unit_scaling.transforms.compile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile</span></code></a>(module)</p></td>
+<td><p>A transform that applies torch.compile to a module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.transforms.prune_non_float_tensors.html#unit_scaling.transforms.prune_non_float_tensors" title="unit_scaling.transforms.prune_non_float_tensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prune_non_float_tensors</span></code></a>(graph)</p></td>
 <td><p>Given an FX Graph, prunes all nodes which don't output floating-point tensors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.transforms.prune_same_scale_tensors.html#unit_scaling.transforms.prune_same_scale_tensors" title="unit_scaling.transforms.prune_same_scale_tensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prune_same_scale_tensors</span></code></a>(graph[, rtol])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.transforms.prune_same_scale_tensors.html#unit_scaling.transforms.prune_same_scale_tensors" title="unit_scaling.transforms.prune_same_scale_tensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prune_same_scale_tensors</span></code></a>(graph[, rtol])</p></td>
 <td><p>Given an FX Graph, prunes all nodes with the same scale as the previous node.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.transforms.prune_selected_nodes.html#unit_scaling.transforms.prune_selected_nodes" title="unit_scaling.transforms.prune_selected_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prune_selected_nodes</span></code></a>(graph, targets)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.transforms.prune_selected_nodes.html#unit_scaling.transforms.prune_selected_nodes" title="unit_scaling.transforms.prune_selected_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prune_selected_nodes</span></code></a>(graph, targets)</p></td>
 <td><p>Given an FX Graph, prunes all nodes with functions in the set of target nodes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.transforms.simulate_format.html#unit_scaling.transforms.simulate_format" title="unit_scaling.transforms.simulate_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate_format</span></code></a>(module, fwd_format, bwd_format)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.transforms.simulate_format.html#unit_scaling.transforms.simulate_format" title="unit_scaling.transforms.simulate_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate_format</span></code></a>(module, fwd_format, bwd_format)</p></td>
 <td><p><strong>[Experimental]</strong> Given a module, uses TorchDynamo to return a new module which simulates the effect of using the supplied formats for matmuls.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html#unit_scaling.transforms.simulate_fp8" title="unit_scaling.transforms.simulate_fp8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate_fp8</span></code></a>(module)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html#unit_scaling.transforms.simulate_fp8" title="unit_scaling.transforms.simulate_fp8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate_fp8</span></code></a>(module)</p></td>
 <td><p><strong>[Experimental]</strong> Given a module, uses TorchDynamo to return a new module which simulates the effect of running matmuls in FP8.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.transforms.track_scales.html#unit_scaling.transforms.track_scales" title="unit_scaling.transforms.track_scales"><code class="xref py py-obj docutils literal notranslate"><span class="pre">track_scales</span></code></a>(module)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.transforms.track_scales.html#unit_scaling.transforms.track_scales" title="unit_scaling.transforms.track_scales"><code class="xref py py-obj docutils literal notranslate"><span class="pre">track_scales</span></code></a>(module)</p></td>
 <td><p>Returns a version of the input module which tracks internal tensor metrics.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.transforms.unit_scale.html#unit_scaling.transforms.unit_scale" title="unit_scaling.transforms.unit_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scale</span></code></a>(module[, replace])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.transforms.unit_scale.html#unit_scaling.transforms.unit_scale" title="unit_scaling.transforms.unit_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scale</span></code></a>(module[, replace])</p></td>
 <td><p><strong>[Experimental]</strong> Returns a unit-scaled version of the input model.</p></td>
 </tr>
 </tbody>
@@ -139,7 +143,7 @@ scaling.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="unit_scaling.scale.scale_fwd.html" class="btn btn-neutral float-left" title="4.6.2. unit_scaling.scale.scale_fwd" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.transforms.prune_non_float_tensors.html" class="btn btn-neutral float-right" title="4.7.1. unit_scaling.transforms.prune_non_float_tensors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.transforms.compile.html" class="btn btn-neutral float-right" title="4.7.1. unit_scaling.transforms.compile" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

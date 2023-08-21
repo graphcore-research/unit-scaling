@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.7.1. unit_scaling.transforms.compile &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4.7.2. unit_scaling.transforms.prune_non_float_tensors" href="unit_scaling.transforms.prune_non_float_tensors.html" />
+    <link rel="prev" title="4.7. unit_scaling.transforms" href="unit_scaling.transforms.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">4. API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">4.1. unit_scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">4.2. unit_scaling.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">4.3. unit_scaling.constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">4.4. unit_scaling.formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">4.5. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.6. unit_scaling.scale</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.transforms.html">4.7. unit_scaling.transforms</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.7.1. unit_scaling.transforms.compile</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.transforms.compile"><code class="docutils literal notranslate"><span class="pre">compile()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_non_float_tensors.html">4.7.2. unit_scaling.transforms.prune_non_float_tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_same_scale_tensors.html">4.7.3. unit_scaling.transforms.prune_same_scale_tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_selected_nodes.html">4.7.4. unit_scaling.transforms.prune_selected_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_format.html">4.7.5. unit_scaling.transforms.simulate_format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html">4.7.6. unit_scaling.transforms.simulate_fp8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.track_scales.html">4.7.7. unit_scaling.transforms.track_scales</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.unit_scale.html">4.7.8. unit_scaling.transforms.unit_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.Metrics.html">4.7.9. unit_scaling.transforms.Metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">4.8. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">4.9. unit_scaling.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.transforms.html"><span class="section-number">4.7. </span>unit_scaling.transforms</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.7.1. </span>unit_scaling.transforms.compile</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/unit_scaling.transforms.compile.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="unit-scaling-transforms-compile">
+<h1><span class="section-number">4.7.1. </span>unit_scaling.transforms.compile<a class="headerlink" href="#unit-scaling-transforms-compile" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="unit_scaling.transforms.compile">
+<span class="sig-prename descclassname"><span class="pre">unit_scaling.transforms.</span></span><span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">M</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">M</span></span></span><a class="reference internal" href="../_modules/unit_scaling/transforms/_compile.html#compile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.transforms.compile" title="Permalink to this definition"></a></dt>
+<dd><p>A transform that applies torch.compile to a module.</p>
+<p>Note that this is slightly different to calling <code class="code docutils literal notranslate"><span class="pre">torch.compile(module)</span></code>.</p>
+<p>The current version of <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> doesn’t allow for nested transforms, so
+the following is not supported:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">unit_scaling.transforms</span> <span class="kn">import</span> <span class="n">unit_scale</span>
+
+<span class="n">module</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">unit_scale</span><span class="p">(</span><span class="n">module</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="unit_scaling.transforms.html#module-unit_scaling.transforms" title="unit_scaling.transforms"><code class="xref py py-mod docutils literal notranslate"><span class="pre">unit_scaling.transforms</span></code></a> addresses this by introducing a range of composable
+transforms. This works by moving the call to
+<a class="reference external" href="https://pytorch.org/docs/stable/_dynamo.html#torch._dynamo.optimize" title="(in PyTorch v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch._dynamo.optimize()</span></code></a> within the <code class="code docutils literal notranslate"><span class="pre">forward()</span></code> method of the module
+and only executing it on the first call to the module, or if a new transform
+is applied, the optimised call being cached thereafter.</p>
+<p>The <a class="reference internal" href="#unit_scaling.transforms.compile" title="unit_scaling.transforms.compile"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_scaling.transforms.compile()</span></code></a> function is one such composable
+transform. This means that the following can be written:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">unit_scaling.transforms</span> <span class="kn">import</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">unit_scale</span>
+
+<span class="n">module</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">unit_scale</span><span class="p">(</span><span class="n">module</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This will successfully combine the two transforms in a single module. Note that
+the call to compile must still come last, as its underlying backend returns a
+standard <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> rather than a <a class="reference external" href="https://pytorch.org/docs/stable/fx.html#torch.fx.GraphModule" title="(in PyTorch v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.fx.GraphModule</span></code></a>.</p>
+<p>Currently <a class="reference internal" href="#unit_scaling.transforms.compile" title="unit_scaling.transforms.compile"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_scaling.transforms.compile()</span></code></a> does not support the ops needed
+for the <a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html#unit_scaling.transforms.simulate_fp8" title="unit_scaling.transforms.simulate_fp8"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_scaling.transforms.simulate_fp8()</span></code></a> transform, though this may
+change in future PyTorch releases.</p>
+<p>Modules implemented manually with unit-scaled layers (i.e. without the global
+<code class="code docutils literal notranslate"><span class="pre">unit_scale(module)</span></code> transform) can still use <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> in the
+standard way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>module</strong> (<em>M</em>) – the module to be compiled.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the compiled module.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>M</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unit_scaling.transforms.html" class="btn btn-neutral float-left" title="4.7. unit_scaling.transforms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.transforms.prune_non_float_tensors.html" class="btn btn-neutral float-right" title="4.7.2. unit_scaling.transforms.prune_non_float_tensors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

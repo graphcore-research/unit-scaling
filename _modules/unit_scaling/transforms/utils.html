@@ -245,12 +245,12 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies a graph transformation to a module.</span>
 
-<span class="sd">    The user-supplied `backend` represents a transformation of a</span>
-<span class="sd">    :class:`torch.fx.graph_module.GraphModule`. `apply_transform()` uses</span>
+<span class="sd">    The user-supplied :code:`backend` represents a transformation of a</span>
+<span class="sd">    :class:`torch.fx.graph_module.GraphModule`. :code:`apply_transform()` uses</span>
 <span class="sd">    :func:`torch._dynamo.optimize` to apply this transformation to the module,</span>
 <span class="sd">    returning a new transformed module.</span>
 
-<span class="sd">    Note that the current version of TorchDynamo (or :mod:`torch.compile`, which is a</span>
+<span class="sd">    Note that the current version of TorchDynamo (or :func:`torch.compile`, which is a</span>
 <span class="sd">    wrapper around TorchDynamo) doesn&#39;t support nested transforms, so we implement our</span>
 <span class="sd">    own system here. This makes it easy to nest transforms:</span>
 
@@ -259,10 +259,10 @@
 <span class="sd">        module = apply_transform(apply_transform(module, backend_1), backend_2)</span>
 
 <span class="sd">    However, it should be noted these transforms are not interoperable with the standard</span>
-<span class="sd">    :mod:`torch.compile` interface.</span>
+<span class="sd">    :func:`torch.compile` interface.</span>
 
 <span class="sd">    This nesting system is implemented by moving the call to</span>
-<span class="sd">    :func:`torch._dynamo.optimize` within the `forward()` method of the module</span>
+<span class="sd">    :func:`torch._dynamo.optimize` within the :code:`forward()` method of the module</span>
 <span class="sd">    (though it is only executed on the first call to the module, or if a new transform</span>
 <span class="sd">    is applied, the optimised call being cached thereafter). This differs from the</span>
 <span class="sd">    standard approach used with :func:`torch._dynamo.optimize`, but enables this</span>
