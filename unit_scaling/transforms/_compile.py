@@ -40,7 +40,7 @@ def compile(module: M) -> M:
 
         module = compile(unit_scale(module))
 
-    This will successfully combine the three transforms in a single module. Note that
+    This will successfully combine the two transforms in a single module. Note that
     the call to compile must still come last, as its underlying backend returns a
     standard :class:`torch.nn.Module` rather than a :class:`torch.fx.GraphModule`.
 
@@ -50,7 +50,7 @@ def compile(module: M) -> M:
 
     Modules implemented manually with unit-scaled layers (i.e. without the global
     :code:`unit_scale(module)` transform) can still use :func:`torch.compile` in the
-    standardgit way.
+    standard way.
 
     Args:
         module (M): the module to be compiled.
