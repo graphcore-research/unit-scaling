@@ -15,29 +15,28 @@ To install :code:`unit-scaling`, run:
 
     pip install git+https://github.com/graphcore-research/unit-scaling.git
 
-For those who wish to develop on the :code:`unit-scaling` codebase, clone or fork our
-`GitHub repo <https://github.com/graphcore-research/unit-scaling.git>`_ and follow the
-instructions in our :doc:`developer guide <development>`.
-
-.. Note:: This library is currently in its *beta* release.
-    Some features have yet to be implemented and occasional bugs may be present.
-    We're keen to help users with any problems they encounter.
-
 Getting Started
-------------
+---------------
 
-The following video illustrates how unit scaling works.
+We recommend that new users get started with :numref:`User Guide`.
+
+A reference outlining our API can be found at :numref:`API reference`.
+
+The following video gives a broad overview of the workings of unit scaling.
 
 .. raw:: html
    :file: _static/animation.html
 
-We recommend that new users get started with :numref:`User Guide`.
-A reference outlining our API can be found at :numref:`API reference`.
+.. Note:: The library is currently in its *beta* release.
+    Some features have yet to be implemented and occasional bugs may be present.
+    We're keen to help users with any problems they encounter.
 
-For a high-level overview of the technique, see the blog post
-`Simple FP16 and FP8 training with Unit Scaling
-<https://www.graphcore.ai/posts/simple-fp16-and-fp8-training-with-unit-scaling>`_.
+Development
+-----------
 
+For those who wish to develop on the :code:`unit-scaling` codebase, clone or fork our
+`GitHub repo <https://github.com/graphcore-research/unit-scaling.git>`_ and follow the
+instructions in our :doc:`developer guide <development>`.
 
 .. toctree::
     :caption: Contents
