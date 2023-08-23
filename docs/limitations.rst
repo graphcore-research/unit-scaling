@@ -1,18 +1,15 @@
 Limitations
 ===========
 
-:code:`unit-scaling` is currently still in early stages of development, and many
-important features have not yet been implement. The following is a list of some key
-missing functionality on the development roadmap:
+:code:`unit-scaling` is a new library and (despite our best efforts!) we can't guarantee
+it will be bug-free or feature-complete. We're keen to assist anyone who wants to use
+the library, and help them work through any issues.
 
-1. **Causal masking**
-2. **Positional embeddings**
-3. **Flash attention**
-4. **Distributed training:** the interplay between unit scaling and
-   distributed training libraries has not yet been investigated.
-5. **Limited set of ops:** the set of ops currently supported is limited to those
-   required for training transformers. Unit scaling is a more general method that will
-   work for arbitrary models once support has been implemented.
+Known limitations of the library include:
+
+1. **Op coverage:** we've currently focussed on adding common transformer operations — other ops may be missing (though we can add most requested ops without difficulty).
+2. **Using transforms with torch.compile:** currently our transforms (for example :code:`unit_scale`, :code:`simulate_fp8`) can't be used directly with :code:`torch.compile`. We provide a special compilation function to get around this: :code:`unit_scaling.transforms.compile` (see docs for more details), though this only works with :code:`unit_scale` and not :code:`simulate_fp8`.
+3. **Distributed training:** although we suspect distributed training will still work reasonably well with the current library, we haven't tested this.
 
 This list is not exhaustive and we encourage you to get in touch if you have
 feature-requests not listed here.

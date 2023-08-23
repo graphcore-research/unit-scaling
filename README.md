@@ -20,8 +20,9 @@ pip install git+https://github.com/graphcore-research/unit-scaling.git
 
 ## What is unit scaling?
 
-For a high-level introduction to unit scaling, see our blog post
-[Simple FP16 and FP8 training with Unit Scaling](https://www.graphcore.ai/posts/simple-fp16-and-fp8-training-with-unit-scaling).
+For a demonstration of the library and an overview of how it works, see
+[Out-of-the-Box FP8 Training](https://github.com/graphcore-research/out-of-the-box-fp8-training/blob/main/out_of_the_box_fp8_training.ipynb)
+(a notebook showing how to unit-scale the nanoGPT model).
 
 For a more in-depth explanation, consult our paper
 [Unit Scaling: Out-of-the-Box Low-Precision Training](https://arxiv.org/abs/2303.11257).
