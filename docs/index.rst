@@ -6,6 +6,9 @@ the use of the *unit scaling* method, as outlined in the paper
 `Unit Scaling: Out-of-the-Box Low-Precision Training (ICML, 2023)
 <https://arxiv.org/abs/2303.11257>`_.
 
+For a demonstration of the library, see `Out-of-the-Box FP8 Training
+<https://github.com/graphcore-research/out-of-the-box-fp8-training/blob/main/out_of_the_box_fp8_training.ipynb>`_ — a notebook showing how to unit-scale the nanoGPT model.
+
 Installation
 ------------
 
