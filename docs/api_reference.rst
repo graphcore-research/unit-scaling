@@ -14,7 +14,7 @@ For PyTorch code which uses the following imports:
 .. code-block::
 
    from torch import nn
-   from torch import functional as F
+   from torch.nn import functional as F
 
 Unit scaling can be applied by first adding:
 
