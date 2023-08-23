@@ -6,7 +6,7 @@ A library for unit scaling in PyTorch, based on the paper
 Documentation can be found at
 [https://graphcore-research.github.io/unit-scaling](https://graphcore-research.github.io/unit-scaling).
 
-**Note:** This library is currently in its *beta* release.
+**Note:** The library is currently in its _beta_ release.
 Some features have yet to be implemented and occasional bugs may be present.
 We're keen to help users with any problems they encounter.
 
