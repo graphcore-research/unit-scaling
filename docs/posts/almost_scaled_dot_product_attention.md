@@ -6,7 +6,14 @@ Transformers seem to be all you need, but we don't fully understand why they wor
 
 Many deep learning modules are designed and initialised to roughly preserve variance in the forward and/or backward (gradient) passes. Dot product attention explicitly includes a scaling factor for this ({math}`d_{head}^{-1/2}`). But this is _insufficient for attention to preserve variance_. We have derived a post-scaling factor for attention:
 
-![attention scaling: regular attention is underscaled to sigma=0.1 when d_seq=256, but scaled to sigma=1.0 when using a sqrt(d_seq/e) multiplier](img/attention_scaling.png)
+```{figure} img/attention_scaling.png
+---
+width: 30em
+align: center
+alt: "attention scaling: regular attention is underscaled to sigma=0.1 when d_seq=256, but scaled to sigma=1.0 when using a sqrt(d_seq/e) multiplier"
+---
+```
+<p/>
 
 With this in mind, here is a "fix" for the output scale of standard attention (our change in red):
 
@@ -26,7 +33,14 @@ Attention contains the expression {math}`Z=\mathrm{Softmax}(A^{\prime})V`. If we
  - {math}`t\to 0`, the output is a single unit spike, and the scale of {math}`Z` is {math}`1`, since attention selects a single element of {math}`V \sim N(0, 1)`
  - {math}`t \gt 1/2`, with some assumptions, the output follows a log-normal distribution, and the scale of {math}`Z` is {math}`(e^{t^{-2}}/d_{seq})^{1/2}`; _we explain this further in the [companion notebook](TODO-notebook-link)_
 
-![effect of softmax temperature, flat when temperature is infinite, a spike when temperature is zero and a bumpy corve when temperature is one](img/softmax_temperature.png)
+```{figure} img/softmax_temperature.png
+---
+align: center
+width: 30em
+alt: "effect of softmax temperature, flat when temperature is infinite, a spike when temperature is zero and a bumpy corve when temperature is one"
+---
+```
+<p/>
 
 We find that the log-normal scaling rule works well for temperature near 1, so propose multiplying by the inverse, i.e. scale attention output by {math}`(d_{seq}/e)^{1/2}`.
 
@@ -34,7 +48,14 @@ We find that the log-normal scaling rule works well for temperature near 1, so p
 
 We tested this change, introducing "fully scaled attention" in a full transformer model—a small autoregressive character language model trained on Shakespeare. This is what we saw from a learning rate sweep:
 
-![learning rate sweep for baseline (standard attention) and fully scaled attention. Fully scaled attention behaves worse than the baseline (final training loss 1.2 for baseline, 1.4 for fully scaled)](img/scaled_attention_lr_sweep.png)
+```{figure} img/scaled_attention_lr_sweep.png
+---
+align: center
+width: 25em
+alt: "learning rate sweep for baseline (standard attention) and fully scaled attention. Fully scaled attention behaves worse than the baseline (final training loss 1.2 for baseline, 1.4 for fully scaled)"
+---
+```
+<p/>
 
 This is most unfortunate. It seems that under-scaled tensors coming out of the attention block are important and helpful for transformer training dynamics. It isn't just tiny Shakespare models—we've also seen this effect when training BERT.
 
