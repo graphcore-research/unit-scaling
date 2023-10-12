@@ -1,10 +1,22 @@
 # Almost-scaled dot-product attention
 
-[Notebook](TODO-notebook-link) | _TL;DR: Scaled dot product attention isn't properly scaled, and that's a good thing!_
+TL;DR: _Scaled dot product attention isn't properly scaled, and that's a good thing!_
+
+Notebook: _[almost-scaled dot-product attention](https://github.com/graphcore-research/unit-scaling/tree/main/analysis/almost_scaled_dot_product_attention/almost_scaled_dot_product_attention.ipynb)_
+
+---
 
 Transformers seem to be all you need, but we don't fully understand why they work so well. While working on [unit scaling](https://arxiv.org/abs/2303.11257), we noticed something surprising about attention, the heart of the transformer architecture, and how the outputs are scaled.
 
-Many deep learning modules are designed and initialised to roughly preserve variance in the forward and/or backward (gradient) passes. Dot product attention explicitly includes a scaling factor for this ({math}`d_{head}^{-1/2}`). But this is _insufficient for attention to preserve variance_. We have derived a post-scaling factor for attention:
+Many deep learning modules are designed and initialised to roughly preserve variance in the forward and/or backward (gradient) passes. This is a useful property as the behaviour of many modules depends on the scale of their inputs (e.g. saturating nonlinearities). Dot product attention explicitly includes a <span style="color: #008000">scaling factor</span> for this to ensure the variance going into the softmax is stable:
+
+```{math}
+A^{\prime} &= Q K^T \cdot \color{green}{d_{head}^{-1/2}}
+
+Z &= \mathrm{Softmax}(A^{\prime})\, V
+```
+
+But this is _insufficient for the attention operation as a whole_. We have derived a post-scaling factor for attention to correct this:
 
 ```{figure} img/attention_scaling.png
 ---
@@ -15,23 +27,21 @@ alt: "attention scaling: regular attention is underscaled to sigma=0.1 when d_se
 ```
 <p/>
 
-With this in mind, here is a "fix" for the output scale of standard attention (our change in red):
+With this in mind, here is <span style="color: #fc4349">our "fix"</span> for the output scale of standard attention:
 
 ```{math}
-A^{\prime} &= Q K^T \cdot d_{head}^{-1/2}
-
-Z &= \mathrm{Softmax}(A^{\prime})\, V \color{red}{\cdot (d_{seq}/e)^{1/2}}
+Z = \mathrm{Softmax}(A^{\prime})\, V \color{red}{\cdot (d_{seq}/e)^{1/2}}
 ```
 
 In this post, we'll look at the variance-scaling behaviour of attention, and explain this scaling factor, before seeing that it makes training dynamics _worse_, not better.
 
 ## Where does {math}`(d_{seq}/e)^{1/2}` come from?
 
-Attention contains the expression {math}`Z=\mathrm{Softmax}(A^{\prime})V`. If we modify this slightly to {math}`Z=\mathrm{Softmax}(A^{\prime}/t)V`, we can think about three cases:
+Attention contains the expression {math}`Z=\mathrm{Softmax}(A^{\prime})V`. If we modify this slightly to {math}`Z=\mathrm{Softmax}(A^{\prime}/t)V`, we can think about three cases (assuming {math}`V \sim N(0, 1)`):
 
- - {math}`t\to \infty`, the output is flat, and the scale of {math}`Z` is {math}`d_{seq}^{-1/2}`, from a multiplication by {math}`d_{seq}^{-1}` then a sum over {math}`d_{seq}` uncorrelated values
- - {math}`t\to 0`, the output is a single unit spike, and the scale of {math}`Z` is {math}`1`, since attention selects a single element of {math}`V \sim N(0, 1)`
- - {math}`t \gt 1/2`, with some assumptions, the output follows a log-normal distribution, and the scale of {math}`Z` is {math}`(e^{t^{-2}}/d_{seq})^{1/2}`; _we explain this further in the [companion notebook](TODO-notebook-link)_
+ - {math}`t\to \infty`, the scale of {math}`Z` is {math}`d_{seq}^{-1/2}` — the softmax output is flat with all values {math}`= d_{seq}^{-1}`, followed by a sum over {math}`d_{seq}` uncorrelated values which scales up by {math}`d_{seq}^{1/2}`
+ - {math}`t\to 0`, the scale of {math}`Z` is {math}`1` and the output is a single unit spike — attention selects a single element of {math}`V`
+ - {math}`t \gt 1/2`, the scale of {math}`Z` is {math}`(e^{t^{-2}}/d_{seq})^{1/2}` and with some assumptions, the output follows a log-normal distribution — we explain this further in the [companion notebook](https://github.com/graphcore-research/unit-scaling/tree/main/analysis/almost_scaled_dot_product_attention/almost_scaled_dot_product_attention.ipynb)
 
 ```{figure} img/softmax_temperature.png
 ---
@@ -67,6 +77,10 @@ Unit scaling has a solution for this, allowing unit-scaled tensors while retaini
 
 It is helpful to think through the scales of tensors in deep learning models. Indeed, careful reasoning about scale is the core principle underpinning unit scaling (which also considers the scale of gradients, not just activations).
 
-In today's example, we saw how to "fix" attention's scaling behaviour, multiplying the outputs by {math}`(d_{seq}/e)^{1/2}`, so that the outputs are unit-variance. However we also saw that this change can make training dynamics worse, not better. Why this happens is, as far as we know, an open question.
+In the above example, we saw how to "fix" attention's scaling behaviour, multiplying the outputs by {math}`(d_{seq}/e)^{1/2}`, so that the outputs are unit-variance. However we also saw that this change can make training dynamics worse, not better. Why this happens is, as far as we know, an open question.
 
-If you're interested to find out more, check out our [accompanying notebook](TODO-notebook-link) and [unit scaling](https://arxiv.org/abs/2303.11257) paper.
+If you're interested to find out more, check out our [accompanying notebook](https://github.com/graphcore-research/unit-scaling/tree/main/analysis/almost_scaled_dot_product_attention/almost_scaled_dot_product_attention.ipynb) and [unit scaling](https://arxiv.org/abs/2303.11257) paper.
+
+---
+
+— Douglas Orr ([douglaso@graphcore.ai](mailto:douglaso@graphcore.ai)), October 2023
