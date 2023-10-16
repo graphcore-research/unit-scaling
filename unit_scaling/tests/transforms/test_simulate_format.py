@@ -70,7 +70,7 @@ def test_simulate_fp8_unit_scaled_linear() -> None:
 def test_simulate_fp8_attention() -> None:
     class Model(nn.Module):
         def forward(self, q: Tensor, k: Tensor, v: Tensor) -> Tensor:
-            return F.scaled_dot_product_attention(q, k, v).sum()  # type: ignore
+            return F.scaled_dot_product_attention(q, k, v).sum()
 
     inputs = list(randn(2**8, 2**8, requires_grad=True) for _ in range(3))
     model = Model()
@@ -91,7 +91,7 @@ def test_simulate_fp8_attention() -> None:
 def test_simulate_fp8_unit_scaled_attention() -> None:
     class Model(nn.Module):
         def forward(self, q: Tensor, k: Tensor, v: Tensor) -> Tensor:
-            return U.scaled_dot_product_attention(q, k, v).sum()  # type: ignore
+            return U.scaled_dot_product_attention(q, k, v).sum()
 
     inputs = list(randn(2**8, 2**8, requires_grad=True) for _ in range(3))
     model = Model()

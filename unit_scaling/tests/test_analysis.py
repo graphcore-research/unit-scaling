@@ -74,7 +74,7 @@ def test_graph_to_dataframe() -> None:
     loss = model(input)
     loss.backward()
 
-    graph = model.scales_graph()  # type: ignore[operator]
+    graph = model.scales_graph()
     df = graph_to_dataframe(graph)
 
     expected = pd.DataFrame.from_dict(
@@ -84,10 +84,10 @@ def test_graph_to_dataframe() -> None:
                 "x",
                 "relu",
                 "relu",
-                "self_linear_weight",
-                "self_linear_weight",
-                "self_linear_bias",
-                "self_linear_bias",
+                "linear_weight",
+                "linear_weight",
+                "linear_bias",
+                "linear_bias",
                 "linear",
                 "linear",
                 "sum_1",
@@ -173,7 +173,7 @@ def test_plot() -> None:
     loss = model(input)
     loss.backward()
 
-    graph = model.scales_graph()  # type: ignore[operator]
+    graph = model.scales_graph()
     axes = plot(graph, "demo", xmin=2**-20, xmax=2**10)
     assert axes
 

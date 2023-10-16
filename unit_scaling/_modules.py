@@ -34,7 +34,7 @@ class GELU(nn.GELU):
         self.constraint = constraint
 
     def forward(self, input: Tensor) -> Tensor:
-        return U.gelu(  # type: ignore
+        return U.gelu(
             input,
             approximate=self.approximate,
             constraint=self.constraint,

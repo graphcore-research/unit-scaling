@@ -8,9 +8,9 @@ import re
 from math import isnan
 from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 
-import matplotlib  # type: ignore[import]
-import matplotlib.colors  # type: ignore[import]
-import matplotlib.pyplot as plt  # type: ignore[import]
+import matplotlib
+import matplotlib.colors
+import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns  # type: ignore[import]
 from datasets import load_dataset  # type: ignore[import]
@@ -438,7 +438,7 @@ def plot(
                 for direction in ["fwd", "bwd"]:
                     draw_error_bar(n, direction)
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def visualiser(
@@ -512,7 +512,7 @@ def visualiser(
     _, loss = tracked_model(inputs, labels)
     if backward:
         loss.backward()
-    graph = tracked_model.scales_graph()  # type: ignore[operator]
+    graph = tracked_model.scales_graph()
     return plot(graph, **plot_kwargs)
 
 
