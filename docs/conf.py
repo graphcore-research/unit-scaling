@@ -32,6 +32,7 @@ extensions = [
     "myst_parser",  # support for including markdown files in .rst files (e.g. readme)
     "sphinx.ext.viewcode",  # adds source code to docs
     "sphinx.ext.autosectionlabel",  # links to sections in the same document
+    "sphinx.ext.mathjax",  # equations
 ]
 
 autosummary_generate = True

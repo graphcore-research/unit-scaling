@@ -49,4 +49,5 @@ instructions in our :doc:`developer guide <development>`.
     User guide <user_guide>
     Developer guide <development>
     Limitations <limitations>
+    Blog <blog>
     API reference <api_reference>
