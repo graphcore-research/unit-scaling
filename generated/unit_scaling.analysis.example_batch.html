@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.2.1. unit_scaling.analysis.example_batch &mdash; unit-scaling  documentation</title>
+  <title>5.2.1. unit_scaling.analysis.example_batch &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/scales.png"/>
@@ -18,8 +18,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4.2.2. unit_scaling.analysis.graph_to_dataframe" href="unit_scaling.analysis.graph_to_dataframe.html" />
-    <link rel="prev" title="4.2. unit_scaling.analysis" href="unit_scaling.analysis.html" /> 
+    <link rel="next" title="5.2.2. unit_scaling.analysis.graph_to_dataframe" href="unit_scaling.analysis.graph_to_dataframe.html" />
+    <link rel="prev" title="5.2. unit_scaling.analysis" href="unit_scaling.analysis.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,25 +46,26 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_guide.html">1. User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../development.html">2. Developer guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../limitations.html">3. Limitations</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">4. API reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">4.1. unit_scaling</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.analysis.html">4.2. unit_scaling.analysis</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">4.2.1. unit_scaling.analysis.example_batch</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../blog.html">4. Blog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">5. API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">5.1. unit_scaling</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.analysis.html">5.2. unit_scaling.analysis</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">5.2.1. unit_scaling.analysis.example_batch</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#unit_scaling.analysis.example_batch"><code class="docutils literal notranslate"><span class="pre">example_batch()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.analysis.graph_to_dataframe.html">4.2.2. unit_scaling.analysis.graph_to_dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.analysis.plot.html">4.2.3. unit_scaling.analysis.plot</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.analysis.visualiser.html">4.2.4. unit_scaling.analysis.visualiser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.analysis.graph_to_dataframe.html">5.2.2. unit_scaling.analysis.graph_to_dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.analysis.plot.html">5.2.3. unit_scaling.analysis.plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.analysis.visualiser.html">5.2.4. unit_scaling.analysis.visualiser</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">4.3. unit_scaling.constraints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">4.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">4.5. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.6. unit_scaling.scale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">4.7. unit_scaling.transforms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">4.8. unit_scaling.transforms.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">4.9. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">5.3. unit_scaling.constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">5.4. unit_scaling.formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.5. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.6. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">5.7. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.8. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">5.9. unit_scaling.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -83,9 +84,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
-          <li class="breadcrumb-item"><a href="unit_scaling.analysis.html"><span class="section-number">4.2. </span>unit_scaling.analysis</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4.2.1. </span>unit_scaling.analysis.example_batch</li>
+          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">5. </span>API reference</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.analysis.html"><span class="section-number">5.2. </span>unit_scaling.analysis</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.2.1. </span>unit_scaling.analysis.example_batch</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/generated/unit_scaling.analysis.example_batch.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -96,7 +97,7 @@
            <div itemprop="articleBody">
              
   <section id="unit-scaling-analysis-example-batch">
-<h1><span class="section-number">4.2.1. </span>unit_scaling.analysis.example_batch<a class="headerlink" href="#unit-scaling-analysis-example-batch" title="Permalink to this heading"></a></h1>
+<h1><span class="section-number">5.2.1. </span>unit_scaling.analysis.example_batch<a class="headerlink" href="#unit-scaling-analysis-example-batch" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="unit_scaling.analysis.example_batch">
 <span class="sig-prename descclassname"><span class="pre">unit_scaling.analysis.</span></span><span class="sig-name descname"><span class="pre">example_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PreTrainedTokenizerBase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'wikitext'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'wikitext-103-v1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle_buffer_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1472</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.1)"><span class="pre">Tensor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.1)"><span class="pre">Tensor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.1)"><span class="pre">Tensor</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/unit_scaling/analysis.html#example_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.analysis.example_batch" title="Permalink to this definition"></a></dt>
@@ -133,8 +134,8 @@ Defaults to 10_000.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.analysis.html" class="btn btn-neutral float-left" title="4.2. unit_scaling.analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.analysis.graph_to_dataframe.html" class="btn btn-neutral float-right" title="4.2.2. unit_scaling.analysis.graph_to_dataframe" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.analysis.html" class="btn btn-neutral float-left" title="5.2. unit_scaling.analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.analysis.graph_to_dataframe.html" class="btn btn-neutral float-right" title="5.2.2. unit_scaling.analysis.graph_to_dataframe" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

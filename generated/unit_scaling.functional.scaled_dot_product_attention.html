@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.5.12. unit_scaling.functional.scaled_dot_product_attention &mdash; unit-scaling  documentation</title>
+  <title>5.5.12. unit_scaling.functional.scaled_dot_product_attention &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/scales.png"/>
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4.5.13. unit_scaling.functional.softmax" href="unit_scaling.functional.softmax.html" />
-    <link rel="prev" title="4.5.11. unit_scaling.functional.scale_elementwise" href="unit_scaling.functional.scale_elementwise.html" /> 
+    <link rel="next" title="5.5.13. unit_scaling.functional.softmax" href="unit_scaling.functional.softmax.html" />
+    <link rel="prev" title="5.5.11. unit_scaling.functional.scale_elementwise" href="unit_scaling.functional.scale_elementwise.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,34 +47,35 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_guide.html">1. User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../development.html">2. Developer guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../limitations.html">3. Limitations</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">4. API reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">4.1. unit_scaling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">4.2. unit_scaling.analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">4.3. unit_scaling.constraints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">4.4. unit_scaling.formats</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.functional.html">4.5. unit_scaling.functional</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.add.html">4.5.1. unit_scaling.functional.add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">4.5.2. unit_scaling.functional.cross_entropy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">4.5.3. unit_scaling.functional.dropout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">4.5.4. unit_scaling.functional.embedding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">4.5.5. unit_scaling.functional.gelu</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">4.5.6. unit_scaling.functional.layer_norm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">4.5.7. unit_scaling.functional.linear</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">4.5.8. unit_scaling.functional.matmul</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">4.5.9. unit_scaling.functional.residual_add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">4.5.10. unit_scaling.functional.residual_split</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">4.5.11. unit_scaling.functional.scale_elementwise</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">4.5.12. unit_scaling.functional.scaled_dot_product_attention</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../blog.html">4. Blog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">5. API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">5.1. unit_scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">5.2. unit_scaling.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">5.3. unit_scaling.constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">5.4. unit_scaling.formats</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.functional.html">5.5. unit_scaling.functional</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.add.html">5.5.1. unit_scaling.functional.add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">5.5.2. unit_scaling.functional.cross_entropy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">5.5.3. unit_scaling.functional.dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">5.5.4. unit_scaling.functional.embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">5.5.5. unit_scaling.functional.gelu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">5.5.6. unit_scaling.functional.layer_norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">5.5.7. unit_scaling.functional.linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">5.5.8. unit_scaling.functional.matmul</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">5.5.9. unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">5.5.10. unit_scaling.functional.residual_split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scale_elementwise.html">5.5.11. unit_scaling.functional.scale_elementwise</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">5.5.12. unit_scaling.functional.scaled_dot_product_attention</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.scaled_dot_product_attention"><code class="docutils literal notranslate"><span class="pre">scaled_dot_product_attention()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">4.5.13. unit_scaling.functional.softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">5.5.13. unit_scaling.functional.softmax</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.6. unit_scaling.scale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">4.7. unit_scaling.transforms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">4.8. unit_scaling.transforms.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">4.9. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.6. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">5.7. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.8. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">5.9. unit_scaling.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -93,9 +94,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
-          <li class="breadcrumb-item"><a href="unit_scaling.functional.html"><span class="section-number">4.5. </span>unit_scaling.functional</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4.5.12. </span>unit_scaling.functional.scaled_dot_product_attention</li>
+          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">5. </span>API reference</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.functional.html"><span class="section-number">5.5. </span>unit_scaling.functional</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.5.12. </span>unit_scaling.functional.scaled_dot_product_attention</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/generated/unit_scaling.functional.scaled_dot_product_attention.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -106,7 +107,7 @@
            <div itemprop="articleBody">
              
   <section id="unit-scaling-functional-scaled-dot-product-attention">
-<h1><span class="section-number">4.5.12. </span>unit_scaling.functional.scaled_dot_product_attention<a class="headerlink" href="#unit-scaling-functional-scaled-dot-product-attention" title="Permalink to this heading"></a></h1>
+<h1><span class="section-number">5.5.12. </span>unit_scaling.functional.scaled_dot_product_attention<a class="headerlink" href="#unit-scaling-functional-scaled-dot-product-attention" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="unit_scaling.functional.scaled_dot_product_attention">
 <span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">scaled_dot_product_attention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.1)"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.1)"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.1)"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attn_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.1)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_causal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.1)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#scaled_dot_product_attention"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.scaled_dot_product_attention" title="Permalink to this definition"></a></dt>
@@ -217,8 +218,8 @@ to <span class="math notranslate nohighlight">\(\frac{1}{\sqrt{E}}\)</span>.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.functional.scale_elementwise.html" class="btn btn-neutral float-left" title="4.5.11. unit_scaling.functional.scale_elementwise" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.functional.softmax.html" class="btn btn-neutral float-right" title="4.5.13. unit_scaling.functional.softmax" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.functional.scale_elementwise.html" class="btn btn-neutral float-left" title="5.5.11. unit_scaling.functional.scale_elementwise" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.functional.softmax.html" class="btn btn-neutral float-right" title="5.5.13. unit_scaling.functional.softmax" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

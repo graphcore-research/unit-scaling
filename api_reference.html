@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4. API reference &mdash; unit-scaling  documentation</title>
+  <title>5. API reference &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="_static/scales.png"/>
@@ -18,8 +18,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="4.1. unit_scaling" href="generated/unit_scaling.html" />
-    <link rel="prev" title="3. Limitations" href="limitations.html" /> 
+    <link rel="next" title="5.1. unit_scaling" href="generated/unit_scaling.html" />
+    <link rel="prev" title="4. Unit Scaling blog" href="blog.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,16 +46,17 @@
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">1. User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">2. Developer guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="limitations.html">3. Limitations</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">4. API reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.html">4.1. unit_scaling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.analysis.html">4.2. unit_scaling.analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.constraints.html">4.3. unit_scaling.constraints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.formats.html">4.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.functional.html">4.5. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.scale.html">4.6. unit_scaling.scale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.transforms.html">4.7. unit_scaling.transforms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.transforms.utils.html">4.8. unit_scaling.transforms.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.utils.html">4.9. unit_scaling.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blog.html">4. Blog</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">5. API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.html">5.1. unit_scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.analysis.html">5.2. unit_scaling.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.constraints.html">5.3. unit_scaling.constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.formats.html">5.4. unit_scaling.formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.functional.html">5.5. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.scale.html">5.6. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.transforms.html">5.7. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.transforms.utils.html">5.8. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.utils.html">5.9. unit_scaling.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -74,7 +75,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4. </span>API reference</li>
+      <li class="breadcrumb-item active"><span class="section-number">5. </span>API reference</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/api_reference.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -85,7 +86,7 @@
            <div itemprop="articleBody">
              
   <section id="api-reference">
-<h1><span class="section-number">4. </span>API reference<a class="headerlink" href="#api-reference" title="Permalink to this heading"></a></h1>
+<h1><span class="section-number">5. </span>API reference<a class="headerlink" href="#api-reference" title="Permalink to this heading"></a></h1>
 <p><code class="code docutils literal notranslate"><span class="pre">unit-scaling</span></code> is implemented using thin wrappers around existing <code class="code docutils literal notranslate"><span class="pre">torch.nn</span></code>
 classes and functions. Documentation also inherits from the standard PyTorch docs, with
 modifications for scaling. Note that some docs may no longer be relevant but are
@@ -143,8 +144,8 @@ classes and functions can easily be swapped-out for their unit-scaled equivalent
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="limitations.html" class="btn btn-neutral float-left" title="3. Limitations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="generated/unit_scaling.html" class="btn btn-neutral float-right" title="4.1. unit_scaling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="blog.html" class="btn btn-neutral float-left" title="4. Unit Scaling blog" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/unit_scaling.html" class="btn btn-neutral float-right" title="5.1. unit_scaling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

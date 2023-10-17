@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Almost-scaled dot-product attention &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/scales.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog.html">4. Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">5. API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Almost-scaled dot-product attention</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/posts/almost_scaled_dot_product_attention.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="almost-scaled-dot-product-attention">
+<h1>Almost-scaled dot-product attention<a class="headerlink" href="#almost-scaled-dot-product-attention" title="Permalink to this heading"></a></h1>
+<p>TL;DR: <em>Scaled dot product attention isn’t properly scaled, and that’s a good thing!</em></p>
+<p>Notebook: <em><a class="reference external" href="https://github.com/graphcore-research/unit-scaling/tree/main/analysis/almost_scaled_dot_product_attention/almost_scaled_dot_product_attention.ipynb">almost-scaled dot-product attention</a></em></p>
+<hr class="docutils" />
+<p>Transformers seem to be all you need, but we don’t fully understand why they work so well. While working on <a class="reference external" href="https://arxiv.org/abs/2303.11257">unit scaling</a>, we noticed something surprising about attention, the heart of the transformer architecture, and how the outputs are scaled.</p>
+<p>Many deep learning modules are designed and initialised to roughly preserve variance in the forward and/or backward (gradient) passes. This is a useful property as the behaviour of many modules depends on the scale of their inputs (e.g. saturating nonlinearities). Dot product attention explicitly includes a <span style="color: #008000">scaling factor</span> for this to ensure the variance going into the softmax is stable:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}A^{\prime} &amp;= Q K^T \cdot \color{green}{d_{head}^{-1/2}}\\Z &amp;= \mathrm{Softmax}(A^{\prime})\, V\end{aligned}\end{align} \]</div>
+<p>But this is <em>insufficient for the attention operation as a whole</em>. We have derived a <span style="color: #fc4349">post-scaling factor</span> for attention to correct this:</p>
+<div class="math notranslate nohighlight">
+\[Z = \mathrm{Softmax}(A^{\prime})\, V \color{red}{\,\cdot\, (d_{seq}/e)^{1/2}}\]</div>
+<p>For an illustrative example, this gives the following scaling behaviour:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/attention_scaling.png"><img alt="attention scaling: regular attention is underscaled to sigma=0.1 when d_seq=256, but scaled to sigma=1.0 when using a sqrt(d_seq/e) multiplier" src="../_images/attention_scaling.png" style="width: 30em;" /></a>
+</figure>
+<p/>
+<p>In this post, we’ll look at the variance-scaling behaviour of attention, and explain this scaling factor, before seeing that it makes training dynamics <em>worse</em>, not better. The post is a condensed summary of our <a class="reference external" href="https://github.com/graphcore-research/unit-scaling/tree/main/analysis/almost_scaled_dot_product_attention/almost_scaled_dot_product_attention.ipynb">almost-scaled dot-product attention notebook</a>.</p>
+<section id="where-does-d-seq-e-1-2-come-from">
+<h2>Where does <span class="math notranslate nohighlight">\((d_{seq}/e)^{1/2}\)</span> come from?<a class="headerlink" href="#where-does-d-seq-e-1-2-come-from" title="Permalink to this heading"></a></h2>
+<p>Attention contains the expression <span class="math notranslate nohighlight">\(Z=\mathrm{Softmax}(A^{\prime})V\)</span>. If we modify this slightly to <span class="math notranslate nohighlight">\(Z=\mathrm{Softmax}(A^{\prime}/t)V\)</span>, we can think about three cases (assuming <span class="math notranslate nohighlight">\(V \sim N(0, 1)\)</span>):</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(t\to \infty\)</span>, the scale of <span class="math notranslate nohighlight">\(Z\)</span> is <span class="math notranslate nohighlight">\(d_{seq}^{-1/2}\)</span> — the softmax output is flat with all values <span class="math notranslate nohighlight">\(= d_{seq}^{-1}\)</span>, followed by a sum over <span class="math notranslate nohighlight">\(d_{seq}\)</span> uncorrelated values which scales up by <span class="math notranslate nohighlight">\(d_{seq}^{1/2}\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(t\to 0\)</span>, the scale of <span class="math notranslate nohighlight">\(Z\)</span> is <span class="math notranslate nohighlight">\(1\)</span> and the output is a single unit spike — attention selects a single element of <span class="math notranslate nohighlight">\(V\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(t \gt 1/2\)</span>, the scale of <span class="math notranslate nohighlight">\(Z\)</span> is <span class="math notranslate nohighlight">\((e^{t^{-2}}/d_{seq})^{1/2}\)</span> and with some assumptions, the output follows a log-normal distribution — we explain this further in the <a class="reference external" href="https://github.com/graphcore-research/unit-scaling/tree/main/analysis/almost_scaled_dot_product_attention/almost_scaled_dot_product_attention.ipynb">companion notebook</a></p></li>
+</ul>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/softmax_temperature.png"><img alt="effect of softmax temperature, flat when temperature is infinite, a spike when temperature is zero and a bumpy corve when temperature is one" src="../_images/softmax_temperature.png" style="width: 30em;" /></a>
+</figure>
+<p/>
+<p>We find that the log-normal scaling rule works well for temperature near 1, so propose multiplying by the inverse, i.e. scale attention output by <span class="math notranslate nohighlight">\((d_{seq}/e)^{1/2}\)</span>.</p>
+</section>
+<section id="does-it-work-no">
+<h2>Does it work? …No!<a class="headerlink" href="#does-it-work-no" title="Permalink to this heading"></a></h2>
+<p>We tested this change, introducing “fully scaled attention” in a full transformer model—a small autoregressive character language model trained on Shakespeare. This is what we saw from a learning rate sweep:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/scaled_attention_lr_sweep.png"><img alt="learning rate sweep for baseline (standard attention) and fully scaled attention. Fully scaled attention behaves worse than the baseline (final training loss 1.2 for baseline, 1.4 for fully scaled)" src="../_images/scaled_attention_lr_sweep.png" style="width: 25em;" /></a>
+</figure>
+<p/>
+<p>This is most unfortunate. It seems that under-scaled tensors coming out of the attention block are important and helpful for transformer training dynamics. It isn’t just tiny Shakespare models—we’ve also seen this effect when training BERT. We don’t yet have an explanation for this difference, but find it intriguing that such a (presumed) accident of under-scaling turns out to be helpful for training dynamics!</p>
+<p>Unit scaling has a solution for this, allowing unit-scaled tensors while retaining the original training dynamics. The bad training behaviour must come from scale-dependent operations, in particular when attention’s residual output is added to the skip connection. So, we found that we can reproduce the same dynamics as the original model by applying a relative weight to the residual vs skip connections.</p>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading"></a></h2>
+<p>It is helpful to think through the scales of tensors in deep learning models. Indeed, careful reasoning about scale is the core principle underpinning unit scaling (which also considers the scale of gradients, not just activations).</p>
+<p>In the above example, we saw how to “fix” attention’s scaling behaviour, multiplying the outputs by <span class="math notranslate nohighlight">\((d_{seq}/e)^{1/2}\)</span>, so that the outputs are unit-variance. However we also saw that this change can make training dynamics worse, not better. Why this happens is, as far as we know, an open question.</p>
+<p>If you’re interested to find out more, check out our <a class="reference external" href="https://github.com/graphcore-research/unit-scaling/tree/main/analysis/almost_scaled_dot_product_attention/almost_scaled_dot_product_attention.ipynb">accompanying notebook</a> and <a class="reference external" href="https://arxiv.org/abs/2303.11257">unit scaling</a> paper.</p>
+<hr class="docutils" />
+<p>With thanks to Charlie Blake for help &amp; feedback.</p>
+<p>— Douglas Orr (<a class="reference external" href="mailto:douglaso&#37;&#52;&#48;graphcore&#46;ai">douglaso<span>&#64;</span>graphcore<span>&#46;</span>ai</a>), October 2023</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
