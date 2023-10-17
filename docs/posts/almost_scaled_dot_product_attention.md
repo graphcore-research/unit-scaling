@@ -16,7 +16,13 @@ A^{\prime} &= Q K^T \cdot \color{green}{d_{head}^{-1/2}}
 Z &= \mathrm{Softmax}(A^{\prime})\, V
 ```
 
-But this is _insufficient for the attention operation as a whole_. We have derived a post-scaling factor for attention to correct this:
+But this is _insufficient for the attention operation as a whole_. We have derived a <span style="color: #fc4349">post-scaling factor</span> for attention to correct this:
+
+```{math}
+Z = \mathrm{Softmax}(A^{\prime})\, V \color{red}{\,\cdot\, (d_{seq}/e)^{1/2}}
+```
+
+For an illustrative example, this gives the following scaling behaviour:
 
 ```{figure} img/attention_scaling.png
 ---
@@ -27,13 +33,7 @@ alt: "attention scaling: regular attention is underscaled to sigma=0.1 when d_se
 ```
 <p/>
 
-With this in mind, here is <span style="color: #fc4349">our "fix"</span> for the output scale of standard attention:
-
-```{math}
-Z = \mathrm{Softmax}(A^{\prime})\, V \color{red}{\cdot (d_{seq}/e)^{1/2}}
-```
-
-In this post, we'll look at the variance-scaling behaviour of attention, and explain this scaling factor, before seeing that it makes training dynamics _worse_, not better.
+In this post, we'll look at the variance-scaling behaviour of attention, and explain this scaling factor, before seeing that it makes training dynamics _worse_, not better. The post is a condensed summary of our [almost-scaled dot-product attention notebook](https://github.com/graphcore-research/unit-scaling/tree/main/analysis/almost_scaled_dot_product_attention/almost_scaled_dot_product_attention.ipynb).
 
 ## Where does {math}`(d_{seq}/e)^{1/2}` come from?
 
@@ -67,9 +67,7 @@ alt: "learning rate sweep for baseline (standard attention) and fully scaled att
 ```
 <p/>
 
-This is most unfortunate. It seems that under-scaled tensors coming out of the attention block are important and helpful for transformer training dynamics. It isn't just tiny Shakespare models—we've also seen this effect when training BERT.
-
-Note that it shouldn't be a question of model expressivity, as the scale factor can be "moved" into the output projection for each head; both standard attention and fully scaled attention can behave identically during inference. We don't yet have an explanation for this behaviour, but find it intriguing that such a (presumed) accident of under-scaling turns out to be helpful for training dynamics!
+This is most unfortunate. It seems that under-scaled tensors coming out of the attention block are important and helpful for transformer training dynamics. It isn't just tiny Shakespare models—we've also seen this effect when training BERT. We don't yet have an explanation for this difference, but find it intriguing that such a (presumed) accident of under-scaling turns out to be helpful for training dynamics!
 
 Unit scaling has a solution for this, allowing unit-scaled tensors while retaining the original training dynamics. The bad training behaviour must come from scale-dependent operations, in particular when attention's residual output is added to the skip connection. So, we found that we can reproduce the same dynamics as the original model by applying a relative weight to the residual vs skip connections.
 
