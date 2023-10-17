@@ -171,7 +171,10 @@ def _add_tabular_html_display(g: Graph) -> None:
 
 
 def _clean_node_name(name: str) -> str:
-    return name.replace("l__self___", "").replace("l_", "").strip("_")
+    replace_strs = ["l__self___", "L__self___", "l_", "L_"]
+    for r in replace_strs:
+        name = name.replace(r, "")
+    return name.strip("_")
 
 
 def _is_float_tensor(a: Any) -> bool:
@@ -198,6 +201,9 @@ class _Tracker(Interpreter):
             out = _Track.apply(out, n.meta)  # type: ignore
         return out
 
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        return super().run(*args, **kwargs)
+
 
 def scale_tracking_backend(graph_holder: List[Graph]) -> Backend:
     def inner_backend(
@@ -205,7 +211,7 @@ def scale_tracking_backend(graph_holder: List[Graph]) -> Backend:
     ) -> Callable[..., Any]:
         _add_tabular_html_display(gm.graph)  # displays full info in notebooks
         graph_holder[0] = gm.graph  # allows graph to be accessed from outside
-        return _Tracker(gm).run  # type: ignore[no-any-return]
+        return _Tracker(gm)
 
     return inner_backend
 

@@ -156,7 +156,13 @@ def _compose_backends(backends: Iterable[Backend]) -> Backend:
         gm: GraphModule, example_inputs: List[Tensor]
     ) -> Callable[..., Any]:
         for b in backends:
-            gm = b(gm, example_inputs)  # type: ignore[assignment]
+            new_gm = b(gm, example_inputs)
+            new_gm._param_name_to_source = getattr(  # type: ignore
+                gm,
+                "_param_name_to_source",
+                None,
+            )
+            gm = new_gm  # type: ignore[assignment]
         return gm
 
     return composite_backend
