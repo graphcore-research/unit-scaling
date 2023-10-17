@@ -219,7 +219,7 @@ def scale_tracking_backend(graph_holder: List[Graph]) -> Backend:
 def _prune(graph: Graph, node: Node, replacement_arg: Optional[Node] = None) -> None:
     for user in list(node.users):
         # output node's args are a tuple of tuples, so need special handling
-        if user.name == "output":
+        if len(user.args) > 0 and isinstance(user.args[0], tuple):
             user.args = tuple(
                 (
                     (tuple(replacement_arg if o == node else o for o in out))
