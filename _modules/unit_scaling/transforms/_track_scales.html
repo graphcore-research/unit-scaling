@@ -244,7 +244,10 @@
 
 
 <span class="k">def</span> <span class="nf">_clean_node_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;l__self___&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;l_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="n">replace_strs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;l__self___&quot;</span><span class="p">,</span> <span class="s2">&quot;L__self___&quot;</span><span class="p">,</span> <span class="s2">&quot;l_&quot;</span><span class="p">,</span> <span class="s2">&quot;L_&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">replace_strs</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_is_float_tensor</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -271,6 +274,9 @@
             <span class="n">out</span> <span class="o">=</span> <span class="n">_Track</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="k">return</span> <span class="n">out</span>
 
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
 
 <span class="k">def</span> <span class="nf">scale_tracking_backend</span><span class="p">(</span><span class="n">graph_holder</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Graph</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Backend</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">inner_backend</span><span class="p">(</span>
@@ -278,7 +284,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="n">_add_tabular_html_display</span><span class="p">(</span><span class="n">gm</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>  <span class="c1"># displays full info in notebooks</span>
         <span class="n">graph_holder</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">graph</span>  <span class="c1"># allows graph to be accessed from outside</span>
-        <span class="k">return</span> <span class="n">_Tracker</span><span class="p">(</span><span class="n">gm</span><span class="p">)</span><span class="o">.</span><span class="n">run</span>  <span class="c1"># type: ignore[no-any-return]</span>
+        <span class="k">return</span> <span class="n">_Tracker</span><span class="p">(</span><span class="n">gm</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">inner_backend</span>
 

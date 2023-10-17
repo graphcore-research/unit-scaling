@@ -81,9 +81,9 @@
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">isnan</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib</span>  <span class="c1"># type: ignore[import]</span>
-<span class="kn">import</span> <span class="nn">matplotlib.colors</span>  <span class="c1"># type: ignore[import]</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>  <span class="c1"># type: ignore[import]</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.colors</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>  <span class="c1"># type: ignore[import]</span>
 <span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_dataset</span>  <span class="c1"># type: ignore[import]</span>
@@ -511,7 +511,7 @@
                 <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fwd&quot;</span><span class="p">,</span> <span class="s2">&quot;bwd&quot;</span><span class="p">]:</span>
                     <span class="n">draw_error_bar</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">p</span></div>
+    <span class="k">return</span> <span class="n">p</span>  <span class="c1"># type: ignore[no-any-return]</span></div>
 
 
 <div class="viewcode-block" id="visualiser"><a class="viewcode-back" href="../../generated/unit_scaling.visualiser.html#unit_scaling.analysis.visualiser">[docs]</a><span class="k">def</span> <span class="nf">visualiser</span><span class="p">(</span>
@@ -585,7 +585,7 @@
     <span class="n">_</span><span class="p">,</span> <span class="n">loss</span> <span class="o">=</span> <span class="n">tracked_model</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">backward</span><span class="p">:</span>
         <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-    <span class="n">graph</span> <span class="o">=</span> <span class="n">tracked_model</span><span class="o">.</span><span class="n">scales_graph</span><span class="p">()</span>  <span class="c1"># type: ignore[operator]</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">tracked_model</span><span class="o">.</span><span class="n">scales_graph</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">plot</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span></div>
 
 

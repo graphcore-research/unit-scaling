@@ -109,14 +109,14 @@
 simulates the effect of running matmuls in FP8. As is standard in the literature
 (Noune et al., 2022; Micikevicius et al., 2022), we use the FP8 E4 format in the
 forwards pass, and FP8 E5 in the backward pass.</p>
-<p>Specifically, before each <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.functional.linear.html#torch.nn.functional.linear" title="(in PyTorch v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.functional.linear()</span></code></a> and
-<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html#torch.nn.functional.scaled_dot_product_attention" title="(in PyTorch v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.functional.scaled_dot_product_attention()</span></code></a> call, a quantisation op
+<p>Specifically, before each <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.functional.linear.html#torch.nn.functional.linear" title="(in PyTorch v2.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.functional.linear()</span></code></a> and
+<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html#torch.nn.functional.scaled_dot_product_attention" title="(in PyTorch v2.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.functional.scaled_dot_product_attention()</span></code></a> call, a quantisation op
 is inserted which simulates the effect of using FP8. This op
 reduces the range of values to that of the format, and (stochastically) rounds
 values to only those representable by the format.</p>
 <p>The same is true for the backward pass.
 Models which use modules that contain these functions internally
-(such as <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Linear</span></code></a>) will be inspected by TorchDynamo and have the
+(such as <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Linear</span></code></a>) will be inspected by TorchDynamo and have the
 correct quantisation ops inserted.</p>
 <p>If the equivalent unit-scaled functions from <a class="reference internal" href="unit_scaling.functional.html#module-unit_scaling.functional" title="unit_scaling.functional"><code class="xref py py-mod docutils literal notranslate"><span class="pre">unit_scaling.functional</span></code></a> are
 used in the module, these too will be quantised.</p>

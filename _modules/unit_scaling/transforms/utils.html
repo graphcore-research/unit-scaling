@@ -229,7 +229,13 @@
         <span class="n">gm</span><span class="p">:</span> <span class="n">GraphModule</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">backends</span><span class="p">:</span>
-            <span class="n">gm</span> <span class="o">=</span> <span class="n">b</span><span class="p">(</span><span class="n">gm</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">)</span>  <span class="c1"># type: ignore[assignment]</span>
+            <span class="n">new_gm</span> <span class="o">=</span> <span class="n">b</span><span class="p">(</span><span class="n">gm</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">)</span>
+            <span class="n">new_gm</span><span class="o">.</span><span class="n">_param_name_to_source</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+                <span class="n">gm</span><span class="p">,</span>
+                <span class="s2">&quot;_param_name_to_source&quot;</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">gm</span> <span class="o">=</span> <span class="n">new_gm</span>  <span class="c1"># type: ignore[assignment]</span>
         <span class="k">return</span> <span class="n">gm</span>
 
     <span class="k">return</span> <span class="n">composite_backend</span>
