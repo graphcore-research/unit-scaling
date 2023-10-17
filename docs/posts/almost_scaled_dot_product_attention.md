@@ -81,4 +81,6 @@ If you're interested to find out more, check out our [accompanying notebook](htt
 
 ---
 
+With thanks to Charlie Blake for help & feedback.
+
 — Douglas Orr ([douglaso@graphcore.ai](mailto:douglaso@graphcore.ai)), October 2023
