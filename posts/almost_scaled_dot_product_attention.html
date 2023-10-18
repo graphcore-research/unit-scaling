@@ -85,7 +85,7 @@
 <p>But this is <em>insufficient for the attention operation as a whole</em>. We have derived a <span style="color: #fc4349">post-scaling factor</span> for attention to correct this:</p>
 <div class="math notranslate nohighlight">
 \[Z = \mathrm{Softmax}(A^{\prime})\, V \color{red}{\,\cdot\, (d_{seq}/e)^{1/2}}\]</div>
-<p>For an illustrative example, this gives the following scaling behaviour:</p>
+<p>Where <span class="math notranslate nohighlight">\(d_{seq}\)</span> is the sequence length. For example, this gives the following scaling behaviour:</p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="../_images/attention_scaling.png"><img alt="attention scaling: regular attention is underscaled to sigma=0.1 when d_seq=256, but scaled to sigma=1.0 when using a sqrt(d_seq/e) multiplier" src="../_images/attention_scaling.png" style="width: 30em;" /></a>
 </figure>
@@ -93,7 +93,7 @@
 <p>In this post, we’ll look at the variance-scaling behaviour of attention, and explain this scaling factor, before seeing that it makes training dynamics <em>worse</em>, not better. The post is a condensed summary of our <a class="reference external" href="https://github.com/graphcore-research/unit-scaling/tree/main/analysis/almost_scaled_dot_product_attention/almost_scaled_dot_product_attention.ipynb">almost-scaled dot-product attention notebook</a>.</p>
 <section id="where-does-d-seq-e-1-2-come-from">
 <h2>Where does <span class="math notranslate nohighlight">\((d_{seq}/e)^{1/2}\)</span> come from?<a class="headerlink" href="#where-does-d-seq-e-1-2-come-from" title="Permalink to this heading"></a></h2>
-<p>Attention contains the expression <span class="math notranslate nohighlight">\(Z=\mathrm{Softmax}(A^{\prime})V\)</span>. If we modify this slightly to <span class="math notranslate nohighlight">\(Z=\mathrm{Softmax}(A^{\prime}/t)V\)</span>, we can think about three cases (assuming <span class="math notranslate nohighlight">\(V \sim N(0, 1)\)</span>):</p>
+<p>Attention contains the expression <span class="math notranslate nohighlight">\(Z=\mathrm{Softmax}(A^{\prime})V\)</span>. If we modify this slightly to introduce a temperature <span class="math notranslate nohighlight">\(t\)</span>, <span class="math notranslate nohighlight">\(Z=\mathrm{Softmax}(A^{\prime}/t)V\)</span>, we can think about three cases (assuming <span class="math notranslate nohighlight">\(V \sim N(0, 1)\)</span>):</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(t\to \infty\)</span>, the scale of <span class="math notranslate nohighlight">\(Z\)</span> is <span class="math notranslate nohighlight">\(d_{seq}^{-1/2}\)</span> — the softmax output is flat with all values <span class="math notranslate nohighlight">\(= d_{seq}^{-1}\)</span>, followed by a sum over <span class="math notranslate nohighlight">\(d_{seq}\)</span> uncorrelated values which scales up by <span class="math notranslate nohighlight">\(d_{seq}^{1/2}\)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\(t\to 0\)</span>, the scale of <span class="math notranslate nohighlight">\(Z\)</span> is <span class="math notranslate nohighlight">\(1\)</span> and the output is a single unit spike — attention selects a single element of <span class="math notranslate nohighlight">\(V\)</span></p></li>

@@ -22,7 +22,7 @@ But this is _insufficient for the attention operation as a whole_. We have deriv
 Z = \mathrm{Softmax}(A^{\prime})\, V \color{red}{\,\cdot\, (d_{seq}/e)^{1/2}}
 ```
 
-For an illustrative example, this gives the following scaling behaviour:
+Where {math}`d_{seq}` is the sequence length. For example, this gives the following scaling behaviour:
 
 ```{figure} img/attention_scaling.png
 ---
@@ -37,7 +37,7 @@ In this post, we'll look at the variance-scaling behaviour of attention, and exp
 
 ## Where does {math}`(d_{seq}/e)^{1/2}` come from?
 
-Attention contains the expression {math}`Z=\mathrm{Softmax}(A^{\prime})V`. If we modify this slightly to {math}`Z=\mathrm{Softmax}(A^{\prime}/t)V`, we can think about three cases (assuming {math}`V \sim N(0, 1)`):
+Attention contains the expression {math}`Z=\mathrm{Softmax}(A^{\prime})V`. If we modify this slightly to introduce a temperature {math}`t`, {math}`Z=\mathrm{Softmax}(A^{\prime}/t)V`, we can think about three cases (assuming {math}`V \sim N(0, 1)`):
 
  - {math}`t\to \infty`, the scale of {math}`Z` is {math}`d_{seq}^{-1/2}` — the softmax output is flat with all values {math}`= d_{seq}^{-1}`, followed by a sum over {math}`d_{seq}` uncorrelated values which scales up by {math}`d_{seq}^{1/2}`
  - {math}`t\to 0`, the scale of {math}`Z` is {math}`1` and the output is a single unit spike — attention selects a single element of {math}`V`
