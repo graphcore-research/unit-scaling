@@ -130,8 +130,9 @@ def graph_to_dataframe(g: Graph) -> pd.DataFrame:
     data = []
     for n in g.nodes:
         # 'output' has to be kept from previous stages to keep fx happy. We drop it here
-        if n.name == "output":
+        if n.op == "output" or n.meta.get("df_drop", False):
             continue
+        assert isinstance(n.op, str), type(n.opcode)
         for direction in ["fwd", "bwd"]:
             tensor_type_prefix = "" if direction == "fwd" else "grad_"
             tensor_type_suffix = "w" if n.meta["requires_grad"] else "x"
@@ -325,7 +326,7 @@ def plot(
     i = 0
     node_idxs = {}
     for node in g.nodes:
-        if node.name != "output":
+        if node.op != "output":
             name = node.meta["clean_name"]
             if name not in node_idxs:
                 node_idxs[name] = i
@@ -426,7 +427,7 @@ def plot(
 
     if show_arrows:
         for n in g.nodes:
-            if n.name != "output":
+            if n.op != "output":
                 for direction in ["fwd", "bwd"]:
                     for arg in n.args:
                         if isinstance(arg, Node):
@@ -434,7 +435,7 @@ def plot(
 
     if show_error_bars:
         for n in g.nodes:
-            if n.name != "output":
+            if n.op != "output":
                 for direction in ["fwd", "bwd"]:
                     draw_error_bar(n, direction)
 

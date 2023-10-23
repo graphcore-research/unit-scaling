@@ -2,8 +2,8 @@
 
 import logging
 from copy import deepcopy
-from dataclasses import dataclass
-from math import isclose
+from dataclasses import asdict, dataclass
+from math import isclose, isnan
 from types import MethodType
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, TypeVar
 
@@ -40,6 +40,25 @@ class Metrics:
         abs_max: float
         abs_min: float
         numel: int
+        num_zero: int
+        num_pos_inf: int
+        num_neg_inf: int
+        num_abs_max: int
+        num_abs_min: int
+        
+        def __eq__(self, __value: object) -> bool:
+            if not isinstance(__value, type(self)):
+                return False
+            d1 = asdict(self)
+            d2 = asdict(__value)
+            for (k1, v1), (k2, v2) in zip(d1.items(), d2.items()):
+                if k1 != k2:
+                    raise ValueError("Data objects should have same keys:", k1, k2)
+                if isnan(v1) and isnan(v2):  # Key difference versus default impl.
+                    continue
+                if v1 != v2:
+                    return False
+            return True
 
     def __init__(self, fwd_tensor: Tensor) -> None:
         self.fwd = self.from_tensor(fwd_tensor)
@@ -50,17 +69,65 @@ class Metrics:
 
     def __str__(self) -> str:
         return f"fwd: {self.fwd}, bwd: {self.bwd}"  # pragma: no cover
+    
+    def __eq__(self, __value: object) -> bool:
+        if not isinstance(__value, type(self)):
+            return False
+        return self.fwd == __value.fwd and self.bwd == __value.bwd
 
     @staticmethod
     def from_tensor(t: Tensor) -> "Metrics.Data":
+        def _get_regulars(t: Tensor) -> Tensor:
+            dmax = torch.finfo(t.dtype).max
+            dmin = torch.finfo(t.dtype).min
+            special_values = [0, float("inf"), -float("inf"), float("nan"), dmax, dmin]
+
+            regular_mask = ~(sum(t == v for v in special_values).bool())
+            num_regulars = regular_mask.sum()
+            masked_regulars = torch.where(regular_mask, t, 0)
+            return masked_regulars, num_regulars
+
+        def _ignore_mean(t: Tensor) -> Tensor:
+            """Mean calculation ignoring any NaN, inf, -inf, max, min or 0 values."""
+            masked_regulars, num_regulars = _get_regulars(t)
+            if num_regulars == 0:
+                return t.mean()
+            regular_sum = masked_regulars.sum()
+            return regular_sum / num_regulars
+
+        def _ignore_std(t: Tensor) -> Tensor:
+            """Std calculation that ignores any NaN, inf or -inf values."""
+            mean_of_squares = _ignore_mean(t ** 2)
+            square_of_means = _ignore_mean(t) ** 2
+            return (mean_of_squares - square_of_means) ** 0.5
+
+        def _ignore_max(t: Tensor) -> Tensor:
+            masked_regulars, num_regulars = _get_regulars(t)
+            if num_regulars == 0:
+                return t.max()
+            return masked_regulars.max()
+
+        def _ignore_min(t: Tensor) -> Tensor:
+            masked_regulars, num_regulars = _get_regulars(t)
+            if num_regulars == 0:
+                return t.min()
+            return masked_regulars.min()
+
         abs_t = t.abs()
+        abs_max = torch.finfo(t.dtype).max
+        abs_min = torch.finfo(t.dtype).min
         return Metrics.Data(
-            mean_abs=abs_t.mean().item(),
-            abs_mean=t.mean().abs().item(),
-            std=t.std().item(),
-            abs_max=abs_t.max().item(),
-            abs_min=abs_t.min().item(),
+            mean_abs=_ignore_mean(abs_t).item(),
+            abs_mean=_ignore_mean(t).abs().item(),
+            std=_ignore_std(t).item(),
+            abs_max=_ignore_max(abs_t).item(),
+            abs_min=_ignore_min(abs_t).item(),
             numel=t.numel(),
+            num_zero=(t == 0).sum().item(),
+            num_pos_inf=(t == float("inf")).sum().item(),
+            num_neg_inf=(t == -float("inf")).sum().item(),
+            num_abs_max=(t == abs_max).sum().item(),
+            num_abs_min=(t == abs_min).sum().item(),
         )
 
     @staticmethod
@@ -72,6 +139,11 @@ class Metrics:
             "abs_max": "absolute maximum",
             "abs_min": "absolute minimum",
             "numel": "number of elements",
+            "num_zero": "number of zero elements",
+            "num_pos_inf": "number of pos inf elements",
+            "num_neg_inf": "number of neg inf elements",
+            "num_abs_max": "number of abs max elements",
+            "num_abs_min": "number of abs min elements",
         }[short_name]
 
     @staticmethod
@@ -210,7 +282,7 @@ def scale_tracking_backend(graph_holder: List[Graph]) -> Backend:
         gm: GraphModule, example_inputs: List[Tensor]
     ) -> Callable[..., Any]:
         _add_tabular_html_display(gm.graph)  # displays full info in notebooks
-        graph_holder[0] = gm.graph  # allows graph to be accessed from outside
+        graph_holder.append(gm.graph)  # allows graph to be accessed from outside
         return _Tracker(gm)
 
     return inner_backend
@@ -302,13 +374,13 @@ def track_scales(module: M) -> M:
     Returns:
         M: a new version of the input module which tracks tensor metrics when used.
     """
-    graph_holder = [Graph()]
+    graph_holder = []
     tracking_module = apply_transform(module, scale_tracking_backend(graph_holder))
 
-    def scales_graph() -> Graph:
-        return graph_holder[0]  # type: ignore
+    def scales_graphs() -> List[Graph]:
+        return graph_holder  # type: ignore
 
-    tracking_module.scales_graph = scales_graph
+    tracking_module.scales_graphs = scales_graphs
     _make_input_tensors_require_grad(tracking_module)
     return tracking_module  # type: ignore[no-any-return]
 
