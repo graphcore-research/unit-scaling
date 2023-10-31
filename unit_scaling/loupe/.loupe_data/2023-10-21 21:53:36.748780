@@ -1,0 +1,11 @@
+layer,Forward Pass,Backward Pass,Misc
+word_embedding,2,5,0.07692307692307693
+pos_embedding,3,4,0.07142857142857142
+add,1,4,0.0625
+layernorm_1,7,4,0.08333333333333333
+split,8,8,0.14285714285714285
+layernorm_2,8,13,0.1111111111111111
+proj_up,5,15,0.3333333333333333
+gelu,4,17,0.5
+proj_down,9,18,1.0
+residual_add,11,13,1.0

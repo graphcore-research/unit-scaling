@@ -1,0 +1,11 @@
+,layer,forward_pass,backward_pass,misc
+0,word_embedding,2,5,13
+1,pos_embedding,3,4,14
+2,add,1,4,16
+3,layernorm_1,7,4,12
+4,split,8,8,7
+5,layernorm_2,8,13,9
+6,proj_up,5,15,3
+7,gelu,4,17,2
+8,proj_down,9,18,1
+9,residual_add,11,13,1
