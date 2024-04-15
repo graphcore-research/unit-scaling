@@ -282,8 +282,6 @@ def plot(
         s = s.replace("transformer_", "")
         return s
 
-    p.set_yticklabels([_rename(item.get_text()) for item in p.get_yticklabels()])
-
     plt.axvline(2**-14, color="grey", dashes=(3, 1))
     plt.axvline(2**-7, color="grey", dashes=(1, 3))
     plt.axvline(240, color="grey", dashes=(1, 3))
@@ -437,6 +435,9 @@ def plot(
             if n.name != "output":
                 for direction in ["fwd", "bwd"]:
                     draw_error_bar(n, direction)
+
+    p.set_yticks(p.get_yticks())
+    p.set_yticklabels([_rename(item.get_text()) for item in p.get_yticklabels()])
 
     return p  # type: ignore[no-any-return]
 
