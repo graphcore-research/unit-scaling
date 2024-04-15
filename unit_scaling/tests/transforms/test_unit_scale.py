@@ -3,6 +3,7 @@
 import logging
 import math
 from typing import Tuple
+import re
 
 import torch
 import torch.nn.functional as F
@@ -94,14 +95,14 @@ def test_unit_scale_residual_add(caplog: LogCaptureFixture) -> None:
     loss.backward()
 
     expected_logs = [
-        "unit scaling function: add\n",
-        "unit scaling function: iadd\n",
-        "unit scaling function: iadd_1 (residual-add, tau=0.5)",
-        "unit scaling function: add_1 (residual-add, tau=0.5)",
+        "unit scaling function: (add|input_2)\n",
+        "unit scaling function: (iadd|input_4)\n",
+        "unit scaling function: (iadd_1|skip_1) \(residual-add, tau=0\.5\)",
+        "unit scaling function: (add_1|input_6) \(residual-add, tau=0\.5\)",
     ]
     print(caplog.text)
     for log_msg in expected_logs:
-        assert log_msg in caplog.text
+        assert re.search(log_msg, caplog.text)
 
 
 def test_fp8_unit_scaling(caplog: LogCaptureFixture) -> None:

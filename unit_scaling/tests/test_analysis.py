@@ -17,6 +17,8 @@ from ..analysis import (
 )
 from ..transforms import track_scales
 
+from .conftest import pt20, pt21
+
 
 def test_example_seqs() -> None:
     batch_size, min_seq_len = 3, 1024
@@ -82,14 +84,14 @@ def test_graph_to_dataframe() -> None:
             "layer": [
                 "x",
                 "x",
-                "relu",
-                "relu",
-                "linear_weight",
-                "linear_weight",
-                "linear_bias",
-                "linear_bias",
-                "linear",
-                "linear",
+                "relu" if pt21 else "y",
+                "relu" if pt21 else "y",
+                "self_linear_weight" if pt20 else "linear_weight",
+                "self_linear_weight" if pt20 else "linear_weight",
+                "self_linear_bias" if pt20 else "linear_bias",
+                "self_linear_bias" if pt20 else "linear_bias",
+                "linear" if pt21 else "z",
+                "linear" if pt21 else "z",
                 "sum_1",
                 "sum_1",
             ],

@@ -4,7 +4,7 @@
 
 import functools
 from contextlib import contextmanager
-from copy import copy, deepcopy
+
 from typing import (
     Any,
     Callable,
@@ -35,15 +35,91 @@ Backend = Callable[[GraphModule, List[Tensor]], Callable[..., Any]]
 _unit_scaled_functions = [getattr(U, f) for f in U.__all__]
 
 
+import copy
+
+from unittest.mock import patch
+
+
+def deepcopy_with_intercept(obj, interceptor):
+    old_reconstruct = copy._reconstruct
+
+    def new_reconstruct(
+        x,
+        memo,
+        func,
+        args,
+        state=None,
+        listiter=None,
+        dictiter=None,
+        *,
+        deepcopy=copy.deepcopy,
+    ):
+        if len(args) > 0:
+            new_args = interceptor(*args)
+        else:
+            new_args = args
+        return old_reconstruct(
+            x, memo, func, new_args, state, listiter, dictiter, deepcopy=deepcopy
+        )
+
+    with patch("copy._reconstruct", new=new_reconstruct):
+        return copy.deepcopy(obj)
+
+
+def trivial_subclass(in_type: type) -> type:
+    """
+    Given a class type, make a subclass type which forwards all calls to the base.
+
+    Useful to disable dynamo behaviors which match on stringy class names.
+    """
+    # TODO: this incredibly common pattern must be packaged somewhere....
+    # A proper implementation would protect against generating the same name
+    # for 'a_b.c' and 'a.b.c', most likely by '_' -> '__', '.' -> '_o_'
+
+    name = (
+        "trivial_subclass_"
+        + in_type.__module__.replace(".", "_")
+        + "_"
+        + in_type.__name__
+    )
+    return type(name, (in_type,), {})
+
+
+def torch_nn_modules_to_user_modules(model):
+    """
+    Convert torch.nn.module classes to `trivial_subclass` versions.
+
+    This will make dynamo inline them.
+    """
+
+    # Implementation note: This is not a dynamo pass, as it is merely
+    # a data structure change.  Instead it uses a deepcopy, intercepting
+    # the constructors.
+
+    def intercept_ctor(ctor, *args):
+        if isinstance(ctor, type) and ctor.__module__.startswith("torch.nn.modules"):
+            ctor = trivial_subclass(ctor)
+        return ctor, *args
+
+    return deepcopy_with_intercept(model, intercept_ctor)
+
+
+def _torch_nn_module_functions_to_inline():
+    for v in nn.modules.__dict__.values():
+        if isinstance(v, type) and v not in nn.modules.loss.__dict__.values():
+            yield v
+
+
 def _get_patched_allowed_function_ids(
     non_recurse_functions: Iterable[Callable[..., Any]],
 ) -> Set[int]:
-    allowed_function_ids = copy(torch._dynamo.allowed_functions._allowed_function_ids)
-    for v in nn.modules.__dict__.values():
-        if isinstance(v, type) and v not in nn.modules.loss.__dict__.values():
-            i = id(v)
-            if i in allowed_function_ids:
-                allowed_function_ids.remove(i)
+    allowed_function_ids = copy.copy(
+        torch._dynamo.allowed_functions._allowed_function_ids
+    )
+    for v in _torch_nn_module_functions_to_inline():
+        i = id(v)
+        if i in allowed_function_ids:
+            allowed_function_ids.remove(i)
     for f in non_recurse_functions:
         allowed_function_ids.add(id(f))
     return allowed_function_ids  # type: ignore[no-any-return]
@@ -70,18 +146,40 @@ def _patched_call_function(  # type: ignore[no-untyped-def]
     ).call_function(tx, args, kwargs)
 
 
+if torch.__version__ > "2.2alpha":
+    import torch._dynamo.trace_rules
+
+    _uncached_get_torch_obj_rule_map = (
+        torch._dynamo.trace_rules.get_torch_obj_rule_map.__wrapped__
+    )
+
+
 @contextmanager
 def _expand_modules_patch(non_recurse_functions):  # type: ignore[no-untyped-def]
-    patcher_a = patch(
-        "torch._dynamo.allowed_functions._allowed_function_ids",
-        new=_get_patched_allowed_function_ids(non_recurse_functions),
-    )
-    patcher_b = patch(
-        "torch._dynamo.variables.functions.UserMethodVariable.call_function",
-        new=_patched_call_function,
-    )
-    with patcher_a, patcher_b:
-        yield (patcher_a.start(), patcher_b.start())
+    if torch.__version__ < "2.3alpha":  # We need the a0 - alphas are earlier than ".0"
+        patcher_a = patch(
+            "torch._dynamo.allowed_functions._allowed_function_ids",
+            new=_get_patched_allowed_function_ids(non_recurse_functions),
+        )
+        patcher_b = patch(
+            "torch._dynamo.variables.functions.UserMethodVariable.call_function",
+            new=_patched_call_function,
+        )
+        with patcher_a, patcher_b:
+            yield (patcher_a.start(), patcher_b.start())
+    else:
+        # All changed at https://github.com/awf/pytorch/commit/f657b2b1f8f35aa6ee199c4690d38a2b460387ae
+
+        for v in non_recurse_functions:
+            torch._dynamo.allow_in_graph(v)
+
+        patcher_b = patch(
+            "torch._dynamo.variables.functions.UserMethodVariable.call_function",
+            new=_patched_call_function,
+        )
+
+        with patcher_b:
+            yield patcher_b.start()
 
 
 def patch_to_expand_modules(
@@ -211,13 +309,15 @@ def apply_transform(
     Returns:
         nn.Module: the transformed module.
     """
-    module = deepcopy(module)
+    module = torch_nn_modules_to_user_modules(module)
+
     if not hasattr(module, "backends"):
         module.backends = []
     module.backends.append(backend)
     if not hasattr(module, "non_recurse_functions"):
         module.non_recurse_functions = list(_unit_scaled_functions)
     module.non_recurse_functions += non_recurse_functions
+
     backend = _compose_backends(module.backends)
 
     def new_forward(*args: Any, **kwargs: Any) -> Any:
