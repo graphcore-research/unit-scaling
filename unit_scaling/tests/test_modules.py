@@ -15,12 +15,12 @@ from .._modules import (
     LayerNorm,
     Linear,
     Softmax,
+    TransformerDecoder,
     TransformerLayer,
 )
 from .helper import (
     assert_non_zeros,
     assert_not_unit_scaled,
-    assert_scale,
     assert_unit_scaled,
     assert_zeros,
     unit_backward,
@@ -64,8 +64,7 @@ def test_dropout() -> None:
 
 
 def test_linear() -> None:
-    b = 2**8
-    input = randn(b, 2**10, requires_grad=True)
+    input = randn(2**8, 2**10, requires_grad=True)
     model = Linear(2**10, 2**12)
     output = model(input)
 
@@ -74,7 +73,7 @@ def test_linear() -> None:
     assert output.shape == torch.Size([2**8, 2**12])
 
     unit_backward(output)
-    SGD(model.parameters(), lr=10).step()
+    SGD(model.parameters(), lr=1).step()
 
     combined_std = output.std().detach() * input.grad.std()  # type: ignore
     assert combined_std == pytest.approx(1, abs=0.1)
@@ -84,18 +83,16 @@ def test_linear() -> None:
 
 
 def test_layer_norm() -> None:
-    b = 2**8
-    input = randn(b, 2**10, requires_grad=True)
+    input = randn(2**8, 2**10, requires_grad=True)
     model = LayerNorm(2**10)
     output = model(input)
 
-    assert output.shape == torch.Size([b, 2**10])
+    assert output.shape == torch.Size([2**8, 2**10])
 
     unit_backward(output)
     SGD(model.parameters(), lr=1).step()
 
-    assert_unit_scaled(output, input.grad)
-    assert_scale(model.weight.grad, model.bias.grad, target=b**-0.25)
+    assert_unit_scaled(output, input.grad, model.weight.grad, model.bias.grad)
 
 
 def test_embedding() -> None:
@@ -108,9 +105,7 @@ def test_embedding() -> None:
 
     unit_backward(output)
 
-    assert_scale(
-        model.weight.grad, target=(num_embeddings / (batch_sz * seq_len)) ** 0.25
-    )
+    assert_unit_scaled(model.weight.grad)
 
     with pytest.raises(ValueError):
         Embedding(num_embeddings, embedding_dim, scale_grad_by_freq=True)
@@ -144,7 +139,7 @@ def test_mlp() -> None:
     assert output.shape == torch.Size([2**8, 2**10])
 
     unit_backward(output)
-    SGD(model.parameters(), lr=10).step()
+    SGD(model.parameters(), lr=1).step()
 
     combined_std = output.std().detach() * input.grad.std()  # type: ignore
     assert combined_std == pytest.approx(1, abs=0.1)
@@ -163,7 +158,7 @@ def test_mhsa() -> None:
     assert output.shape == torch.Size([batch_sz, seq_len, hidden_dim])
 
     unit_backward(output)
-    SGD(model.parameters(), lr=10).step()
+    SGD(model.parameters(), lr=1).step()
 
     combined_std = output.std().detach() * input.grad.std()  # type: ignore
     assert combined_std == pytest.approx(1, abs=0.5)
@@ -180,7 +175,34 @@ def test_transformer_layer() -> None:
     assert output.shape == torch.Size([batch_sz, seq_len, hidden_dim])
 
     unit_backward(output)
-    SGD(model.parameters(), lr=10).step()
+    SGD(model.parameters(), lr=1).step()
 
     combined_std = output.std().detach() * input.grad.std()  # type: ignore
     assert combined_std == pytest.approx(1, abs=0.1)
+
+
+def test_transformer_decoder() -> None:
+    batch_size = 2**8
+    seq_len = 2**6
+    hidden_size = 2**6
+    vocab_size = 2**12
+    layers = 2
+    heads = 4
+
+    input_idxs = torch.randint(low=0, high=vocab_size, size=(batch_size, seq_len))
+    labels = torch.roll(input_idxs, -1, 1)
+    model = TransformerDecoder(hidden_size, vocab_size, layers, heads, dropout_p=0.1)
+    loss = model(input_idxs, labels)
+
+    assert loss.shape == torch.Size([])
+
+    loss.backward()
+    SGD(model.parameters(), lr=1).step()
+
+    for name, p in model.named_parameters():
+        if "layer_norm.bias" in name:
+            threshold = 20.0
+        else:
+            threshold = 5.0
+        assert p.grad is not None
+        assert 1 / threshold <= p.grad.std().detach() <= threshold, name

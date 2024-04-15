@@ -19,12 +19,7 @@ from ..functional import (
     scaled_dot_product_attention,
     softmax,
 )
-from .helper import (
-    assert_not_unit_scaled,
-    assert_scale,
-    assert_unit_scaled,
-    unit_backward,
-)
+from .helper import assert_not_unit_scaled, assert_unit_scaled, unit_backward
 
 
 def retain_grad(t: Tensor) -> None:
@@ -208,54 +203,47 @@ def test_matmul_scale_for_grad_right() -> None:
 
 
 def test_linear_no_constraint() -> None:
-    b = 2**8
-    input = randn(b, 2**10, requires_grad=True)
+    input = randn(2**8, 2**10, requires_grad=True)
     weight = randn(2**12, 2**10, requires_grad=True)
     bias = zeros(2**12).requires_grad_()
     output = linear(input, weight, bias, constraint=None)
     unit_backward(output)
 
-    assert_unit_scaled(output, input.grad)
-    assert_scale(weight.grad, bias.grad, target=b**-0.25)
+    assert_unit_scaled(output, input.grad, weight.grad, bias.grad)
 
 
 def test_linear_geo_mean() -> None:
-    b = 2**8
-    input = randn(b, 2**10, requires_grad=True)
+    input = randn(2**8, 2**10, requires_grad=True)
     weight = randn(2**12, 2**10, requires_grad=True)
     bias = zeros(2**12).requires_grad_()
     output = linear(input, weight, bias, constraint="gmean")
     unit_backward(output)
 
-    assert_scale(weight.grad, bias.grad, target=b**-0.25)
+    assert_unit_scaled(weight.grad, bias.grad)
     assert_not_unit_scaled(output, input.grad)
     combined_std = output.std().detach() * input.grad.std()  # type: ignore
     assert combined_std == pytest.approx(1, abs=0.1)
 
 
 def test_linear_scale_for_output() -> None:
-    b = 2**8
-    input = randn(b, 2**10, requires_grad=True)
+    input = randn(2**8, 2**10, requires_grad=True)
     weight = randn(2**12, 2**10, requires_grad=True)
     bias = zeros(2**12).requires_grad_()
     output = linear(input, weight, bias, constraint="to_output_scale")
     unit_backward(output)
 
-    assert_unit_scaled(output)
-    assert_scale(weight.grad, bias.grad, target=b**-0.25)
+    assert_unit_scaled(output, weight.grad, bias.grad)
     assert_not_unit_scaled(input.grad)
 
 
 def test_linear_scale_for_grad_input() -> None:
-    b = 2**8
-    input = randn(b, 2**10, requires_grad=True)
+    input = randn(2**8, 2**10, requires_grad=True)
     weight = randn(2**12, 2**10, requires_grad=True)
     bias = zeros(2**12).requires_grad_()
     output = linear(input, weight, bias, constraint="to_grad_input_scale")
     unit_backward(output)
 
-    assert_unit_scaled(input.grad)
-    assert_scale(weight.grad, bias.grad, target=b**-0.25)
+    assert_unit_scaled(input.grad, weight.grad, bias.grad)
     assert_not_unit_scaled(output)
 
 
@@ -263,15 +251,13 @@ def test_linear_scale_for_grad_input() -> None:
 
 
 def test_layer_norm() -> None:
-    b = 2**8
-    input = randn(b, 2**10, requires_grad=True)
+    input = randn(2**8, 2**10, requires_grad=True)
     weight = randn(2**10, requires_grad=True)
     bias = zeros(2**10).requires_grad_()
     output = layer_norm(input, (2**10,), weight, bias)
     unit_backward(output)
 
-    assert_unit_scaled(output, input.grad)
-    assert_scale(weight.grad, bias.grad, target=b**-0.25)
+    assert_unit_scaled(output, input.grad, weight.grad, bias.grad)
 
 
 # --- test add() ---
@@ -364,10 +350,7 @@ def test_embedding() -> None:
     output = embedding(input_idxs, embedding_table)
     unit_backward(output)
 
-    assert_unit_scaled(output)
-    assert_scale(
-        embedding_table.grad, target=(num_embeddings / (batch_sz * seq_len)) ** 0.25
-    )
+    assert_unit_scaled(output, embedding_table.grad)
 
     with pytest.raises(ValueError):
         embedding(input_idxs, embedding_table, scale_grad_by_freq=True)
