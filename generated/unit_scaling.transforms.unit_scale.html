@@ -135,7 +135,7 @@ better scaling.</p></li>
 modules / operations than with previous PyTorch tracing approaches. This enables
 the process of unit scaling to be expressed as a generic graph transform that can be
 applied to arbitrary modules.</p>
-<p>Note that the current version of TorchDynamo (or <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a>, which is a
+<p>Note that the current version of TorchDynamo (or <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a>, which is a
 wrapper around TorchDynamo) doesn’t support nested transforms, so we implement our
 own system here. This makes it easy to nest transforms:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">unit_scaling.transforms</span> <span class="kn">import</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">simulate_fp8</span><span class="p">,</span> <span class="n">unit_scale</span>
@@ -144,7 +144,7 @@ own system here. This makes it easy to nest transforms:</p>
 </pre></div>
 </div>
 <p>However, these transforms are not interoperable with the standard
-<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> interface.</p>
+<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> interface.</p>
 <p>In some cases users may have a model definition that uses a custom implementation of
 a basic operation. In this case, <cite>unit_scale()</cite> can be told explicitly to substitute
 the layer for an equivalent, using the <cite>replace</cite> dictionary:</p>
