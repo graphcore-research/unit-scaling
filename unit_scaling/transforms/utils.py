@@ -111,9 +111,8 @@ if pt21:
     def _get_patched_allowed_function_ids(  # type: ignore [no-untyped-def]
         non_recurse_functions: Iterable[Callable[..., Any]],
     ):
-        allowed_function_ids = copy.copy(
-            torch._dynamo.allowed_functions._allowed_function_ids
-        )
+        _af = torch._dynamo.allowed_functions  # type: ignore [attr-defined]
+        allowed_function_ids = copy.copy(_af._allowed_function_ids)
         for v in _torch_nn_module_functions_to_inline():
             i = id(v)
             if i in allowed_function_ids:
@@ -139,13 +138,13 @@ def _patched_call_function(  # type: ignore[no-untyped-def]
             var = self.obj.call_method(
                 tx, self.fn.__name__, args, kwargs, constant=self.is_constant
             )
-            return var.add_options(self)  # type: ignore [no-untyped-call]
+            return var.add_options(self)  # type: ignore [no-untyped-call,attr-defined]
     return super(
         torch._dynamo.variables.functions.UserMethodVariable, self
     ).call_function(tx, args, kwargs)
 
 
-if not pt21:
+if pt21 and hasattr(torch._dynamo, "trace_rules"):
     import torch._dynamo.trace_rules  # type: ignore [import]
 
     _uncached_get_torch_obj_rule_map = (
