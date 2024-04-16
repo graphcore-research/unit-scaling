@@ -4,4 +4,4 @@ einops
 numpy
 seaborn
 tabulate
-torch
+torch==2.1
