@@ -4,6 +4,11 @@ import inspect
 import sys
 from typing import List
 
+import torch
+
+# Check for torch < 2.2.   Note alphas are earlier than ".0"
+pt21 = torch.__version__ >= "2.0" and torch.__version__ < "2.2alpha"
+
 
 def generate__all__(module_name: str, include_imports: bool = False) -> List[str]:
     """Generates the contents of __all__ by extracting every public function/class/etc.

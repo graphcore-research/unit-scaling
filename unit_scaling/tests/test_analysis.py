@@ -16,7 +16,6 @@ from ..analysis import (
     visualiser,
 )
 from ..transforms import track_scales
-
 from .conftest import pt20, pt21
 
 

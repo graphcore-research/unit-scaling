@@ -17,11 +17,10 @@ from ...transforms import (
     prune_selected_nodes,
     track_scales,
 )
+from ..conftest import pt21
 
-from ..conftest import pt20, pt21
 
-
-def get_target_or_node_name(node: Node) -> Union[str, Callable]:  # type: ignore[type-arg]
+def get_target_or_node_name(node: Node) -> Union[str, Callable[..., Any]]:
     return node.meta["clean_name"] if isinstance(node.target, str) else node.target
 
 
@@ -157,43 +156,6 @@ def test_prune_non_float_tensors() -> None:
     assert graph_targets == expected_targets
 
 
-# Example of a pre-2.2 captured graph
-# def forward(self, L_idxs_ : torch.Tensor):
-#     l_idxs_ = L_idxs_
-#     l__self___emb_weight = foo.L__self___emb_weight
-#     embedding = torch.nn.functional.embedding(l_idxs_, l__self___emb_weight, None, None, 2.0, False, False);  l_idxs_ = l__self___emb_weight = None
-#     flatten = embedding.flatten(start_dim = 0, end_dim = -1);  embedding = None
-#     view = flatten.view((8, 32, 64));  flatten = None
-#     l__self___linear_weight = foo.L__self___linear_weight
-#     l__self___linear_bias = foo.L__self___linear_bias
-#     linear = torch._C._nn.linear(view, l__self___linear_weight, l__self___linear_bias);  l__self___linear_weight = l__self___linear_bias = None
-#     softmax = torch.nn.functional.softmax(linear, dim = -1);  linear = None
-#     argmax = torch.argmax(softmax, dim = -1);  softmax = None
-#     unsqueeze = torch.unsqueeze(argmax, -1);  argmax = None
-#     gather = torch.gather(view, -1, unsqueeze);  view = None
-#     randn_like = torch.randn_like(gather)
-#     gather += randn_like;  iadd = gather;  gather = randn_like = None
-#     return (iadd, unsqueeze)
-#
-# Example of a post-2.2 captured graph
-# def forward(self, L_idxs_ : torch.Tensor):
-#     l_idxs_ = L_idxs_
-#     l__self___emb_weight = foo.L__self___emb_weight
-#     x = torch.nn.functional.embedding(l_idxs_, l__self___emb_weight, None, None, 2.0, False, False);  l_idxs_ = l__self___emb_weight = None
-#     _x = x.flatten(start_dim = 0, end_dim = -1);  x = None
-#     x_1 = _x.view((8, 32, 64));  _x = None
-#     l__self___linear_weight = foo.L__self___linear_weight
-#     l__self___linear_bias = foo.L__self___linear_bias
-#     y = torch._C._nn.linear(x_1, l__self___linear_weight, l__self___linear_bias);  l__self___linear_weight = l__self___linear_bias = None
-#     scores = torch.nn.functional.softmax(y, dim = -1);  y = None
-#     top_idx = torch.argmax(scores, dim = -1);  scores = None
-#     top_idx_1 = torch.unsqueeze(top_idx, -1);  top_idx = None
-#     top_score_x = torch.gather(x_1, -1, top_idx_1);  x_1 = None
-#     randn_like = torch.randn_like(top_score_x)
-#     top_score_x += randn_like;  top_score_x_1 = top_score_x;  top_score_x = randn_like = None
-#     return (top_score_x_1, top_idx_1)
-
-
 def test_prune_same_scale_tensors() -> None:
     class Model(nn.Module):
         def __init__(self, emb_size: int, dim: int) -> None:
@@ -220,6 +182,8 @@ def test_prune_same_scale_tensors() -> None:
     model(idxs)
 
     graph = model.scales_graph()
+
+    # Version-dependent, see https://github.com/graphcore-research/unit-scaling/pull/52
     var_lhs_flatten = "flatten" if pt21 else "x"
     var_lhs_view = "view" if pt21 else "x_1"
     expected_targets = {
