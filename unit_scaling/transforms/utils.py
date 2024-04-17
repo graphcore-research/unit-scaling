@@ -351,4 +351,4 @@ def apply_transform(
     return module
 
 
-__all__ = generate__all__(__name__)
+__all__ = [*generate__all__(__name__), pt21]
