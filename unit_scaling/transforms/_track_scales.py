@@ -205,15 +205,16 @@ class _Tracker(Interpreter):
         return super().run(*args, **kwargs)
 
 
-def scale_tracking_backend(graph_holder: List[Graph]) -> Backend:
-    def inner_backend(
-        gm: GraphModule, example_inputs: List[Tensor]
+class ScaleTrackingBackend(Backend):
+    def __init__(self):
+        self.graph = Graph()
+
+    def __call__(
+        self, gm: GraphModule, example_inputs: List[Tensor]
     ) -> Callable[..., Any]:
         _add_tabular_html_display(gm.graph)  # displays full info in notebooks
-        graph_holder[0] = gm.graph  # allows graph to be accessed from outside
+        self.graph = gm.graph  # allows graph to be accessed from outside
         return _Tracker(gm)
-
-    return inner_backend
 
 
 def _prune(graph: Graph, node: Node, replacement_arg: Optional[Node] = None) -> None:
@@ -302,13 +303,10 @@ def track_scales(module: M) -> M:
     Returns:
         M: a new version of the input module which tracks tensor metrics when used.
     """
-    graph_holder = [Graph()]
-    tracking_module = apply_transform(module, scale_tracking_backend(graph_holder))
+    backend = ScaleTrackingBackend()
+    tracking_module = apply_transform(module, backend)
 
-    def scales_graph() -> Graph:
-        return graph_holder[0]  # type: ignore
-
-    tracking_module.scales_graph = scales_graph
+    tracking_module.scales_graph = lambda: backend.graph
     _make_input_tensors_require_grad(tracking_module)
     return tracking_module  # type: ignore[no-any-return]
 
