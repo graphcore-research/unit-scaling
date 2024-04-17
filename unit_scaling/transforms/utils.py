@@ -3,6 +3,7 @@
 """Utilities for working with transforms."""
 
 import copy
+import copyreg
 import functools
 from contextlib import contextmanager
 from typing import (
@@ -36,13 +37,23 @@ _unit_scaled_functions = [getattr(U, f) for f in U.__all__]
 
 def deepcopy_with_intercept(obj: Any, interceptor: Callable[..., Any]) -> Any:
     """
-    Make a deepcopy of OBJ, intercepting every new constructor call.
+    Make a deepcopy of ``param: obj``, intercepting every new constructor call.
 
     The standard python deepcopy traverses the input object, and for every
-    object therein, calls ``_reconstruct`` to create the new copy.
-
-    This version calls the user-supplied ``interceptor`` passing the object
-    constructor, and it should return a new constructor
+    object therein, calls a constructor like
+    ``
+      __newobj__(type, *args)
+    ``
+    to create the new copy.  This function instead calls
+    ``
+      interceptor(type, *args)
+    ``
+    If this were to act as a no-op, interceptor would just call
+    ``
+      type.__new__(type, *args)
+    ``
+    We don't call the constructor ``type(*args)`` as the object's state may
+    be later set by ``__setstate__``.
     """
     old_reconstruct = copy._reconstruct  # type: ignore [attr-defined]
 
@@ -57,13 +68,10 @@ def deepcopy_with_intercept(obj: Any, interceptor: Callable[..., Any]) -> Any:
         *,
         deepcopy=copy.deepcopy,
     ):
-        if len(args) > 0:
-            new_ctor = interceptor(args[0])
-            new_args = (new_ctor, *args[1:])
-        else:
-            new_args = args
+        if func == copyreg.__newobj__:
+            func = interceptor
         return old_reconstruct(
-            x, memo, func, new_args, state, listiter, dictiter, deepcopy=deepcopy
+            x, memo, func, args, state, listiter, dictiter, deepcopy=deepcopy
         )
 
     with patch("copy._reconstruct", new=new_reconstruct):
@@ -100,10 +108,10 @@ def torch_nn_modules_to_user_modules(mod: nn.Module) -> nn.Module:
     # a data structure change.  Instead it uses a deepcopy, intercepting
     # the constructors.
 
-    def intercept_ctor(ctor):  # type: ignore [no-untyped-def]
+    def intercept_ctor(ctor, *args):  # type: ignore [no-untyped-def]
         if isinstance(ctor, type) and ctor.__module__.startswith("torch.nn.modules"):
             ctor = trivial_subclass(ctor)
-        return ctor
+        return ctor.__new__(ctor, *args)
 
     mod = deepcopy_with_intercept(mod, intercept_ctor)
     assert isinstance(mod, nn.Module)
