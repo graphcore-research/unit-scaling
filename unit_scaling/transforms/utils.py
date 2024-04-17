@@ -19,6 +19,7 @@ from typing import (
 )
 from unittest.mock import patch
 
+import torch
 import torch._dynamo
 from torch import Tensor, nn
 from torch.fx.graph import Graph
@@ -33,6 +34,9 @@ T = TypeVar("T")
 Backend = Callable[[GraphModule, List[Tensor]], Callable[..., Any]]
 
 _unit_scaled_functions = [getattr(U, f) for f in U.__all__]
+
+# Check for torch < 2.2.   Note alphas are earlier than ".0"
+pt21 = torch.__version__ >= "2.0" and torch.__version__ < "2.2alpha"
 
 
 def deepcopy_with_intercept(obj: Any, interceptor: Callable[..., Any]) -> Any:
@@ -68,7 +72,7 @@ def deepcopy_with_intercept(obj: Any, interceptor: Callable[..., Any]) -> Any:
         *,
         deepcopy=copy.deepcopy,
     ):
-        if func == copyreg.__newobj__:
+        if func == copyreg.__newobj__:  # type: ignore [attr-defined]
             func = interceptor
         return old_reconstruct(
             x, memo, func, args, state, listiter, dictiter, deepcopy=deepcopy
@@ -351,4 +355,4 @@ def apply_transform(
     return module
 
 
-__all__ = [*generate__all__(__name__), pt21]
+__all__ = generate__all__(__name__)
