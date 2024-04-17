@@ -16,7 +16,8 @@ from ..analysis import (
     visualiser,
 )
 from ..transforms import track_scales
-from .conftest import pt20, pt21
+from ..transforms.utils import pt21
+from .conftest import pt20
 
 
 def test_example_seqs() -> None:

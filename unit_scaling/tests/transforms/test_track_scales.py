@@ -17,7 +17,7 @@ from ...transforms import (
     prune_selected_nodes,
     track_scales,
 )
-from ..conftest import pt21
+from ...transforms.utils import pt21
 
 
 def get_target_or_node_name(node: Node) -> Union[str, Callable[..., Any]]:
