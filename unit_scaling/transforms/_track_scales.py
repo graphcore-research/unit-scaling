@@ -115,7 +115,7 @@ def _make_input_tensors_require_grad(module: nn.Module) -> None:
     module.forward = new_forward
 
 
-class _Track(torch.autograd.Function):
+class ScaleTrackingAutogradFunction(torch.autograd.Function):
     @staticmethod
     def forward(  # type:ignore[override]
         ctx: torch.autograd.function.FunctionCtx,
@@ -189,7 +189,7 @@ def _get_tracking_meta(n: Node, out: Any) -> Dict[str, Any]:
     }
 
 
-class _Tracker(Interpreter):
+class ScaleTrackingInterpreter(Interpreter):
     def __init__(self, gm: GraphModule) -> None:
         super().__init__(gm)
 
@@ -198,7 +198,7 @@ class _Tracker(Interpreter):
         n.meta.update(_get_tracking_meta(n, out))
         if n.meta["outputs_float_tensor"]:
             logger.info("adding tracking to node: %s", n)
-            out = _Track.apply(out, n.meta)  # type: ignore
+            out = ScaleTrackingAutogradFunction.apply(out, n.meta)  # type: ignore
         return out
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
@@ -214,7 +214,7 @@ class ScaleTrackingBackend(Backend):
     ) -> Callable[..., Any]:
         _add_tabular_html_display(gm.graph)  # displays full info in notebooks
         self.graph = gm.graph  # allows graph to be accessed from outside
-        return _Tracker(gm)
+        return ScaleTrackingInterpreter(gm)
 
 
 def _prune(graph: Graph, node: Node, replacement_arg: Optional[Node] = None) -> None:
