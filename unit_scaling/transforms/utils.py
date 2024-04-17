@@ -27,7 +27,7 @@ from torch.fx.graph_module import GraphModule
 from torch.fx.node import Node
 
 from .. import functional as U
-from .._internal_utils import generate__all__, pt21
+from .._internal_utils import generate__all__
 
 T = TypeVar("T")
 
