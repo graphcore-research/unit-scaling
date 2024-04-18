@@ -17,7 +17,6 @@ from ...transforms import (
     prune_selected_nodes,
     track_scales,
 )
-from ...transforms.utils import pt21
 
 
 def get_target_or_node_name(node: Node) -> Union[str, Callable[..., Any]]:
@@ -184,8 +183,8 @@ def test_prune_same_scale_tensors() -> None:
     graph = model.scales_graph()
 
     # Version-dependent, see https://github.com/graphcore-research/unit-scaling/pull/52
-    var_lhs_flatten = "flatten" if pt21 else "x"
-    var_lhs_view = "view" if pt21 else "x_1"
+    var_lhs_flatten = "x"
+    var_lhs_view = "x_1"
     expected_targets = {
         "idxs",
         "emb_weight",
@@ -239,7 +238,7 @@ def test_prune_same_scale_tensors_with_grad() -> None:
         operator.mul,
         F.relu,
         operator.sub,
-        "sum_1" if pt21 else "f",
+        "f",
         "output",
     }
     graph_targets = get_targets(graph)

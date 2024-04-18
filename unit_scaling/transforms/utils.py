@@ -34,9 +34,6 @@ Backend = Callable[[GraphModule, List[Tensor]], Callable[..., Any]]
 
 _unit_scaled_functions = [getattr(U, f) for f in U.__all__]
 
-# Check for torch < 2.2.   Note alphas are earlier than ".0"
-pt21 = torch.__version__ >= "2.0" and torch.__version__ < "2.2alpha"
-
 
 def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
     """
@@ -66,28 +63,6 @@ def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
             setattr(mod, n, newsubmod)
 
 
-def _torch_nn_module_functions_to_inline() -> Iterable[type]:
-    for v in nn.modules.__dict__.values():
-        if isinstance(v, type) and v not in nn.modules.loss.__dict__.values():
-            yield v
-
-
-if pt21:
-
-    def _get_patched_allowed_function_ids(  # type: ignore [no-untyped-def]
-        non_recurse_functions: Iterable[Callable[..., Any]],
-    ):
-        _af = torch._dynamo.allowed_functions  # type: ignore [attr-defined]
-        allowed_function_ids = copy.copy(_af._allowed_function_ids)
-        for v in _torch_nn_module_functions_to_inline():
-            i = id(v)
-            if i in allowed_function_ids:
-                allowed_function_ids.remove(i)
-        for f in non_recurse_functions:
-            allowed_function_ids.add(id(f))
-        return allowed_function_ids
-
-
 def _patched_call_function(  # type: ignore[no-untyped-def]
     self,
     tx,
@@ -110,38 +85,18 @@ def _patched_call_function(  # type: ignore[no-untyped-def]
     ).call_function(tx, args, kwargs)
 
 
-if pt21 and hasattr(torch._dynamo, "trace_rules"):
-    import torch._dynamo.trace_rules  # type: ignore [import]
-
-    _uncached_get_torch_obj_rule_map = (
-        torch._dynamo.trace_rules.get_torch_obj_rule_map.__wrapped__
-    )
-
-
 @contextmanager
 def _expand_modules_patch(non_recurse_functions):  # type: ignore[no-untyped-def]
-    if pt21:
-        patcher_a = patch(
-            "torch._dynamo.allowed_functions._allowed_function_ids",
-            new=_get_patched_allowed_function_ids(non_recurse_functions),
-        )
-        patcher_b = patch(
-            "torch._dynamo.variables.functions.UserMethodVariable.call_function",
-            new=_patched_call_function,
-        )
-        with patcher_a, patcher_b:
-            yield (patcher_a.start(), patcher_b.start())
-    else:
-        for v in non_recurse_functions:
-            torch._dynamo.allow_in_graph(v)  # type: ignore [no-untyped-call]
+    for v in non_recurse_functions:
+        torch._dynamo.allow_in_graph(v)  # type: ignore [no-untyped-call]
 
-        patcher_b = patch(
-            "torch._dynamo.variables.functions.UserMethodVariable.call_function",
-            new=_patched_call_function,
-        )
+    patcher_b = patch(
+        "torch._dynamo.variables.functions.UserMethodVariable.call_function",
+        new=_patched_call_function,
+    )
 
-        with patcher_b:
-            yield patcher_b.start()
+    with patcher_b:
+        yield patcher_b.start()
 
 
 def patch_to_expand_modules(

@@ -6,9 +6,6 @@ import numpy as np
 import pytest
 import torch
 
-# Some tests depend on dynamo implementation details, so need to check PyTorch versions
-pt20 = torch.__version__ >= "2.0" and torch.__version__ < "2.1"
-
 
 @pytest.fixture(scope="function", autouse=True)
 def fix_seed() -> None:

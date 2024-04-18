@@ -95,12 +95,12 @@ def test_unit_scale_residual_add(caplog: LogCaptureFixture) -> None:
     loss.backward()
 
     expected_logs = [
-        r"unit scaling function: (add|input_2)\n",
-        r"unit scaling function: (iadd|input_4)\n",
-        r"unit scaling function: (iadd_1|skip_1|input_3) \(residual-add, tau=0\.5\)",
+        r"unit scaling function: (input_2)\n",
+        r"unit scaling function: (input_4)\n",
+        r"unit scaling function: (skip_1|input_3) \(residual-add, tau=0\.5\)",
         r"unit scaling function: (add_1|input_6) \(residual-add, tau=0\.5\)",
     ]
-    print(caplog.text)
+
     for log_msg in expected_logs:
         assert re.search(log_msg, caplog.text)
 
