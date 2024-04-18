@@ -38,25 +38,6 @@ _unit_scaled_functions = [getattr(U, f) for f in U.__all__]
 pt21 = torch.__version__ >= "2.0" and torch.__version__ < "2.2alpha"
 
 
-def trivial_subclass(in_type: type) -> type:
-    """
-    Given a class type, make a subclass type which forwards all calls to the base.
-
-    Useful to disable dynamo behaviors which match on stringy class names.
-    """
-    # TODO: this incredibly common pattern must be packaged somewhere....
-    # A proper implementation would protect against generating the same name
-    # for 'a_b.c' and 'a.b.c', most likely by '_' -> '__', '.' -> '_o_'
-
-    name = (
-        "trivial_subclass_"
-        + in_type.__module__.replace(".", "_")
-        + "_"
-        + in_type.__name__
-    )
-    return type(name, (in_type,), {})
-
-
 def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
     """
     Convert torch.nn.module classes to `trivial_subclass` versions.
@@ -65,12 +46,17 @@ def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
     """
 
     for n, submod in mod.named_modules():
-        # Mirroring the check in https://github.com/awf/pytorch/blob/72662bf05b3499ce96aae9183a489c78f0c44c84/torch/_dynamo/variables/functions.py#L335 # noqa: L501
+        # Mirroring the check in https://github.com/awf/pytorch/blob/72662bf05b3499ce96aae9183a489c78f0c44c84/torch/_dynamo/variables/functions.py#L335 # noqa: E501
         if submod.__module__.startswith("torch.nn."):
-            newmodtype = trivial_subclass(type(submod))
+            newtypename = (
+                "trivial_subclass"
+                + submod.__module__.replace("torch.nn.", "_")
+                + "_"
+                + type(submod).__name__
+            )
+            newmodtype = type(newtypename, (type(submod),), {})
             newsubmod = newmodtype.__new__(newmodtype)  # type: ignore [call-overload]
             newsubmod.__setstate__(submod.__getstate__())
-            newsubmod.load_state_dict(submod.state_dict())
             setattr(mod, n, newsubmod)
 
 
