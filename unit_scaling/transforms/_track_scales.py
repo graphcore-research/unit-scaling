@@ -15,7 +15,7 @@ from torch.fx.graph import Graph
 from torch.fx.graph_module import GraphModule
 from torch.fx.node import Node, Target
 
-from .utils import Backend, apply_transform
+from .utils import apply_transform
 
 logger = logging.getLogger(__name__)
 M = TypeVar("M", bound=nn.Module)
@@ -205,8 +205,8 @@ class ScaleTrackingInterpreter(Interpreter):
         return super().run(*args, **kwargs)
 
 
-class ScaleTrackingBackend(Backend):
-    def __init__(self):
+class ScaleTrackingBackend:
+    def __init__(self) -> None:
         self.graph = Graph()
 
     def __call__(
