@@ -44,20 +44,28 @@ def deepcopy_with_intercept(obj: Any, interceptor: Callable[..., Any]) -> Any:
     Make a deepcopy of ``param: obj``, intercepting every new constructor call.
 
     The standard python deepcopy traverses the input object, and for every
-    object therein, calls a constructor like
-    ``
-      __newobj__(type, *args)
-    ``
-    to create the new copy.  This function instead calls
-    ``
-      interceptor(type, *args)
-    ``
-    If this were to act as a no-op, interceptor would just call
-    ``
-      type.__new__(type, *args)
-    ``
+    object therein, calls a constructor like::
+
+          __newobj__(type, *args)
+
+    to create the new copy.  This function instead calls::
+
+          interceptor(type, *args)
+
+    If this were to act as a no-op, interceptor would just call::
+
+          type.__new__(type, *args)
+
     We don't call the constructor ``type(*args)`` as the object's state may
     be later set by ``__setstate__``.
+
+    Args:
+        obj (Any): the object to be deep-copied.
+        interceptor (Callable): replacement constructor
+
+    Returns:
+        Any: the deep-copied object.
+
     """
     old_reconstruct = copy._reconstruct  # type: ignore [attr-defined]
 
