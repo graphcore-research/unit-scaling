@@ -3,7 +3,6 @@
 """Utilities for working with transforms."""
 
 import copy
-import copyreg
 import functools
 from contextlib import contextmanager
 from typing import (
@@ -39,57 +38,6 @@ _unit_scaled_functions = [getattr(U, f) for f in U.__all__]
 pt21 = torch.__version__ >= "2.0" and torch.__version__ < "2.2alpha"
 
 
-def deepcopy_with_intercept(obj: Any, interceptor: Callable[..., Any]) -> Any:
-    """
-    Make a deepcopy of ``param: obj``, intercepting every new constructor call.
-
-    The standard python deepcopy traverses the input object, and for every
-    object therein, calls a constructor like::
-
-          __newobj__(type, *args)
-
-    to create the new copy.  This function instead calls::
-
-          interceptor(type, *args)
-
-    If this were to act as a no-op, interceptor would just call::
-
-          type.__new__(type, *args)
-
-    We don't call the constructor ``type(*args)`` as the object's state may
-    be later set by ``__setstate__``.
-
-    Args:
-        obj (Any): the object to be deep-copied.
-        interceptor (Callable): replacement constructor
-
-    Returns:
-        Any: the deep-copied object.
-
-    """
-    old_reconstruct = copy._reconstruct  # type: ignore [attr-defined]
-
-    def new_reconstruct(  # type: ignore [no-untyped-def]
-        x,
-        memo,
-        func,
-        args,
-        state=None,
-        listiter=None,
-        dictiter=None,
-        *,
-        deepcopy=copy.deepcopy,
-    ):
-        if func == copyreg.__newobj__:  # type: ignore [attr-defined]
-            func = interceptor
-        return old_reconstruct(
-            x, memo, func, args, state, listiter, dictiter, deepcopy=deepcopy
-        )
-
-    with patch("copy._reconstruct", new=new_reconstruct):
-        return copy.deepcopy(obj)
-
-
 def trivial_subclass(in_type: type) -> type:
     """
     Given a class type, make a subclass type which forwards all calls to the base.
@@ -109,25 +57,21 @@ def trivial_subclass(in_type: type) -> type:
     return type(name, (in_type,), {})
 
 
-def torch_nn_modules_to_user_modules(mod: nn.Module) -> nn.Module:
+def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
     """
     Convert torch.nn.module classes to `trivial_subclass` versions.
 
     This will make dynamo inline them.
     """
 
-    # Implementation note: This is not a dynamo pass, as it is merely
-    # a data structure change.  Instead it uses a deepcopy, intercepting
-    # the constructors.
-
-    def intercept_ctor(ctor, *args):  # type: ignore [no-untyped-def]
-        if isinstance(ctor, type) and ctor.__module__.startswith("torch.nn.modules"):
-            ctor = trivial_subclass(ctor)
-        return ctor.__new__(ctor, *args)
-
-    mod = deepcopy_with_intercept(mod, intercept_ctor)
-    assert isinstance(mod, nn.Module)
-    return mod
+    for n, submod in mod.named_modules():
+        # TODO: Do we want "submod not in nn.modules.loss.__dict__.values()" here?
+        if submod.__module__.startswith("torch.nn.modules"):
+            newmodtype = trivial_subclass(type(submod))
+            newsubmod = newmodtype.__new__(newmodtype)  # type: ignore [call-overload]
+            newsubmod.__setstate__(submod.__getstate__())
+            newsubmod.load_state_dict(submod.state_dict())
+            setattr(mod, n, newsubmod)
 
 
 def _torch_nn_module_functions_to_inline() -> Iterable[type]:
@@ -335,7 +279,9 @@ def apply_transform(
     Returns:
         nn.Module: the transformed module.
     """
-    module = torch_nn_modules_to_user_modules(module)
+    module = copy.deepcopy(module)
+
+    torch_nn_modules_to_user_modules(module)
 
     if not hasattr(module, "backends"):
         module.backends = []
