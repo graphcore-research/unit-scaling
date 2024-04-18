@@ -46,17 +46,23 @@ def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
     """
 
     for n, submod in mod.named_modules():
-        # Mirroring the check in https://github.com/awf/pytorch/blob/72662bf05b3499ce96aae9183a489c78f0c44c84/torch/_dynamo/variables/functions.py#L335 # noqa: E501
+        # Mirroring the check in https://github.com/pytorch/pytorch/blob/72662bf05b3499ce96aae9183a489c78f0c44c84/torch/_dynamo/variables/functions.py#L335 # noqa: E501
         if submod.__module__.startswith("torch.nn."):
-            newtypename = (
-                "trivial_subclass"
-                + submod.__module__.replace("torch.nn.", "_")
-                + "_"
-                + type(submod).__name__
-            )
+            # Generate a new name, so e.g. torch.nn.modules.sparse.Embedding
+            # becomes trivial_subclass_modules_sparse_Embedding
+            modulename = submod.__module__
+            modulename = modulename.replace("torch.nn.", "", 1)
+            modulename = modulename.replace(".", "_")
+            newtypename = "trivial_subclass_" + modulename + "_" + type(submod).__name__
+
+            # Create a new type object deriving from type(submod)
             newmodtype = type(newtypename, (type(submod),), {})
+
+            # Initialize and copy state using pickle
             newsubmod = newmodtype.__new__(newmodtype)  # type: ignore [call-overload]
             newsubmod.__setstate__(submod.__getstate__())
+
+            # Update module in mod
             setattr(mod, n, newsubmod)
 
 
