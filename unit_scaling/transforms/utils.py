@@ -39,7 +39,13 @@ def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
     """
     Convert torch.nn.module classes to `trivial_subclass` versions.
 
-    This will make dynamo inline them.
+    By default TorchDynamo doesn't recurse into :mod:`torch.nn` modules or
+    :mod:`torch.nn.functional` functions when capturing the FX graph.
+
+    This function makes `torch.nn` modules into user modules.
+
+    To use this with a :class:`torch.nn.Module` the typical use case
+    is to call `module = torch_nn_modules_to_user_modules(module)`.
     """
 
     for n, submod in mod.named_modules():
@@ -63,45 +69,7 @@ def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
             setattr(mod, n, newsubmod)
 
 
-def _patched_call_function(  # type: ignore[no-untyped-def]
-    self,
-    tx,
-    args,
-    kwargs,
-):  # pragma: no cover
-    if isinstance(self.obj, torch._dynamo.variables.NNModuleVariable):
-        module_attr = getattr(self.fn, "__module__", "")
-        if (
-            module_attr is not None
-            and module_attr.startswith("torch.nn.modules.module")
-            or self.is_constant
-        ):
-            var = self.obj.call_method(
-                tx, self.fn.__name__, args, kwargs, constant=self.is_constant
-            )
-            return var.add_options(self)  # type: ignore [no-untyped-call,attr-defined]
-    return super(
-        torch._dynamo.variables.functions.UserMethodVariable, self
-    ).call_function(tx, args, kwargs)
-
-
-@contextmanager
-def _expand_modules_patch(non_recurse_functions):  # type: ignore[no-untyped-def]
-    for v in non_recurse_functions:
-        torch._dynamo.allow_in_graph(v)  # type: ignore [no-untyped-call]
-
-    patcher_b = patch(
-        "torch._dynamo.variables.functions.UserMethodVariable.call_function",
-        new=_patched_call_function,
-    )
-
-    with patcher_b:
-        yield patcher_b.start()
-
-
-def patch_to_expand_modules(
-    fn: Callable[..., T], non_recurse_functions: Iterable[Callable[..., Any]] = ()
-) -> Callable[..., T]:
+def patch_to_expand_modules(fn: Callable[..., T]) -> Callable[..., T]:
     """By default TorchDynamo doesn't recurse into :mod:`torch.nn` modules or
     :mod:`torch.nn.functional` functions when capturing the FX graph.
     Any function which is wrapped in
@@ -113,21 +81,31 @@ def patch_to_expand_modules(
     is to call `module = torch._dynamo.optimize(backend)(module)`, followed by
     `module.forward = patch_to_expand_modules(module.forward)`.
 
-    In addition, any functions the user *doesn't* wish to recurse into can be passed
-    into `non_recurse_functions` and these will not be expanded.
+    This should be used in conjunction with :func:`torch_nn_modules_to_user_modules`
 
     Args:
         fn (Callable[..., T]): the function to be patched.
-        non_recurse_functions (Iterable[Callable[..., Any]], optional): functions which
-            the user does not wish to be recursed into. Defaults to ().
 
     Returns:
         Callable[..., T]: the new version of `fn` with patching applied.
     """
 
+    def _patched_call_function(  # type: ignore[no-untyped-def]
+        self,
+        tx,
+        args,
+        kwargs,
+    ):  # pragma: no cover
+        # Removing the check in https://github.com/pytorch/pytorch/blob/72662bf05b3499ce96aae9183a489c78f0c44c84/torch/_dynamo/variables/functions.py#L335 # noqa: E501
+        sup = super(torch._dynamo.variables.functions.UserMethodVariable, self)
+        return sup.call_function(tx, args, kwargs)
+
     @functools.wraps(fn)
     def new_fn(*args: Any, **kwargs: Any) -> Any:
-        with _expand_modules_patch(non_recurse_functions):
+        with patch(
+            "torch._dynamo.variables.functions.UserMethodVariable.call_function",
+            new=_patched_call_function,
+        ):
             return fn(*args, **kwargs)
 
     return new_fn
@@ -233,9 +211,9 @@ def apply_transform(
     if not hasattr(module, "backends"):
         module.backends = []
     module.backends.append(backend)
-    if not hasattr(module, "non_recurse_functions"):
-        module.non_recurse_functions = list(_unit_scaled_functions)
-    module.non_recurse_functions += non_recurse_functions
+
+    for v in non_recurse_functions:
+        torch._dynamo.allow_in_graph(v)
 
     backend = _compose_backends(module.backends)
 
@@ -243,9 +221,7 @@ def apply_transform(
         if module.rerun_transform:
             torch._dynamo.reset()
             dynamo_module = torch._dynamo.optimize(backend)(module)
-            module.dynamo_forward = patch_to_expand_modules(
-                dynamo_module.forward, module.non_recurse_functions
-            )
+            module.dynamo_forward = patch_to_expand_modules(dynamo_module.forward)
             module.rerun_transform = False
         with patch.object(module, "forward", module.base_forward):
             return module.dynamo_forward(*args, **kwargs)

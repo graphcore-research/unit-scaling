@@ -41,7 +41,7 @@ def _validate(
             raise ValueError(f"unsupported arg '{arg}' has no default value")
 
     @wraps(f)
-    def f_new(*args: Any, **kwargs: Any) -> T:
+    def _validate_args_supported(*args: Any, **kwargs: Any) -> T:
         arg_values = dict(zip(argspec.args, args))
         full_kwargs = {**arg_values, **kwargs}
         for arg_name, arg_value in full_kwargs.items():
@@ -55,7 +55,7 @@ def _validate(
                     )
         return f(*args, **kwargs)
 
-    return f_new
+    return _validate_args_supported
 
 
 def _get_docstring_from_target(
