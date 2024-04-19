@@ -4,7 +4,6 @@
 
 import copy
 import functools
-from contextlib import contextmanager
 from typing import (
     Any,
     Callable,
@@ -97,8 +96,9 @@ def patch_to_expand_modules(fn: Callable[..., T]) -> Callable[..., T]:
         kwargs,
     ):  # pragma: no cover
         # Removing the check in https://github.com/pytorch/pytorch/blob/72662bf05b3499ce96aae9183a489c78f0c44c84/torch/_dynamo/variables/functions.py#L335 # noqa: E501
-        sup = super(torch._dynamo.variables.functions.UserMethodVariable, self)
-        return sup.call_function(tx, args, kwargs)
+        return super(
+            torch._dynamo.variables.functions.UserMethodVariable, self
+        ).call_function(tx, args, kwargs)
 
     @functools.wraps(fn)
     def new_fn(*args: Any, **kwargs: Any) -> Any:
