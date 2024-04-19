@@ -45,13 +45,14 @@ def _validate(
         arg_values = dict(zip(argspec.args, args))
         full_kwargs = {**arg_values, **kwargs}
         for arg_name, arg_value in full_kwargs.items():
-            arg_default_value = default_kwargs[arg_name]
-            if arg_name in unsupported_args and arg_value != arg_default_value:
-                raise ValueError(
-                    f"Support for the '{arg_name}' argument has not been implemented"
-                    " for the unit-scaling library. Please remove it or replace it"
-                    " with its default value."
-                )
+            if arg_name in unsupported_args:
+                arg_default_value = default_kwargs[arg_name]
+                if arg_value != arg_default_value:
+                    raise ValueError(
+                        f"Support for the '{arg_name}' argument has not been"
+                        " implemented for the unit-scaling library."
+                        " Please remove it or replace it with its default value."
+                    )
         return f(*args, **kwargs)
 
     return f_new
