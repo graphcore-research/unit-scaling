@@ -89,7 +89,7 @@
 <span class="kn">from</span> <span class="nn">torch.fx.graph_module</span> <span class="kn">import</span> <span class="n">GraphModule</span>
 <span class="kn">from</span> <span class="nn">torch.fx.node</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Target</span>
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">Backend</span><span class="p">,</span> <span class="n">apply_transform</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">apply_transform</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">M</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span>
@@ -189,7 +189,7 @@
     <span class="n">module</span><span class="o">.</span><span class="n">forward</span> <span class="o">=</span> <span class="n">new_forward</span>
 
 
-<span class="k">class</span> <span class="nc">_Track</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ScaleTrackingAutogradFunction</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
         <span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span>
@@ -263,7 +263,7 @@
     <span class="p">}</span>
 
 
-<span class="k">class</span> <span class="nc">_Tracker</span><span class="p">(</span><span class="n">Interpreter</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ScaleTrackingInterpreter</span><span class="p">(</span><span class="n">Interpreter</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gm</span><span class="p">:</span> <span class="n">GraphModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">gm</span><span class="p">)</span>
 
@@ -272,22 +272,23 @@
         <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_get_tracking_meta</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">out</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;outputs_float_tensor&quot;</span><span class="p">]:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;adding tracking to node: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">_Track</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">ScaleTrackingAutogradFunction</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">meta</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="k">return</span> <span class="n">out</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">scale_tracking_backend</span><span class="p">(</span><span class="n">graph_holder</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Graph</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Backend</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">inner_backend</span><span class="p">(</span>
-        <span class="n">gm</span><span class="p">:</span> <span class="n">GraphModule</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span>
+<span class="k">class</span> <span class="nc">ScaleTrackingBackend</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">gm</span><span class="p">:</span> <span class="n">GraphModule</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="n">_add_tabular_html_display</span><span class="p">(</span><span class="n">gm</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>  <span class="c1"># displays full info in notebooks</span>
-        <span class="n">graph_holder</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">graph</span>  <span class="c1"># allows graph to be accessed from outside</span>
-        <span class="k">return</span> <span class="n">_Tracker</span><span class="p">(</span><span class="n">gm</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">inner_backend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">graph</span>  <span class="c1"># allows graph to be accessed from outside</span>
+        <span class="k">return</span> <span class="n">ScaleTrackingInterpreter</span><span class="p">(</span><span class="n">gm</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_prune</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">replacement_arg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -376,13 +377,10 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        M: a new version of the input module which tracks tensor metrics when used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">graph_holder</span> <span class="o">=</span> <span class="p">[</span><span class="n">Graph</span><span class="p">()]</span>
-    <span class="n">tracking_module</span> <span class="o">=</span> <span class="n">apply_transform</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">scale_tracking_backend</span><span class="p">(</span><span class="n">graph_holder</span><span class="p">))</span>
+    <span class="n">backend</span> <span class="o">=</span> <span class="n">ScaleTrackingBackend</span><span class="p">()</span>
+    <span class="n">tracking_module</span> <span class="o">=</span> <span class="n">apply_transform</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">backend</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">scales_graph</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">graph_holder</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
-
-    <span class="n">tracking_module</span><span class="o">.</span><span class="n">scales_graph</span> <span class="o">=</span> <span class="n">scales_graph</span>
+    <span class="n">tracking_module</span><span class="o">.</span><span class="n">scales_graph</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">backend</span><span class="o">.</span><span class="n">graph</span>
     <span class="n">_make_input_tensors_require_grad</span><span class="p">(</span><span class="n">tracking_module</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tracking_module</span>  <span class="c1"># type: ignore[no-any-return]</span></div>
 
