@@ -15,7 +15,7 @@ from torch.fx.graph import Graph
 from torch.fx.graph_module import GraphModule
 from torch.fx.node import Node, Target
 
-from .utils import Backend, apply_transform
+from .utils import apply_transform
 
 logger = logging.getLogger(__name__)
 M = TypeVar("M", bound=nn.Module)
@@ -115,7 +115,7 @@ def _make_input_tensors_require_grad(module: nn.Module) -> None:
     module.forward = new_forward
 
 
-class _Track(torch.autograd.Function):
+class ScaleTrackingAutogradFunction(torch.autograd.Function):
     @staticmethod
     def forward(  # type:ignore[override]
         ctx: torch.autograd.function.FunctionCtx,
@@ -189,7 +189,7 @@ def _get_tracking_meta(n: Node, out: Any) -> Dict[str, Any]:
     }
 
 
-class _Tracker(Interpreter):
+class ScaleTrackingInterpreter(Interpreter):
     def __init__(self, gm: GraphModule) -> None:
         super().__init__(gm)
 
@@ -198,22 +198,23 @@ class _Tracker(Interpreter):
         n.meta.update(_get_tracking_meta(n, out))
         if n.meta["outputs_float_tensor"]:
             logger.info("adding tracking to node: %s", n)
-            out = _Track.apply(out, n.meta)  # type: ignore
+            out = ScaleTrackingAutogradFunction.apply(out, n.meta)  # type: ignore
         return out
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         return super().run(*args, **kwargs)
 
 
-def scale_tracking_backend(graph_holder: List[Graph]) -> Backend:
-    def inner_backend(
-        gm: GraphModule, example_inputs: List[Tensor]
+class ScaleTrackingBackend:
+    def __init__(self) -> None:
+        self.graph = Graph()
+
+    def __call__(
+        self, gm: GraphModule, example_inputs: List[Tensor]
     ) -> Callable[..., Any]:
         _add_tabular_html_display(gm.graph)  # displays full info in notebooks
-        graph_holder[0] = gm.graph  # allows graph to be accessed from outside
-        return _Tracker(gm)
-
-    return inner_backend
+        self.graph = gm.graph  # allows graph to be accessed from outside
+        return ScaleTrackingInterpreter(gm)
 
 
 def _prune(graph: Graph, node: Node, replacement_arg: Optional[Node] = None) -> None:
@@ -302,13 +303,10 @@ def track_scales(module: M) -> M:
     Returns:
         M: a new version of the input module which tracks tensor metrics when used.
     """
-    graph_holder = [Graph()]
-    tracking_module = apply_transform(module, scale_tracking_backend(graph_holder))
+    backend = ScaleTrackingBackend()
+    tracking_module = apply_transform(module, backend)
 
-    def scales_graph() -> Graph:
-        return graph_holder[0]  # type: ignore
-
-    tracking_module.scales_graph = scales_graph
+    tracking_module.scales_graph = lambda: backend.graph
     _make_input_tensors_require_grad(tracking_module)
     return tracking_module  # type: ignore[no-any-return]
 
