@@ -19,18 +19,18 @@ from ...transforms import (
 )
 
 
-def get_target(node: Node) -> Union[str, Callable]:  # type: ignore[type-arg]
+def get_target_or_node_name(node: Node) -> Union[str, Callable[..., Any]]:
     return node.meta["clean_name"] if isinstance(node.target, str) else node.target
 
 
 def get_targets(graph: Graph) -> Set[Union[str, Callable]]:  # type: ignore[type-arg]
-    return set(get_target(node) for node in graph.nodes)
+    return set(get_target_or_node_name(node) for node in graph.nodes)
 
 
 def get_target_map(
     graph: Graph,
 ) -> Dict[Union[str, Callable], Dict[str, Any]]:  # type: ignore[type-arg]
-    return {get_target(node): node.meta for node in graph.nodes}
+    return {get_target_or_node_name(node): node.meta for node in graph.nodes}
 
 
 def test_track_scales() -> None:
@@ -181,12 +181,16 @@ def test_prune_same_scale_tensors() -> None:
     model(idxs)
 
     graph = model.scales_graph()
+
+    # Version-dependent, see https://github.com/graphcore-research/unit-scaling/pull/52
+    var_lhs_flatten = "x"
+    var_lhs_view = "x_1"
     expected_targets = {
         "idxs",
         "emb_weight",
         F.embedding,
-        "flatten",
-        "view",
+        var_lhs_flatten,
+        var_lhs_view,
         "linear_weight",
         "linear_bias",
         F.linear,
@@ -203,7 +207,7 @@ def test_prune_same_scale_tensors() -> None:
 
     graph = prune_same_scale_tensors(graph)
     graph_targets = get_targets(graph)
-    expected_targets -= {"flatten", "view"}
+    expected_targets -= {var_lhs_flatten, var_lhs_view}
     assert graph_targets == expected_targets
 
     graph = prune_same_scale_tensors(graph, rtol=2**-4)
@@ -234,7 +238,7 @@ def test_prune_same_scale_tensors_with_grad() -> None:
         operator.mul,
         F.relu,
         operator.sub,
-        "sum_1",
+        "f",
         "output",
     }
     graph_targets = get_targets(graph)
