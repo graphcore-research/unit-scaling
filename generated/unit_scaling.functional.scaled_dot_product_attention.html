@@ -130,7 +130,7 @@ greater than 0.0 is specified.</p>
 
     <span class="k">if</span> <span class="n">attn_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">attn_mask</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
-            <span class="n">attn_mask</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="n">attn_mask</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(),</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">))</span>
+            <span class="n">attn_bias</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="n">attn_mask</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(),</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">attn_bias</span> <span class="o">+=</span> <span class="n">attn_mask</span>
     <span class="n">attn_weight</span> <span class="o">=</span> <span class="n">query</span> <span class="o">@</span> <span class="n">key</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale_factor</span>
@@ -149,7 +149,7 @@ greater than 0.0 is specified.</p>
 <p>There are currently three supported implementations of scaled dot product attention:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><a href="#id1"><span class="problematic" id="id2">`FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness`_</span></a></p></li>
+<li><p><a href="#id1"><span class="problematic" id="id2">`FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning`_</span></a></p></li>
 <li><p><a href="#id3"><span class="problematic" id="id4">`Memory-Efficient Attention`_</span></a></p></li>
 <li><p>A PyTorch implementation defined in C++ matching the above formulation</p></li>
 </ul>

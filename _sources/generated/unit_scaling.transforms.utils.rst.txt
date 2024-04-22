@@ -24,6 +24,7 @@ unit\_scaling.transforms.utils
       apply_transform
       patch_to_expand_modules
       replace_node_with_function
+      torch_nn_modules_to_user_modules
    
 
    

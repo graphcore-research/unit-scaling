@@ -1,0 +1,6 @@
+unit\_scaling.transforms.utils.torch\_nn\_modules\_to\_user\_modules
+====================================================================
+
+.. currentmodule:: unit_scaling.transforms.utils
+
+.. autofunction:: torch_nn_modules_to_user_modules

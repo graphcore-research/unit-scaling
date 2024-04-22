@@ -110,10 +110,9 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="unit_scaling.Dropout">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.</span></span><span class="sig-name descname"><span class="pre">Dropout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/_modules.html#Dropout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.Dropout" title="Permalink to this definition"></a></dt>
-<dd><p>A <strong>unit-scaled</strong> implementation of Dropout.
-tensor with probability <code class="xref py py-attr docutils literal notranslate"><span class="pre">p</span></code> using samples from a Bernoulli
-distribution. Each channel will be zeroed out independently on every forward
-call.</p>
+<dd><p>A <strong>unit-scaled</strong> implementation of Dropout.</p>
+<p>The zeroed elements are chosen independently for each forward call and are sampled from a Bernoulli distribution.</p>
+<p>Each channel will be zeroed out independently on every forward call.</p>
 <p>This has proven to be an effective technique for regularization and
 preventing the co-adaptation of neurons as described in the paper
 <a href="#id1"><span class="problematic" id="id2">`Improving neural networks by preventing co-adaptation of feature

@@ -175,7 +175,7 @@ class probabilities only when a single class label per minibatch item is too res
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>weight</strong> (<em>Tensor?</em>) – <strong>[not supported by unit-scaling]</strong> a manual rescaling weight given to each class.
-If given, has to be a Tensor of size <cite>C</cite></p></li>
+If given, has to be a Tensor of size <cite>C</cite> and floating point dtype</p></li>
 <li><p><strong>size_average</strong> (<em>bool?</em>) – <strong>[not supported by unit-scaling]</strong> Deprecated (see <code class="xref py py-attr docutils literal notranslate"><span class="pre">reduction</span></code>). By default,
 the losses are averaged over each loss element in the batch. Note that for
 some losses, there are multiple elements per sample. If the field <code class="xref py py-attr docutils literal notranslate"><span class="pre">size_average</span></code>

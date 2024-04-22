@@ -106,9 +106,9 @@ backward pass in the supplied <cite>ScalePair</cite>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTracker.backward">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FunctionCtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.2)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.2)"><span class="pre">Tensor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/unit_scaling/utils.html#ScaleTracker.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.utils.ScaleTracker.backward" title="Permalink to this definition"></a></dt>
-<dd><p>Defines a formula for differentiating the operation with backward mode
-automatic differentiation (alias to the vjp function).</p>
-<p>This function is to be overridden by all subclasses.</p>
+<dd><p>Define a formula for differentiating the operation with backward mode automatic differentiation.</p>
+<p>This function is to be overridden by all subclasses.
+(Defining this function is equivalent to defining the <code class="docutils literal notranslate"><span class="pre">vjp</span></code> function.)</p>
 <p>It must accept a context <code class="xref py py-attr docutils literal notranslate"><span class="pre">ctx</span></code> as the first argument, followed by
 as many outputs as the <code class="xref py py-func docutils literal notranslate"><span class="pre">forward()</span></code> returned (None will be passed in
 for non tensor outputs of the forward function),
@@ -139,9 +139,8 @@ exist) are written using PyTorch operations; otherwise, please override
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTracker.jvp">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">jvp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">grad_inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#unit_scaling.utils.ScaleTracker.jvp" title="Permalink to this definition"></a></dt>
-<dd><p>Defines a formula for differentiating the operation with forward mode
-automatic differentiation.
-This function is to be overridden by all subclasses.
+<dd><p>Define a formula for differentiating the operation with forward mode automatic differentiation.</p>
+<p>This function is to be overridden by all subclasses.
 It must accept a context <code class="xref py py-attr docutils literal notranslate"><span class="pre">ctx</span></code> as the first argument, followed by
 as many inputs as the <code class="xref py py-func docutils literal notranslate"><span class="pre">forward()</span></code> got (None will be passed in
 for non tensor inputs of the forward function),
@@ -158,7 +157,7 @@ functions.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTracker.mark_dirty">
 <span class="sig-name descname"><span class="pre">mark_dirty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.2)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#unit_scaling.utils.ScaleTracker.mark_dirty" title="Permalink to this definition"></a></dt>
-<dd><p>Marks given tensors as modified in an in-place operation.</p>
+<dd><p>Mark given tensors as modified in an in-place operation.</p>
 <p><strong>This should be called at most once, only from inside the</strong>
 <code class="xref py py-func docutils literal notranslate"><span class="pre">forward()</span></code> <strong>method, and all arguments should be inputs.</strong></p>
 <p>Every tensor that’s been modified in-place in a call to <code class="xref py py-func docutils literal notranslate"><span class="pre">forward()</span></code>
@@ -196,7 +195,7 @@ modification.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTracker.mark_non_differentiable">
 <span class="sig-name descname"><span class="pre">mark_non_differentiable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.2)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#unit_scaling.utils.ScaleTracker.mark_non_differentiable" title="Permalink to this definition"></a></dt>
-<dd><p>Marks outputs as non-differentiable.</p>
+<dd><p>Mark outputs as non-differentiable.</p>
 <p><strong>This should be called at most once, only from inside the</strong>
 <code class="xref py py-func docutils literal notranslate"><span class="pre">forward()</span></code> <strong>method, and all arguments should be tensor outputs.</strong></p>
 <p>This will mark outputs as not requiring gradients, increasing the
@@ -229,7 +228,7 @@ output.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTracker.save_for_backward">
 <span class="sig-name descname"><span class="pre">save_for_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">tensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.2)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#unit_scaling.utils.ScaleTracker.save_for_backward" title="Permalink to this definition"></a></dt>
-<dd><p>Saves given tensors for a future call to <code class="xref py py-func docutils literal notranslate"><span class="pre">backward()</span></code>.</p>
+<dd><p>Save given tensors for a future call to <code class="xref py py-func docutils literal notranslate"><span class="pre">backward()</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">save_for_backward</span></code> should be called at most once, only from inside the
 <code class="xref py py-func docutils literal notranslate"><span class="pre">forward()</span></code> method, and only with tensors.</p>
 <p>All tensors intended to be used in the backward pass should be saved
@@ -285,7 +284,7 @@ they weren’t used in any in-place operation that modified their content.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTracker.save_for_forward">
 <span class="sig-name descname"><span class="pre">save_for_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">tensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.2)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#unit_scaling.utils.ScaleTracker.save_for_forward" title="Permalink to this definition"></a></dt>
-<dd><p>Saves given tensors for a future call to <code class="xref py py-func docutils literal notranslate"><span class="pre">jvp()</span></code>.</p>
+<dd><p>Save given tensors for a future call to <code class="xref py py-func docutils literal notranslate"><span class="pre">jvp()</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">save_for_forward</span></code> should be only called once, from inside the <code class="xref py py-func docutils literal notranslate"><span class="pre">forward()</span></code>
 method, and only be called with tensors.</p>
 <p>In <a class="reference internal" href="#unit_scaling.utils.ScaleTracker.jvp" title="unit_scaling.utils.ScaleTracker.jvp"><code class="xref py py-func docutils literal notranslate"><span class="pre">jvp()</span></code></a>, saved objects can be accessed through the <code class="xref py py-attr docutils literal notranslate"><span class="pre">saved_tensors</span></code>
@@ -331,7 +330,7 @@ attribute.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTracker.set_materialize_grads">
 <span class="sig-name descname"><span class="pre">set_materialize_grads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#unit_scaling.utils.ScaleTracker.set_materialize_grads" title="Permalink to this definition"></a></dt>
-<dd><p>Sets whether to materialize grad tensors. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dd><p>Set whether to materialize grad tensors. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <p><strong>This should be called only from inside the</strong> <code class="xref py py-func docutils literal notranslate"><span class="pre">forward()</span></code> <strong>method</strong></p>
 <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, undefined grad tensors will be expanded to tensors full of zeros
 prior to calling the <a class="reference internal" href="#unit_scaling.utils.ScaleTracker.backward" title="unit_scaling.utils.ScaleTracker.backward"><code class="xref py py-func docutils literal notranslate"><span class="pre">backward()</span></code></a> and <a class="reference internal" href="#unit_scaling.utils.ScaleTracker.jvp" title="unit_scaling.utils.ScaleTracker.jvp"><code class="xref py py-func docutils literal notranslate"><span class="pre">jvp()</span></code></a> methods.</p>
@@ -393,9 +392,9 @@ inside <code class="docutils literal notranslate"><span class="pre">setup_contex
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTracker.vjp">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vjp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">grad_outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#unit_scaling.utils.ScaleTracker.vjp" title="Permalink to this definition"></a></dt>
-<dd><p>Defines a formula for differentiating the operation with backward mode
-automatic differentiation (alias to the vjp function).</p>
-<p>This function is to be overridden by all subclasses.</p>
+<dd><p>Define a formula for differentiating the operation with backward mode automatic differentiation.</p>
+<p>This function is to be overridden by all subclasses.
+(Defining this function is equivalent to defining the <code class="docutils literal notranslate"><span class="pre">vjp</span></code> function.)</p>
 <p>It must accept a context <code class="xref py py-attr docutils literal notranslate"><span class="pre">ctx</span></code> as the first argument, followed by
 as many outputs as the <code class="xref py py-func docutils literal notranslate"><span class="pre">forward()</span></code> returned (None will be passed in
 for non tensor outputs of the forward function),
@@ -415,9 +414,9 @@ output.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTracker.vmap">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_dims</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#unit_scaling.utils.ScaleTracker.vmap" title="Permalink to this definition"></a></dt>
-<dd><p>Defines a rule for the behavior of this autograd.Function underneath
-<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.vmap.html#torch.vmap" title="(in PyTorch v2.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.vmap()</span></code></a>. For a <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.autograd.Function()</span></code> to support
-<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.vmap.html#torch.vmap" title="(in PyTorch v2.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.vmap()</span></code></a>, you must either override this staticmethod, or set
+<dd><p>Define the behavior for this autograd.Function underneath <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.vmap.html#torch.vmap" title="(in PyTorch v2.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.vmap()</span></code></a>.</p>
+<p>For a <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.autograd.Function()</span></code> to support
+<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.vmap.html#torch.vmap" title="(in PyTorch v2.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.vmap()</span></code></a>, you must either override this static method, or set
 <code class="docutils literal notranslate"><span class="pre">generate_vmap_rule</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (you may not do both).</p>
 <p>If you choose to override this staticmethod: it must accept</p>
 <ul class="simple">
