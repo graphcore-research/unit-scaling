@@ -48,8 +48,8 @@ def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
     """
 
     for n, submod in mod.named_modules():
-        # Mirroring the check in https://github.com/pytorch/pytorch/blob/72662bf05b3499ce96aae9183a489c78f0c44c84/torch/_dynamo/variables/functions.py#L335 # noqa: E501
-        if submod.__module__.startswith("torch.nn."):
+        # Mirroring the check at https://github.com/pytorch/pytorch/blob/34bce27f0d12bf7226b37dfe365660aad456701a/torch/_dynamo/variables/nn_module.py#L307 # noqa: E501
+        if submod.__module__.startswith(("torch.nn.", "torch.ao.")):
             # Generate a new name, so e.g. torch.nn.modules.sparse.Embedding
             # becomes trivial_subclass_modules_sparse_Embedding
             modulename = submod.__module__
