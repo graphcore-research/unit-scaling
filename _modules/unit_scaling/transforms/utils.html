@@ -122,8 +122,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">submod</span> <span class="ow">in</span> <span class="n">mod</span><span class="o">.</span><span class="n">named_modules</span><span class="p">():</span>
-        <span class="c1"># Mirroring the check in https://github.com/pytorch/pytorch/blob/72662bf05b3499ce96aae9183a489c78f0c44c84/torch/_dynamo/variables/functions.py#L335 # noqa: E501</span>
-        <span class="k">if</span> <span class="n">submod</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;torch.nn.&quot;</span><span class="p">):</span>
+        <span class="c1"># Mirroring the check at https://github.com/pytorch/pytorch/blob/34bce27f0d12bf7226b37dfe365660aad456701a/torch/_dynamo/variables/nn_module.py#L307 # noqa: E501</span>
+        <span class="k">if</span> <span class="n">submod</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;torch.nn.&quot;</span><span class="p">,</span> <span class="s2">&quot;torch.ao.&quot;</span><span class="p">)):</span>
             <span class="c1"># Generate a new name, so e.g. torch.nn.modules.sparse.Embedding</span>
             <span class="c1"># becomes trivial_subclass_modules_sparse_Embedding</span>
             <span class="n">modulename</span> <span class="o">=</span> <span class="n">submod</span><span class="o">.</span><span class="vm">__module__</span>
