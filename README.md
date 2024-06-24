@@ -71,6 +71,6 @@ then view `docs/_build/html/index.html` in your browser.
 
 ## License
 
-Copyright (c) 2023 Graphcore Ltd. Licensed under the MIT License.
+Copyright (c) 2023 Graphcore Ltd. Licensed under the Apache 2.0 License.
 
 See [NOTICE.md](NOTICE.md) for further details.
