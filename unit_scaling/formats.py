@@ -80,10 +80,15 @@ class FPFormat:
         downscale = 2.0 ** (127 - 2 ** (self.exponent_bits - 1))
         mask = torch.tensor(2 ** (23 - self.mantissa_bits) - 1, device=x.device)
         if self.rounding == "stochastic":
+            srbitsbar = 23 - self.mantissa_bits - self.srbits
             offset = torch.randint(  # type: ignore[call-overload]
                 0, 2**self.srbits, x.shape, dtype=torch.int32, device=x.device
-            ) << (23 - self.mantissa_bits - self.srbits)
-            assert (offset <= mask).all()
+            ) << srbitsbar
+            # Correct for bias.  We can do this only for srbits < 23-mantissa_bits,
+            # but it is only likely to matter when srbits is small. 
+            if srbitsbar > 0:
+                offset += 1 << (srbitsbar - 1)
+
         elif self.rounding == "nearest":
             offset = mask // 2
         else:  # pragma: no cover
