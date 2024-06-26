@@ -29,13 +29,14 @@ def test_fp_format_rounding() -> None:
     y_nearest = FPFormat(2, 1, rounding="nearest").quantise(torch.full((n,), x))
     assert collections.Counter(y_nearest.tolist()) == {-1.5: n}
 
-    y_stochastic = FPFormat(2, 1, rounding="stochastic").quantise(torch.full((n,), x))
-    count = collections.Counter(y_stochastic.tolist())
-    assert count.keys() == {-1.5, -1.0}
-    expected_ratio = (1.35 - 1.0) / 0.5
-    nearest_ratio = count[-1.5] / sum(count.values())
-    std_x3 = 3 * (expected_ratio * (1 - expected_ratio) / n) ** 0.5
-    assert expected_ratio - std_x3 < nearest_ratio < expected_ratio + std_x3
+    for srbits in (0, 13):
+      y_stochastic = FPFormat(2, 1, rounding="stochastic", srbits=srbits).quantise(torch.full((n,), x))
+      count = collections.Counter(y_stochastic.tolist())
+      assert count.keys() == {-1.5, -1.0}
+      expected_ratio = (1.35 - 1.0) / 0.5
+      nearest_ratio = count[-1.5] / sum(count.values())
+      std_x3 = 3 * (expected_ratio * (1 - expected_ratio) / n) ** 0.5
+      assert expected_ratio - std_x3 < nearest_ratio < expected_ratio + std_x3
 
 
 def test_fp_format_bwd() -> None:
