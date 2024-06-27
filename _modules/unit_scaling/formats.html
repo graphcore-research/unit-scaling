@@ -102,9 +102,15 @@
     <span class="n">exponent_bits</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">mantissa_bits</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">rounding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stochastic&quot;</span>  <span class="c1"># &quot;stochastic|nearest&quot;</span>
+    <span class="n">srbits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Number of bits for stochastic rounding, zero =&gt; use all bits</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;FPFormat requires at least 2 exponent bits&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">srbits</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">rounding</span> <span class="o">==</span> <span class="s2">&quot;stochastic&quot;</span>
+        <span class="p">),</span> <span class="s2">&quot;Nonzero srbits for non-stochastic rounding&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">srbits</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rounding</span> <span class="o">==</span> <span class="s2">&quot;stochastic&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">srbits</span> <span class="o">=</span> <span class="mi">23</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mantissa_bits</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">bits</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -148,9 +154,18 @@
         <span class="n">downscale</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">**</span> <span class="p">(</span><span class="mi">127</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="mi">23</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mantissa_bits</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rounding</span> <span class="o">==</span> <span class="s2">&quot;stochastic&quot;</span><span class="p">:</span>
-            <span class="n">offset</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>  <span class="c1"># type: ignore[call-overload]</span>
-                <span class="mi">0</span><span class="p">,</span> <span class="n">mask</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">device</span>
+            <span class="n">srbitsbar</span> <span class="o">=</span> <span class="mi">23</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mantissa_bits</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">srbits</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                    <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">srbits</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">device</span>
+                <span class="p">)</span>
+                <span class="o">&lt;&lt;</span> <span class="n">srbitsbar</span>
             <span class="p">)</span>
+            <span class="c1"># Correct for bias.  We can do this only for srbits &lt; 23-mantissa_bits,</span>
+            <span class="c1"># but it is only likely to matter when srbits is small.</span>
+            <span class="k">if</span> <span class="n">srbitsbar</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">offset</span> <span class="o">+=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">srbitsbar</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rounding</span> <span class="o">==</span> <span class="s2">&quot;nearest&quot;</span><span class="p">:</span>
             <span class="n">offset</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">//</span> <span class="mi">2</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
