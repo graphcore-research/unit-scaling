@@ -47,7 +47,9 @@ def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
     is to call `module = torch_nn_modules_to_user_modules(module)`.
     """
 
-    for n, submod in mod.named_modules():
+    for n, submod in mod.named_children():
+        torch_nn_modules_to_user_modules(submod)
+
         # Mirroring the check at https://github.com/pytorch/pytorch/blob/34bce27f0d12bf7226b37dfe365660aad456701a/torch/_dynamo/variables/nn_module.py#L307 # noqa: E501
         if submod.__module__.startswith(("torch.nn.", "torch.ao.")):
             # Generate a new name, so e.g. torch.nn.modules.sparse.Embedding

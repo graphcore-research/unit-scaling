@@ -40,7 +40,7 @@ def test_unit_scale(caplog: LogCaptureFixture) -> None:
             return input, input.sum()
 
     input = randn(2**6, 2**10, requires_grad=True)
-    model = MLPLayer(2**10)
+    model = nn.Sequential(MLPLayer(2**10))
     model = unit_scale(model, replace={custom_gelu: F.gelu})
     output, loss = model(input)
     loss.backward()
@@ -48,9 +48,9 @@ def test_unit_scale(caplog: LogCaptureFixture) -> None:
     assert_unit_scaled(
         output,
         input.grad,
-        model.layer_norm.weight.grad,
-        model.l1.weight.grad,
-        model.l2.weight.grad,
+        model[0].layer_norm.weight.grad,
+        model[0].l1.weight.grad,
+        model[0].l2.weight.grad,
         abs=0.2,
     )
 
