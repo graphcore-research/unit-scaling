@@ -34,7 +34,7 @@ Backend = Callable[[GraphModule, List[Tensor]], Callable[..., Any]]
 _unit_scaled_functions = [getattr(U, f) for f in U.__all__]
 
 
-def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
+def torch_nn_modules_to_user_modules(mod: nn.Module) -> None:
     """
     Convert torch.nn.module classes to `trivial_subclass` versions.
 
@@ -47,7 +47,9 @@ def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
     is to call `module = torch_nn_modules_to_user_modules(module)`.
     """
 
-    for n, submod in mod.named_modules():
+    for n, submod in mod.named_children():
+        torch_nn_modules_to_user_modules(submod)
+
         # Mirroring the check at https://github.com/pytorch/pytorch/blob/34bce27f0d12bf7226b37dfe365660aad456701a/torch/_dynamo/variables/nn_module.py#L307 # noqa: E501
         if submod.__module__.startswith(("torch.nn.", "torch.ao.")):
             # Generate a new name, so e.g. torch.nn.modules.sparse.Embedding
@@ -62,7 +64,8 @@ def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
 
             # Initialize and copy state using pickle
             newsubmod = newmodtype.__new__(newmodtype)  # type: ignore [call-overload]
-            newsubmod.__setstate__(submod.__getstate__())
+            state = submod.__getstate__()  # type: ignore [no-untyped-call]
+            newsubmod.__setstate__(state)
 
             # Update module in mod
             setattr(mod, n, newsubmod)
