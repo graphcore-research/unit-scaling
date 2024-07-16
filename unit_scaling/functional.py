@@ -29,7 +29,7 @@ def scale_elementwise(
     f: Callable[..., Tensor],
     output_scale: float,
     grad_input_scale: float,
-    constraint: Optional[str] = "gmean",
+    constraint: Optional[str] = "to_output_scale",
 ) -> Callable[..., Tensor]:
     """Transforms an element-wise function into a scaled version.
 
@@ -73,7 +73,7 @@ def _get_broadcast_sizes(*args: Tensor) -> Tuple[int, ...]:
 def gelu(
     input: Tensor,
     approximate: str = "none",
-    constraint: Optional[str] = "gmean",
+    constraint: Optional[str] = "to_output_scale",
 ) -> Tensor:
     # Scale factors determined empirically, assuming unit scaled input & grad
     output_scale = 0.588**-1
@@ -91,7 +91,7 @@ def softmax(
     input: Tensor,
     dim: int,
     dtype: Optional[torch.dtype] = None,
-    constraint: Optional[str] = "gmean",
+    constraint: Optional[str] = "to_output_scale",
 ) -> Tensor:
     dim_size = input.shape[dim]
     # Scale factors determined empirically, assuming unit-scaled & large dim_size
@@ -126,7 +126,7 @@ def dropout(
 def matmul(
     left: Tensor,
     right: Tensor,
-    constraint: Optional[str] = "gmean",
+    constraint: Optional[str] = "to_output_scale",
 ) -> Tensor:
     left_size = left.shape[-2]
     inner_size = left.shape[-1]
@@ -155,7 +155,7 @@ def linear(
     input: Tensor,
     weight: Tensor,
     bias: Optional[Tensor],
-    constraint: Optional[str] = "gmean",
+    constraint: Optional[str] = "to_output_scale",
 ) -> Tensor:
     fan_out, fan_in = weight.shape
     batch_size = input.numel() // fan_in
@@ -208,7 +208,7 @@ def layer_norm(
 def add(
     input: Union[Tensor, int, float],
     other: Union[Tensor, int, float],
-    constraint: Optional[str] = "gmean",
+    constraint: Optional[str] = "to_output_scale",
     alpha: int = 1,
     out: Optional[Tensor] = None,
 ) -> Tensor:

@@ -39,7 +39,7 @@ def _quantised_u_linear(
     bias: Optional[Tensor],
     fwd_format_tuple: Tuple[int, int],
     bwd_format_tuple: Tuple[int, int],
-    constraint: Optional[str] = "gmean",
+    constraint: Optional[str] = "to_output_scale",
 ) -> Tensor:
     fwd_format = tuple_to_format(fwd_format_tuple)
     bwd_format = tuple_to_format(bwd_format_tuple)

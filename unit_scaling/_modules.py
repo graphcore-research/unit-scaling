@@ -28,7 +28,7 @@ class GELU(nn.GELU):
     def __init__(
         self,
         approximate: str = "none",
-        constraint: Optional[str] = "gmean",
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__(approximate=approximate)
         self.constraint = constraint
@@ -59,7 +59,7 @@ class Softmax(nn.Softmax):
     def __init__(
         self,
         dim: int,
-        constraint: Optional[str] = "gmean",
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__(dim=dim)
         self.constraint = constraint
@@ -94,7 +94,7 @@ class Linear(nn.Linear):
         bias: bool = True,
         device: Any = None,
         dtype: Any = None,
-        constraint: Optional[str] = "gmean",
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__(in_features, out_features, bias, device, dtype)
         self.constraint = constraint
@@ -175,7 +175,7 @@ class MLP(nn.Module):
         hidden_size: int,
         act_fn: nn.Module = GELU(),
         expansion_factor: int = 4,
-        constraint: Optional[str] = "gmean",
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         intermediate_size = hidden_size * expansion_factor
@@ -207,7 +207,7 @@ class MHSA(nn.Module):
         hidden_size: int,
         heads: int,
         dropout_p: float,
-        constraint: Optional[str] = "gmean",
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         self.heads = heads
@@ -258,7 +258,7 @@ class TransformerLayer(nn.Module):
         act_fn: nn.Module = GELU(),
         mhsa_tau: float = 0.01,
         mlp_tau: float = 0.5,
-        constraint: Optional[str] = "gmean",
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         self.dropout_p = dropout_p
@@ -317,7 +317,7 @@ class TransformerDecoder(nn.Module):  # pragma: no cover
         act_fn: nn.Module = GELU(),
         mhsa_tau: float = 0.01,
         mlp_tau: float = 0.5,
-        constraint: Optional[str] = "gmean",
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         self.embedding = Embedding(vocab_size, hidden_size)

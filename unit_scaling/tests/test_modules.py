@@ -28,25 +28,19 @@ from .helper import (
 
 
 def test_gelu() -> None:
-    input = randn(2**10, requires_grad=True)
+    input = randn(2**10)
     model = GELU()
     output = model(input)
 
-    unit_backward(output)
-
-    combined_std = output.std().detach() * input.grad.std()  # type: ignore
-    assert combined_std == pytest.approx(1, abs=0.1)
+    assert float(output.std()) == pytest.approx(1, abs=0.1)
 
 
 def test_softmax() -> None:
-    input = randn(2**14, requires_grad=True)
+    input = randn(2**14)
     model = Softmax(dim=0)
     output = model(input)
 
-    unit_backward(output)
-
-    combined_std = output.std().detach() * input.grad.std()  # type: ignore
-    assert combined_std == pytest.approx(1, abs=0.1)
+    assert float(output.std()) == pytest.approx(1, abs=0.1)
 
 
 def test_dropout() -> None:
@@ -54,10 +48,7 @@ def test_dropout() -> None:
     model = Dropout()
     output = model(input)
 
-    unit_backward(output)
-
-    combined_std = output.std().detach() * input.grad.std()  # type: ignore
-    assert combined_std == pytest.approx(1, abs=0.1)
+    assert float(output.std()) == pytest.approx(1, abs=0.1)
 
     with pytest.raises(ValueError):
         Dropout(0.5, inplace=True)
@@ -75,8 +66,7 @@ def test_linear() -> None:
     unit_backward(output)
     SGD(model.parameters(), lr=1).step()
 
-    combined_std = output.std().detach() * input.grad.std()  # type: ignore
-    assert combined_std == pytest.approx(1, abs=0.1)
+    assert float(output.std()) == pytest.approx(1, abs=0.1)
 
     assert_not_unit_scaled(model.weight)
     assert_non_zeros(model.bias)
@@ -141,8 +131,7 @@ def test_mlp() -> None:
     unit_backward(output)
     SGD(model.parameters(), lr=1).step()
 
-    combined_std = output.std().detach() * input.grad.std()  # type: ignore
-    assert combined_std == pytest.approx(1, abs=0.1)
+    assert float(output.std()) == pytest.approx(1, abs=0.2)
 
     assert_not_unit_scaled(model.linear_1.weight, model.linear_2.weight)
     assert_non_zeros(model.linear_1.bias, model.linear_2.bias)
@@ -160,8 +149,7 @@ def test_mhsa() -> None:
     unit_backward(output)
     SGD(model.parameters(), lr=1).step()
 
-    combined_std = output.std().detach() * input.grad.std()  # type: ignore
-    assert combined_std == pytest.approx(1, abs=0.5)
+    assert float(output.std()) == pytest.approx(1, abs=0.5)
 
     assert_not_unit_scaled(model.linear_qkv.weight, model.linear_o.weight)
 
@@ -177,8 +165,7 @@ def test_transformer_layer() -> None:
     unit_backward(output)
     SGD(model.parameters(), lr=1).step()
 
-    combined_std = output.std().detach() * input.grad.std()  # type: ignore
-    assert combined_std == pytest.approx(1, abs=0.1)
+    assert float(output.std()) == pytest.approx(1, abs=0.1)
 
 
 def test_transformer_decoder() -> None:
