@@ -18,6 +18,7 @@ from ._modules import (
     TransformerDecoder,
     TransformerLayer,
 )
+from ._version import __version__
 from .analysis import visualiser
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     "TransformerDecoder",
     "TransformerLayer",
     "visualiser",
+    "__version__",
 ]
