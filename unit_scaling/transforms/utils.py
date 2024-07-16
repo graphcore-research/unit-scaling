@@ -34,7 +34,7 @@ Backend = Callable[[GraphModule, List[Tensor]], Callable[..., Any]]
 _unit_scaled_functions = [getattr(U, f) for f in U.__all__]
 
 
-def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
+def torch_nn_modules_to_user_modules(mod: nn.Module) -> None:
     """
     Convert torch.nn.module classes to `trivial_subclass` versions.
 
@@ -64,7 +64,8 @@ def torch_nn_modules_to_user_modules(mod: nn.Module) -> Any:
 
             # Initialize and copy state using pickle
             newsubmod = newmodtype.__new__(newmodtype)  # type: ignore [call-overload]
-            newsubmod.__setstate__(submod.__getstate__())
+            state = submod.__getstate__()  # type: ignore [no-untyped-call]
+            newsubmod.__setstate__(state)
 
             # Update module in mod
             setattr(mod, n, newsubmod)
