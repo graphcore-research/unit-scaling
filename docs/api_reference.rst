@@ -43,3 +43,4 @@ Click below for the full documentation:
    unit_scaling.transforms
    unit_scaling.transforms.utils
    unit_scaling.utils
+   unit_scaling.core.functional

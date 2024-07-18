@@ -15,11 +15,17 @@ from ..functional import (
     matmul,
     residual_add,
     residual_split,
-    scale_elementwise,
     scaled_dot_product_attention,
+    silu,
+    silu_glu,
     softmax,
 )
-from .helper import assert_not_unit_scaled, assert_unit_scaled, unit_backward
+from .helper import (
+    assert_not_unit_scaled,
+    assert_scale,
+    assert_unit_scaled,
+    unit_backward,
+)
 
 
 def retain_grad(t: Tensor) -> None:
@@ -31,54 +37,13 @@ def retain_grad(t: Tensor) -> None:
     t.register_hook(set_tensor_grad)  # type: ignore [no-untyped-call]
 
 
-# --- test scale_elementwise() ---
-
-
-def test_scale_elementwise_no_constraint() -> None:
-    input = randn(2**10, requires_grad=True)
-    f = lambda x: x
-    scaled_f = scale_elementwise(
-        f, output_scale=2.5, grad_input_scale=0.5, constraint=None
-    )
-    output = scaled_f(input)
-    unit_backward(output)
-
-    assert output.std().detach() == pytest.approx(2.5, rel=0.1)
-    assert input.grad.std().detach() == pytest.approx(0.5, rel=0.1)  # type: ignore
-
-
-def test_scale_elementwise_for_output() -> None:
-    input = randn(2**10, requires_grad=True)
-    f = lambda x: x
-    scaled_f = scale_elementwise(
-        f, output_scale=2.5, grad_input_scale=0.5, constraint="to_output_scale"
-    )
-    output = scaled_f(input)
-    unit_backward(output)
-
-    assert output.std().detach() == pytest.approx(2.5, rel=0.1)
-    assert input.grad.std().detach() == pytest.approx(2.5, rel=0.1)  # type: ignore
-
-
-def test_scale_elementwise_for_grad_input() -> None:
-    input = randn(2**10, requires_grad=True)
-    f = lambda x: x
-    scaled_f = scale_elementwise(
-        f, output_scale=2.5, grad_input_scale=0.5, constraint="to_grad_input_scale"
-    )
-    output = scaled_f(input)
-    unit_backward(output)
-
-    assert output.std().detach() == pytest.approx(0.5, rel=0.1)
-    assert input.grad.std().detach() == pytest.approx(0.5, rel=0.1)  # type: ignore
-
-
 # --- test gelu() ---
 
 
-def test_gelu_no_constraint() -> None:
+@pytest.mark.parametrize("mult", [1 / 4, 1, 4])
+def test_gelu_no_constraint(mult: float) -> None:
     input = randn(2**10, requires_grad=True)
-    output = gelu(input, constraint=None)
+    output = gelu(input, mult=mult, constraint=None)
     unit_backward(output)
 
     assert_unit_scaled(input.grad, output)
@@ -102,33 +67,80 @@ def test_gelu_scale_for_grad_input() -> None:
     assert_not_unit_scaled(output)
 
 
-# --- test softmax() ---
+# --- test silu() ---
 
 
-def test_softmax_no_constraint() -> None:
-    input = randn(2**12, requires_grad=True)
-    output = softmax(input, dim=0, constraint=None)
+@pytest.mark.parametrize("mult", [1 / 4, 1, 4])
+def test_silu_no_constraint(mult: float) -> None:
+    input = randn(2**10, requires_grad=True)
+    output = silu(input, mult=mult, constraint=None)
     unit_backward(output)
 
-    assert_unit_scaled(output, input.grad)
+    assert_unit_scaled(input.grad, output)
 
 
-def test_softmax_scale_for_output() -> None:
-    input = randn(2**12, requires_grad=True)
-    output = softmax(input, dim=0, constraint="to_output_scale")
+def test_silu_scale_for_output() -> None:
+    input = randn(2**10, requires_grad=True)
+    output = silu(input, mult=2, constraint="to_output_scale")
     unit_backward(output)
 
     assert_unit_scaled(output)
     assert_not_unit_scaled(input.grad)
 
 
-def test_softmax_scale_for_grad_input() -> None:
-    input = randn(2**12, requires_grad=True)
-    output = softmax(input, dim=0, constraint="to_grad_input_scale")
+def test_silu_scale_for_grad_input() -> None:
+    input = randn(2**10, requires_grad=True)
+    output = silu(input, constraint="to_grad_input_scale")
     unit_backward(output)
 
     assert_unit_scaled(input.grad)
     assert_not_unit_scaled(output)
+
+
+# --- test silu() ---
+
+
+@pytest.mark.parametrize("mult", [1 / 4, 1, 4])
+def test_silu_glu(mult: float) -> None:
+    input = randn(2**10, requires_grad=True)
+    gate = randn(2**10, requires_grad=True)
+    output = silu_glu(input, gate, mult=mult)
+    unit_backward(output)
+
+    # Scales are constrained, but forward and backward scaling
+    # are similar enough that everything is nearly unit-scale
+    assert_unit_scaled(input.grad, gate.grad, output)
+
+
+# --- test softmax() ---
+
+# In all these tests, use mult=1/4, as the approximation is quite bad at mult=1
+
+
+def test_softmax_no_constraint() -> None:
+    input = randn(2**12, requires_grad=True)
+    output = softmax(input, dim=0, constraint=None, mult=1 / 4)
+    unit_backward(output)
+
+    assert_unit_scaled(output, input.grad, stat="rms")
+
+
+def test_softmax_scale_for_output() -> None:
+    input = randn(2**12, requires_grad=True)
+    output = softmax(input, dim=0, constraint="to_output_scale", mult=1 / 4)
+    unit_backward(output)
+
+    assert_unit_scaled(output, stat="rms")
+    assert_not_unit_scaled(input.grad, stat="rms")
+
+
+def test_softmax_scale_for_grad_input() -> None:
+    input = randn(2**12, requires_grad=True)
+    output = softmax(input, dim=0, constraint="to_grad_input_scale", mult=1 / 4)
+    unit_backward(output)
+
+    assert_unit_scaled(input.grad, stat="rms")
+    assert_not_unit_scaled(output, stat="rms")
 
 
 def test_softmax_dim() -> None:
@@ -136,10 +148,10 @@ def test_softmax_dim() -> None:
         shape = [2, 2, 2, 2]
         shape[dim] = 2**12
         input = randn(*shape, requires_grad=True)
-        output = softmax(input, dim=dim, constraint=None)
+        output = softmax(input, dim=dim, constraint=None, mult=1 / 4)
         unit_backward(output)
 
-        assert_unit_scaled(output, input.grad)
+        assert_unit_scaled(output, input.grad, stat="rms")
 
 
 # --- test dropout() ---
@@ -367,7 +379,8 @@ def test_scaled_dot_product_attention() -> None:
     output = scaled_dot_product_attention(q, k, v)
     unit_backward(output)
 
-    assert_unit_scaled(output, q.grad, k.grad, v.grad)
+    assert_unit_scaled(output, v.grad)
+    assert_scale(q.grad, k.grad, target=shape[1] ** -0.5)
 
 
 # --- test cross_entropy() ---

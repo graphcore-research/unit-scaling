@@ -75,6 +75,8 @@ def _get_docstring_from_target(
     parser = GoogleParser(sections=parser_sections)
     docstring = parser.parse(target.__doc__)
     docstring.short_description = short_description
+    if docstring.long_description:
+        docstring.long_description += "\n"  # fixes "Args:" section merging
 
     for param in docstring.params:
         if param.arg_name in unsupported_args and param.description is not None:
@@ -207,3 +209,12 @@ variadic_constraint_docstring = (
     " (see `unit_scaling.constraints` for details on these constraint functions)."
     " Defaults to `gmean`."
 )
+
+
+def mult_docstring(name: str = "mult") -> str:
+    return (
+        f"{name} (float, optional): a multiplier to be applied to change the shape"
+        " of a nonlinear function. Typically, high multipliers (> 1) correspond to a"
+        " 'sharper' (low temperature) function, while low multipliers (< 1) correspond"
+        " to a 'flatter' (high temperature) function."
+    )

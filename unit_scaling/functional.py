@@ -5,9 +5,9 @@
 from __future__ import annotations  # required for docs to alias type annotations
 
 import sys
-from math import prod
+from math import log, pi, prod
 from types import FunctionType
-from typing import Any, Callable, Dict, Optional, Sequence, Tuple, Union, cast
+from typing import Dict, Optional, Sequence, Tuple, Union, cast
 
 import torch
 import torch.nn.functional as F
@@ -15,44 +15,15 @@ from torch import Tensor
 
 from ._internal_utils import generate__all__
 from .constraints import apply_constraint
+from .core.functional import logarithmic_interpolation, scale_elementwise
 from .docs import (
     binary_constraint_docstring,
     docstring_from,
     format_docstring,
+    mult_docstring,
     ternary_constraint_docstring,
 )
 from .scale import scale_bwd, scale_fwd
-
-
-@format_docstring(binary_constraint_docstring)
-def scale_elementwise(
-    f: Callable[..., Tensor],
-    output_scale: float,
-    grad_input_scale: float,
-    constraint: Optional[str] = "to_output_scale",
-) -> Callable[..., Tensor]:
-    """Transforms an element-wise function into a scaled version.
-
-    Args:
-        f (Callable[..., Tensor]): the element-wise function to be scaled. Should take
-            as its first input a `Tensor`, followed by `*args, **kwargs`.
-        output_scale (float): the scale to be applied to the output
-        grad_input_scale (float): the scale to be applied to the grad of the input
-        {0}
-
-    Returns:
-        Callable[..., Tensor]: the scaled function
-    """
-    output_scale, grad_input_scale = apply_constraint(
-        constraint, output_scale, grad_input_scale
-    )
-
-    def scaled_f(input: Tensor, *args: Any, **kwargs: Any) -> Tensor:
-        input = scale_bwd(input, grad_input_scale)
-        output = f(input, *args, **kwargs)
-        return scale_fwd(output, output_scale)
-
-    return scaled_f
 
 
 def _get_broadcast_sizes(*args: Tensor) -> Tuple[int, ...]:
@@ -64,43 +35,138 @@ def _get_broadcast_sizes(*args: Tensor) -> Tuple[int, ...]:
     return tuple(output_numel // a.shape.numel() for a in args)
 
 
+def _unscaled_gelu(x: Tensor, mult: float, approximate: str) -> Tensor:
+    if mult == 1:
+        return F.gelu(x, approximate=approximate)
+    return F.gelu(x * mult, approximate=approximate) / mult
+
+
 @docstring_from(
     F.gelu,
     short_description="Applies a **unit-scaled** GELU function.",
-    add_args=[binary_constraint_docstring],
+    add_args=[mult_docstring(), binary_constraint_docstring],
     unsupported_args=["approximate"],
 )
 def gelu(
     input: Tensor,
-    approximate: str = "none",
+    mult: float = 1.0,
     constraint: Optional[str] = "to_output_scale",
+    approximate: str = "none",
 ) -> Tensor:
-    # Scale factors determined empirically, assuming unit scaled input & grad
-    output_scale = 0.588**-1
-    grad_input_scale = 0.675**-1
-    scaled_gelu = scale_elementwise(F.gelu, output_scale, grad_input_scale, constraint)
-    return scaled_gelu(input, approximate=approximate)
+    # An empirical model of gelu output std given mult
+    output_scale = logarithmic_interpolation(
+        alpha=1 / (1 + 0.25 / mult**2),  # = sigmoid(log(4 * mult**2))
+        lower=2**1,
+        upper=(2 / (1 - 1 / pi)) ** 0.5,
+    )
+    grad_input_scale = logarithmic_interpolation(
+        alpha=1 / (1 + 0.25 / mult**2),  # = sigmoid(log(4 * mult**2))
+        lower=2**1,
+        upper=2**0.5,
+    )
+    scaled_gelu = scale_elementwise(
+        _unscaled_gelu, output_scale, grad_input_scale, constraint
+    )
+    return scaled_gelu(input, mult=mult, approximate=approximate)
+
+
+def _unscaled_silu(x: Tensor, mult: float) -> Tensor:
+    if mult == 1:
+        return F.silu(x)
+    return x * F.sigmoid(x * mult)
+
+
+@docstring_from(
+    F.silu,
+    short_description="Applies a **unit-scaled** SiLU function.",
+    add_args=[mult_docstring(), binary_constraint_docstring],
+    unsupported_args=["inplace"],
+)
+def silu(
+    input: Tensor,
+    mult: float = 1.0,
+    constraint: Optional[str] = "to_output_scale",
+    inplace: bool = False,
+) -> Tensor:
+    # An empirical model of swish output std given mult
+    output_scale = logarithmic_interpolation(
+        alpha=1 / (1 + 0.25 / mult**2),  # = sigmoid(log(4 * mult**2))
+        lower=2**1,
+        upper=(2 / (1 - 1 / pi)) ** 0.5,
+    )
+    grad_input_scale = logarithmic_interpolation(
+        alpha=1 / (1 + 1 / mult**2),  # = sigmoid(log(mult**2))
+        lower=2**1,
+        upper=2**0.5,
+    )
+    scaled_silu = scale_elementwise(
+        _unscaled_silu, output_scale, grad_input_scale, constraint
+    )
+    return scaled_silu(input, mult=mult)
+
+
+@format_docstring(mult_docstring())
+def silu_glu(input: Tensor, gate: Tensor, mult: float = 1.0) -> Tensor:
+    """Applies a **unit-scaled** gated linear unit for `input * silu(gate)`.
+
+    .. math::
+        \\text{{silu_glu}}(x, g) = x * g * \\sigma(g),
+        \\text{{where }} \\sigma(g) \\text{{ is the logistic sigmoid.}}
+
+    Args:
+        input (Tensor): linear input
+        gate (Tensor): gate (SiLU) input
+        {0}
+
+    Returns:
+        Tensor: a scaled output, the same shape as `input`
+    """
+    # An empirical model of swish output std given mult
+    scale = logarithmic_interpolation(
+        alpha=1 / (1 + 1 / mult**2),  # = sigmoid(log(mult**2))
+        lower=2**1,
+        upper=2**0.5,
+    )
+    input = scale_bwd(input, scale)
+    gate = scale_bwd(gate, scale)
+    output = input * _unscaled_silu(gate, mult=mult)
+    return scale_fwd(output, scale)
+
+
+def _unscaled_softmax(
+    x: Tensor, dim: int, dtype: Optional[torch.dtype], mult: float
+) -> Tensor:
+    return F.softmax(x * mult, dim=dim, dtype=dtype)
 
 
 @docstring_from(
     F.softmax,
     short_description="Applies a **unit-scaled** softmax function.",
-    add_args=[binary_constraint_docstring],
+    add_args=[mult_docstring(), binary_constraint_docstring],
 )
 def softmax(
     input: Tensor,
     dim: int,
     dtype: Optional[torch.dtype] = None,
     constraint: Optional[str] = "to_output_scale",
+    mult: float = 1.0,
 ) -> Tensor:
     dim_size = input.shape[dim]
-    # Scale factors determined empirically, assuming unit-scaled & large dim_size
-    output_scale = dim_size / 1.31
-    grad_input_scale = dim_size / 1.65
-    scaled_softmax = scale_elementwise(
-        F.softmax, output_scale, grad_input_scale, constraint
+    # Empirical model
+    output_scale = logarithmic_interpolation(
+        alpha=1 / (1 + 4 / mult**2),  # = sigmoid(log(mult**2 / 4))
+        lower=dim_size,  # flat limit
+        upper=dim_size**0.5,  # one-hot limit
     )
-    return scaled_softmax(input, dim=dim, dtype=dtype)
+    grad_input_scale = logarithmic_interpolation(
+        alpha=1 / (1 + 4 / mult**2),  # = sigmoid(log(mult**2 / 4))
+        lower=dim_size / mult,  # flat limit
+        upper=(dim_size / mult) ** 0.5,  # one-hot limit
+    )
+    scaled_softmax = scale_elementwise(
+        _unscaled_softmax, output_scale, grad_input_scale, constraint
+    )
+    return scaled_softmax(input, dim=dim, dtype=dtype, mult=mult)
 
 
 @docstring_from(
@@ -317,44 +383,50 @@ def embedding(
     )
 
 
-if hasattr(F, "scaled_dot_product_attention"):
-
-    @docstring_from(
-        F.scaled_dot_product_attention,
-        short_description=(
-            "A **unit-scaled** dot-product attention function. Note that this will use"
-            "whatever underlying PyTorch scaled_dot_product_attention implementation"
-            "is available, so if flash attention is enabled it will be used here too."
-            "\n\n"
-            "Computes scaled dot product attention on query, key and value tensors,"
-            "using an optional attention mask if passed, and applying dropout if a"
-            "probability greater than 0.0 is specified."
-        ),
+@docstring_from(
+    F.scaled_dot_product_attention,
+    short_description=(
+        "A **unit-scaled** dot-product attention function. Note that this will use"
+        " whatever underlying PyTorch scaled_dot_product_attention implementation"
+        " is available, so if flash attention is enabled it will be used here too."
+        "\n\n"
+        "Computes scaled dot product attention on query, key and value tensors,"
+        " using an optional attention mask if passed, and applying dropout if a"
+        " probability greater than 0.0 is specified."
+        "\n\n"
+        "Note that the scaling rule for causal attention will only be applied if"
+        " is_causal is True, as an arbitrary mask does not identify causal versus"
+        " non-causal."
+    ),
+    add_args=[mult_docstring()],
+)
+def scaled_dot_product_attention(
+    query: Tensor,
+    key: Tensor,
+    value: Tensor,
+    attn_mask: Optional[Tensor] = None,
+    dropout_p: float = 0.0,
+    is_causal: bool = False,
+    mult: float = 1.0,
+) -> Tensor:
+    *_, seq_len, d_head = value.shape
+    # Empirical model of attention output std given mult and seq_len
+    scale = (1 - dropout_p) ** 0.5 / logarithmic_interpolation(
+        alpha=1 / (1 + 4 * d_head / mult**2),  # = sigmoid(log(mult**2 / (4 * d_head)))
+        lower=((log(seq_len) if is_causal else 1) / seq_len) ** 0.5,
+        upper=1.0,
     )
-    def scaled_dot_product_attention(
-        query: Tensor,
-        key: Tensor,
-        value: Tensor,
-        attn_mask: Optional[Tensor] = None,
-        dropout_p: float = 0.0,
-        is_causal: bool = False,
-    ) -> Tensor:
-        s = value.shape[-2]
-        # The scale is based on the assumption that softmax outputs follow a LogNormal
-        # distribution that is normalised in expectation.
-        # Conveniently, forward and backward scaling of attention are the same, so there
-        # is no need to consider constraints.
-        scale_factor = (s / torch.e * (1 - dropout_p)) ** 0.5
-        query, key, value = (scale_bwd(t, scale_factor) for t in (query, key, value))
-        out = F.scaled_dot_product_attention(
-            query,
-            key,
-            value,
-            attn_mask=attn_mask,
-            dropout_p=dropout_p,
-            is_causal=is_causal,
-        )
-        return scale_fwd(out, scale_factor)
+    query, key, value = (scale_bwd(t, scale) for t in (query, key, value))
+    out = F.scaled_dot_product_attention(
+        query,
+        key,
+        value,
+        attn_mask=attn_mask,
+        dropout_p=dropout_p,
+        is_causal=is_causal,
+        scale=mult / d_head,
+    )
+    return scale_fwd(out, scale)
 
 
 @docstring_from(
@@ -364,6 +436,7 @@ if hasattr(F, "scaled_dot_product_attention"):
         " target."
     ),
     unsupported_args=["weight", "size_average", "reduce", "label_smoothing"],
+    add_args=[mult_docstring()],
 )
 def cross_entropy(
     input: Tensor,
@@ -374,6 +447,7 @@ def cross_entropy(
     reduce: Optional[bool] = None,
     reduction: str = "mean",
     label_smoothing: float = 0.0,
+    mult: float = 1.0,
 ) -> Tensor:
     if len(input.shape) == 2:
         batch_size, vocab_size = input.shape
@@ -385,6 +459,7 @@ def cross_entropy(
             " (vocab_size,) or (batch_size, vocab_size)"
         )
     input = scale_bwd(input, vocab_size / (vocab_size - 1) ** 0.5)
+    input = scale_fwd(input, mult)
     loss = F.cross_entropy(
         input,
         target,

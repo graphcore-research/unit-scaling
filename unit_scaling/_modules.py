@@ -15,29 +15,58 @@ from .docs import (
     binary_constraint_docstring,
     format_docstring,
     inherit_docstring,
+    mult_docstring,
     variadic_constraint_docstring,
 )
 
 
 @inherit_docstring(
     short_description="Applies a **unit-scaled** Gaussian Error Linear Units function:",
-    add_args=[binary_constraint_docstring],
+    add_args=[mult_docstring(), binary_constraint_docstring],
     unsupported_args=["approximate"],
 )
 class GELU(nn.GELU):
     def __init__(
         self,
-        approximate: str = "none",
+        mult: float = 1.0,
         constraint: Optional[str] = "to_output_scale",
+        approximate: str = "none",
     ) -> None:
         super().__init__(approximate=approximate)
+        self.mult = mult
         self.constraint = constraint
 
     def forward(self, input: Tensor) -> Tensor:
         return U.gelu(
             input,
+            mult=self.mult,
             approximate=self.approximate,
             constraint=self.constraint,
+        )
+
+
+@inherit_docstring(
+    short_description="Applies a **unit-scaled** Sigmoid Linear Unit function:",
+    add_args=[mult_docstring(), binary_constraint_docstring],
+    unsupported_args=["inplace"],
+)
+class SiLU(nn.SiLU):
+    def __init__(
+        self,
+        mult: float = 1.0,
+        constraint: Optional[str] = "to_output_scale",
+        inplace: bool = False,
+    ) -> None:
+        super().__init__(inplace=inplace)
+        self.mult = mult
+        self.constraint = constraint
+
+    def forward(self, input: Tensor) -> Tensor:
+        return U.silu(
+            input,
+            mult=self.mult,
+            constraint=self.constraint,
+            inplace=self.inplace,
         )
 
 
@@ -53,19 +82,23 @@ class GELU(nn.GELU):
         " implementation. Values there (for example [0,1] ranges) should be adjusted"
         " accordingly."
     ),
-    add_args=[binary_constraint_docstring],
+    add_args=[mult_docstring(), binary_constraint_docstring],
 )
 class Softmax(nn.Softmax):
     def __init__(
         self,
         dim: int,
+        mult: float = 1.0,
         constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__(dim=dim)
+        self.mult = mult
         self.constraint = constraint
 
     def forward(self, input: Tensor) -> Tensor:
-        return U.softmax(input, dim=self.dim, constraint=self.constraint)
+        return U.softmax(
+            input, dim=self.dim, mult=self.mult, constraint=self.constraint
+        )
 
 
 @inherit_docstring(
@@ -145,8 +178,29 @@ class Embedding(nn.Embedding):
         "Computes a **unit-scaled** cross entropy loss between input logits and target."
     ),
     unsupported_args=["weight", "size_average", "reduce", "label_smoothing"],
+    add_args=[mult_docstring()],
 )
 class CrossEntropyLoss(nn.CrossEntropyLoss):
+    def __init__(
+        self,
+        mult: float = 1.0,
+        weight: Optional[Tensor] = None,
+        size_average: Optional[bool] = None,
+        ignore_index: int = -100,
+        reduce: Optional[bool] = None,
+        reduction: str = "mean",
+        label_smoothing: float = 0.0,
+    ):
+        super().__init__(
+            weight=weight,
+            size_average=size_average,
+            ignore_index=ignore_index,
+            reduce=reduce,
+            reduction=reduction,
+            label_smoothing=label_smoothing,
+        )
+        self.mult = mult
+
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
         return U.cross_entropy(
             input,
@@ -155,6 +209,7 @@ class CrossEntropyLoss(nn.CrossEntropyLoss):
             ignore_index=self.ignore_index,
             reduction=self.reduction,
             label_smoothing=self.label_smoothing,
+            mult=self.mult,
         )
 
 
@@ -189,7 +244,7 @@ class MLP(nn.Module):
         return self.linear_2(input)  # type: ignore
 
 
-@format_docstring(variadic_constraint_docstring)
+@format_docstring(mult_docstring(), variadic_constraint_docstring)
 class MHSA(nn.Module):
     """A **unit-scaled** implementation of a multi-head self-attention layer.
 
@@ -200,6 +255,7 @@ class MHSA(nn.Module):
         heads (int): the number of attention heads.
         dropout_p (float, optional): the probability of the post-softmax dropout.
         {0}
+        {1}
     """
 
     def __init__(
