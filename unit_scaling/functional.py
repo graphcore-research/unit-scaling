@@ -15,7 +15,7 @@ from torch import Tensor
 
 from ._internal_utils import generate__all__
 from .constraints import apply_constraint
-from .core.functional import logarithmic_interpolation, scale_elementwise
+from .core.functional import logarithmic_interpolation, rms, scale_elementwise
 from .docs import (
     binary_constraint_docstring,
     docstring_from,
@@ -272,10 +272,8 @@ def _unscaled_rms_norm(
     eps: float,
 ) -> torch.Tensor:
     assert input.shape[-len(normalized_shape) :] == normalized_shape
-    dims = list(range(-1, -1 - len(normalized_shape), -1))
-    output = input / input.float().pow(2).mean(dims, keepdim=True).add(eps).sqrt().to(
-        input.dtype
-    )
+    dims = tuple(range(-1, -1 - len(normalized_shape), -1))
+    output = input / rms(input, dims=dims, keepdim=True, eps=eps)
     if weight is not None:
         output *= weight
     return output

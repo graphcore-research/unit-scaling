@@ -3,7 +3,7 @@
 """Core functionality for implementing `unit_scaling.functional`."""
 
 import math
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Tuple
 
 from torch import Tensor
 
@@ -62,6 +62,19 @@ def logarithmic_interpolation(alpha: float, lower: float, upper: float) -> float
         float: interpolated value
     """
     return math.exp(alpha * math.log(upper) + (1 - alpha) * math.log(lower))
+
+
+def rms(
+    x: Tensor,
+    dims: Optional[Tuple[int, ...]] = None,
+    keepdim: bool = False,
+    eps: float = 0.0,
+) -> Tensor:
+    """Compute the RMS :math:`\\sqrt{\\mathrm{mean}(x^2) + \\epsilon}` of a tensor."""
+    mean = x.float().pow(2).mean(dims, keepdim=keepdim)
+    if eps:
+        mean = mean + eps
+    return mean.sqrt().to(x.dtype)
 
 
 __all__ = generate__all__(__name__)

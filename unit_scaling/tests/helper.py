@@ -6,6 +6,8 @@ import pytest
 import torch
 from torch import Tensor, randn
 
+from ..core.functional import rms
+
 
 def unit_backward(tensor: Tensor) -> Tensor:
     """Applies the `backward()` method with a unit normal tensor as input.
@@ -28,7 +30,7 @@ def assert_scale(
         assert t is not None
         t = t.detach()
         approx_target = pytest.approx(target, abs=abs)
-        stat_value = dict(rms=t.pow(2).mean().sqrt(), std=t.std())[stat]
+        stat_value = dict(rms=rms, std=torch.std)[stat](t)  # type:ignore[operator]
         assert (
             stat_value == approx_target
         ), f"{stat}={stat_value:.3f}, shape={list(t.shape)}"
