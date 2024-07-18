@@ -4,9 +4,10 @@
 
 from __future__ import annotations  # required for docs to alias type annotations
 
-from typing import Any, Optional
+from typing import Any, Optional, Tuple, Union
 
 import einops
+import torch
 from torch import Tensor, nn
 
 from . import functional as U
@@ -150,6 +151,55 @@ class LayerNorm(nn.LayerNorm):
     def forward(self, input: Tensor) -> Tensor:
         return U.layer_norm(
             input, self.normalized_shape, self.weight, self.bias, self.eps
+        )
+
+
+class RMSNorm(nn.Module):
+    """Applies a **unit-scaled** RMS normalisation over trailing dimensions.
+
+    This layer implements the operation as described in the paper
+    `Root Mean Square Layer Normalization <https://arxiv.org/abs/1910.07467>`__.
+
+    .. math::
+        y = \\frac{x}{ \\sqrt{\\sum x^2 + \\epsilon}} * \\gamma
+
+    Args:
+        normalized_shape (Tuple[int]): input shape, for an expected input tensor
+          of shape `(*, *normalized_shape)`.
+        elementwise_affine (bool): a boolean value that when set to True, this
+          module has learnable per-element weight parameters initialized to ones.
+          Default: True.
+        eps (float): a value added to the denominator for numerical stability.
+          Default: 1e-5.
+
+    Attributes:
+        weight: the learnable weights of the module of shape `normalized_shape` when
+          elementwise_affine is set to True. The values are initialized to 1.
+    """
+
+    def __init__(
+        self,
+        normalized_shape: Union[int, Tuple[int, ...]],
+        eps: float = 1e-5,
+        elementwise_affine: bool = True,
+    ):
+        super().__init__()
+        self.normalized_shape = (
+            (normalized_shape,)
+            if isinstance(normalized_shape, int)
+            else normalized_shape
+        )
+        self.eps = eps
+        self.weight = (
+            nn.Parameter(torch.ones(normalized_shape)) if elementwise_affine else None
+        )
+
+    def forward(self, input: Tensor) -> Tensor:
+        return U.rms_norm(
+            input,
+            normalized_shape=self.normalized_shape,
+            weight=self.weight,
+            eps=self.eps,
         )
 
 

@@ -15,6 +15,7 @@ from ..functional import (
     matmul,
     residual_add,
     residual_split,
+    rms_norm,
     scaled_dot_product_attention,
     silu,
     silu_glu,
@@ -270,6 +271,34 @@ def test_layer_norm() -> None:
     unit_backward(output)
 
     assert_unit_scaled(output, input.grad, weight.grad, bias.grad)
+
+
+def test_layer_norm_no_affine() -> None:
+    input = randn(2**8, 2**10, requires_grad=True)
+    output = layer_norm(input, (2**10,), None, None)
+    unit_backward(output)
+
+    assert_unit_scaled(output, input.grad)
+
+
+# --- test rms_norm() ---
+
+
+def test_rms_norm() -> None:
+    input = randn(2**8, 2**10, requires_grad=True)
+    weight = randn(2**10, requires_grad=True)
+    output = rms_norm(input, (2**10,), weight)
+    unit_backward(output)
+
+    assert_unit_scaled(output, input.grad, weight.grad)
+
+
+def test_rms_norm_no_affine() -> None:
+    input = randn(2**8, 2**10, requires_grad=True)
+    output = rms_norm(input, (2**10,), None)
+    unit_backward(output)
+
+    assert_unit_scaled(output, input.grad)
 
 
 # --- test add() ---

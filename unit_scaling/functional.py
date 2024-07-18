@@ -244,8 +244,8 @@ def linear(
 @docstring_from(
     F.layer_norm,
     short_description=(
-        "Applies a **unit-scaled** Layer Normalization for last certain number of"
-        " dimensions."
+        "Applies a **unit-scaled** Layer Normalization for last certain number"
+        " of dimensions."
     ),
 )
 def layer_norm(
@@ -263,6 +263,38 @@ def layer_norm(
     if bias is not None:
         bias = scale_bwd(bias, grad_bias_scale)
     return F.layer_norm(input, normalized_shape, weight, bias, eps)
+
+
+def _unscaled_rms_norm(
+    input: torch.Tensor,
+    normalized_shape: Tuple[int, ...],
+    weight: Optional[torch.Tensor],
+    eps: float,
+) -> torch.Tensor:
+    assert input.shape[-len(normalized_shape) :] == normalized_shape
+    dims = list(range(-1, -1 - len(normalized_shape), -1))
+    output = input / input.float().pow(2).mean(dims, keepdim=True).add(eps).sqrt().to(
+        input.dtype
+    )
+    if weight is not None:
+        output *= weight
+    return output
+
+
+def rms_norm(
+    input: Tensor,
+    normalized_shape: Tuple[int, ...],
+    weight: Optional[Tensor] = None,
+    eps: float = 1e-5,
+) -> Tensor:
+    """Apply **unit-scaled** RMS Normalization for last certain number of dimensions.
+
+    See :class:`~unit_scaling.RMSNorm` for details.
+    """
+    if weight is not None:
+        scale = (prod(normalized_shape) / input.numel()) ** 0.5
+        weight = scale_bwd(weight, scale)
+    return _unscaled_rms_norm(input, normalized_shape, weight, eps=eps)
 
 
 @docstring_from(

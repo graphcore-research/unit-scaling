@@ -14,6 +14,7 @@ from .._modules import (
     Embedding,
     LayerNorm,
     Linear,
+    RMSNorm,
     SiLU,
     Softmax,
     TransformerDecoder,
@@ -93,6 +94,20 @@ def test_layer_norm() -> None:
     SGD(model.parameters(), lr=1).step()
 
     assert_unit_scaled(output, input.grad, model.weight.grad, model.bias.grad)
+
+
+def test_rms_norm() -> None:
+    input = randn(2**8, 2**10, requires_grad=True)
+    model = RMSNorm(2**10)
+    output = model(input)
+
+    assert output.shape == torch.Size([2**8, 2**10])
+    assert model.weight is not None
+
+    unit_backward(output)
+    SGD(model.parameters(), lr=1).step()
+
+    assert_unit_scaled(output, input.grad, model.weight.grad)
 
 
 def test_embedding() -> None:
