@@ -20,17 +20,22 @@ from ._modules import (
     TransformerDecoder,
     TransformerLayer,
 )
+from ._parameter import MupType, Parameter, ParameterData, has_parameter_data
 from .analysis import visualiser
 
 __all__ = [
-    "GELU",
-    "MHSA",
-    "MLP",
     "CrossEntropyLoss",
     "Dropout",
     "Embedding",
+    "GELU",
+    "has_parameter_data",
     "LayerNorm",
     "Linear",
+    "MHSA",
+    "MLP",
+    "MupType",
+    "Parameter",
+    "ParameterData",
     "RMSNorm",
     "SiLU",
     "Softmax",

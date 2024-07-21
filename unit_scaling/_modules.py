@@ -4,7 +4,7 @@
 
 from __future__ import annotations  # required for docs to alias type annotations
 
-from typing import Any, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import einops
 import torch
@@ -12,6 +12,7 @@ from torch import Tensor, nn
 
 from . import functional as U
 from ._internal_utils import generate__all__
+from ._parameter import MupType, Parameter, has_parameter_data
 from .docs import (
     binary_constraint_docstring,
     format_docstring,
@@ -129,9 +130,13 @@ class Linear(nn.Linear):
         device: Any = None,
         dtype: Any = None,
         constraint: Optional[str] = "to_output_scale",
+        weight_mup_type: MupType = "weight",
     ) -> None:
         super().__init__(in_features, out_features, bias, device, dtype)
         self.constraint = constraint
+        self.weight = Parameter(self.weight.data, mup_type=weight_mup_type)
+        if self.bias is not None:
+            self.bias = Parameter(self.bias, mup_type="bias")
 
     def reset_parameters(self) -> None:
         nn.init.normal_(self.weight)
@@ -148,6 +153,28 @@ class Linear(nn.Linear):
     ),
 )
 class LayerNorm(nn.LayerNorm):
+    def __init__(
+        self,
+        normalized_shape: Union[int, List[int], torch.Size],
+        eps: float = 1e-5,
+        elementwise_affine: bool = True,
+        bias: bool = True,
+        device: Any = None,
+        dtype: Any = None,
+    ) -> None:
+        super().__init__(
+            normalized_shape=normalized_shape,
+            eps=eps,
+            elementwise_affine=elementwise_affine,
+            bias=bias,
+            device=device,
+            dtype=dtype,
+        )
+        if self.weight is not None:
+            self.weight = Parameter(self.weight.data, mup_type="norm")
+        if self.bias is not None:
+            self.bias = Parameter(self.bias.data, mup_type="bias")
+
     def forward(self, input: Tensor) -> Tensor:
         return U.layer_norm(
             input, self.normalized_shape, self.weight, self.bias, self.eps
@@ -191,7 +218,9 @@ class RMSNorm(nn.Module):
         )
         self.eps = eps
         self.weight = (
-            nn.Parameter(torch.ones(normalized_shape)) if elementwise_affine else None
+            Parameter(torch.ones(normalized_shape), "norm")
+            if elementwise_affine
+            else None
         )
 
     def forward(self, input: Tensor) -> Tensor:
@@ -211,6 +240,35 @@ class RMSNorm(nn.Module):
     unsupported_args=["scale_grad_by_freq", "sparse"],
 )
 class Embedding(nn.Embedding):
+    def __init__(
+        self,
+        num_embeddings: int,
+        embedding_dim: int,
+        padding_idx: Optional[int] = None,
+        max_norm: Optional[float] = None,
+        norm_type: float = 2.0,
+        scale_grad_by_freq: bool = False,
+        sparse: bool = False,
+        _weight: Optional[Tensor] = None,
+        _freeze: bool = False,
+        device: Any = None,
+        dtype: Any = None,
+    ) -> None:
+        super().__init__(
+            num_embeddings=num_embeddings,
+            embedding_dim=embedding_dim,
+            padding_idx=padding_idx,
+            max_norm=max_norm,
+            norm_type=norm_type,
+            scale_grad_by_freq=scale_grad_by_freq,
+            sparse=sparse,
+            _weight=_weight,
+            _freeze=_freeze,
+            device=device,
+            dtype=dtype,
+        )
+        self.weight = Parameter(self.weight.data, mup_type="weight")
+
     def forward(self, input: Tensor) -> Tensor:
         return U.embedding(
             input,
@@ -291,7 +349,7 @@ class MLP(nn.Module):
     def forward(self, input: Tensor) -> Tensor:
         input = self.linear_1(input)
         input = self.act_fn(input)
-        return self.linear_2(input)  # type: ignore
+        return self.linear_2(input)  # type:ignore[no-any-return]
 
 
 @format_docstring(mult_docstring(), variadic_constraint_docstring)
@@ -437,6 +495,9 @@ class TransformerDecoder(nn.Module):  # pragma: no cover
                 for _ in range(layers)
             )
         )
+        for param in self.transformer_layers.parameters():
+            assert has_parameter_data(param)
+            param.mup_scaling_depth = layers
         self.final_layer_norm = LayerNorm(hidden_size)
 
     def forward(self, input_ids: Tensor, labels: Tensor) -> Tensor:
