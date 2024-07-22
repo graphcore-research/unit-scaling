@@ -362,6 +362,7 @@ class MHSA(nn.Module):
         hidden_size (int): the hidden dimension size of the input.
         heads (int): the number of attention heads.
         dropout_p (float, optional): the probability of the post-softmax dropout.
+        is_causal (bool, optional): causal masking (for non-padded sequences).
         {0}
         {1}
     """
@@ -371,11 +372,15 @@ class MHSA(nn.Module):
         hidden_size: int,
         heads: int,
         dropout_p: float,
+        is_causal: bool = False,
+        mult: float = 1.0,
         constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         self.heads = heads
         self.dropout_p = dropout_p
+        self.is_causal = is_causal
+        self.mult = mult
         self.linear_qkv = Linear(
             hidden_size, 3 * hidden_size, bias=False, constraint=constraint
         )
@@ -387,10 +392,9 @@ class MHSA(nn.Module):
     def forward(self, input: Tensor) -> Tensor:
         q_k_v = self.linear_qkv(input)
         q, k, v = einops.rearrange(q_k_v, "b s (z h d) -> z b h s d", h=self.heads, z=3)
-        qk = U.matmul(q, k.transpose(-1, -2), constraint=self.constraint)
-        qk = U.softmax(qk, dim=-1, constraint=self.constraint)
-        qk = U.dropout(qk, self.dropout_p, training=self.training)
-        qkv = U.matmul(qk, v, constraint=self.constraint)
+        qkv = U.scaled_dot_product_attention(
+            q, k, v, dropout_p=self.dropout_p, is_causal=self.is_causal, mult=self.mult
+        )
         qkv = einops.rearrange(qkv, "b h s d -> b s (h d)")
         return self.linear_o(qkv)  # type: ignore
 
