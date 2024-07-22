@@ -13,6 +13,7 @@ from ..functional import (
     layer_norm,
     linear,
     matmul,
+    mse_loss,
     residual_add,
     residual_split,
     rms_norm,
@@ -435,3 +436,22 @@ def test_cross_entropy() -> None:
         cross_entropy(input, labels, weight=randn(vocab_sz))
     with pytest.raises(ValueError):
         cross_entropy(input, labels, label_smoothing=0.5)
+
+
+# --- test mse_loss() ---
+
+
+@pytest.mark.parametrize("reduction", ("mean", "sum"))
+def test_mse_loss(reduction: str) -> None:
+    input_a = randn(2, 2**10, requires_grad=True)
+    input_b = randn(2, 2**10, requires_grad=True)
+    loss = mse_loss(input_a, input_b, reduction=reduction)
+    standard_loss = F.mse_loss(input_a, input_b, reduction=reduction)
+    loss.backward()  # type: ignore [no-untyped-call]
+
+    assert loss.item() == pytest.approx(standard_loss.item(), rel=1e-4)
+    assert_unit_scaled(input_a.grad)
+    assert_unit_scaled(input_b.grad)
+
+    with pytest.raises(ValueError):
+        mse_loss(zeros(2, 3), zeros(1, 3), reduction=reduction)

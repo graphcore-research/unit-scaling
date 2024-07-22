@@ -462,7 +462,7 @@ def scaled_dot_product_attention(
 @docstring_from(
     F.cross_entropy,
     short_description=(
-        "Computes a **unit-scaled** the cross entropy loss between input logits and"
+        "Computes the **unit-scaled** cross entropy loss between input logits and"
         " target."
     ),
     unsupported_args=["weight", "size_average", "reduce", "label_smoothing"],
@@ -502,6 +502,35 @@ def cross_entropy(
     )
     if reduction == "mean":
         return scale_fwd(loss, 1 / batch_size)
+    assert reduction == "sum"
+    return loss
+
+
+@docstring_from(
+    F.mse_loss,
+    short_description="Computes the **unit-scaled** element-wise mean squared error.",
+    unsupported_args=["size_average", "reduce"],
+)
+def mse_loss(
+    input: Tensor,
+    target: Tensor,
+    size_average: Optional[bool] = None,
+    reduce: Optional[bool] = None,
+    reduction: str = "mean",
+) -> Tensor:
+    if input.shape != target.shape:
+        raise ValueError(
+            "U.mse_loss requires input.shape == target.shape,"
+            f" actual input.shape={tuple(input.shape)},"
+            f" target.shape={tuple(target.shape)}"
+        )
+    grad_scale = 8**-0.5
+    input = scale_bwd(input, grad_scale)
+    target = scale_bwd(target, grad_scale)
+    loss = F.mse_loss(input, target, size_average, reduce, reduction="sum")
+    if reduction == "mean":
+        return scale_fwd(loss, 1 / input.nelement())
+    assert reduction == "sum"
     return loss
 
 

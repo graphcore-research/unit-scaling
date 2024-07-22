@@ -447,6 +447,22 @@ class TransformerLayer(nn.Module):
         return U.residual_add(input, skip, tau=self.mlp_tau)
 
 
+@inherit_docstring(
+    "A :class:`torch.nn.Sequential` that automatically configures the depth"
+    " for sake of scaling."
+)
+class Trunk(nn.Sequential):
+    def __init__(self, *args: Any) -> None:
+        super().__init__(*args)
+        for name, parameter in self.named_parameters():
+            if not has_parameter_data(parameter):
+                raise ValueError(
+                    f"Parameter {name} is not a unit_scaling.Parameter."
+                    " Is it from a regular nn.Module?"
+                )
+            parameter.mup_scaling_depth = len(self)
+
+
 @format_docstring(variadic_constraint_docstring)
 class TransformerDecoder(nn.Module):  # pragma: no cover
     """A **unit-scaled** implementation of a decoder-type transformer.
@@ -487,7 +503,7 @@ class TransformerDecoder(nn.Module):  # pragma: no cover
         self.embedding = Embedding(vocab_size, hidden_size)
         self.dropout_p = dropout_p
         self.initial_layer_norm = LayerNorm(hidden_size)
-        self.transformer_layers = nn.Sequential(
+        self.transformer_layers = Trunk(
             *(
                 TransformerLayer(
                     hidden_size, heads, dropout_p, act_fn, mhsa_tau, mlp_tau, constraint
@@ -495,9 +511,6 @@ class TransformerDecoder(nn.Module):  # pragma: no cover
                 for _ in range(layers)
             )
         )
-        for param in self.transformer_layers.parameters():
-            assert has_parameter_data(param)
-            param.mup_scaling_depth = layers
         self.final_layer_norm = LayerNorm(hidden_size)
 
     def forward(self, input_ids: Tensor, labels: Tensor) -> Tensor:

@@ -5,6 +5,7 @@
 # This all has to be done manually to keep mypy happy.
 # Removing the `--no-implicit-reexport` option ought to fix this, but doesn't appear to.
 
+from . import optim
 from ._modules import (
     GELU,
     MHSA,
@@ -19,6 +20,7 @@ from ._modules import (
     Softmax,
     TransformerDecoder,
     TransformerLayer,
+    Trunk,
 )
 from ._parameter import MupType, Parameter, ParameterData, has_parameter_data
 from .analysis import visualiser
@@ -41,5 +43,7 @@ __all__ = [
     "Softmax",
     "TransformerDecoder",
     "TransformerLayer",
+    "Trunk",
+    "optim",
     "visualiser",
 ]

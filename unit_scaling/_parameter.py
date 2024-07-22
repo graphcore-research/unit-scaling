@@ -12,10 +12,15 @@ MupType = Literal["weight", "bias", "norm", "output"]
 
 
 class ParameterData(Protocol):
-    """Extra fields for :class:`torch.nn.Parameter`, tagging u-muP metadata."""
+    """Extra fields for :class:`torch.nn.Parameter`, tagging u-muP metadata.
+
+    Objects supporting this protocol should implicitly also support
+    :class:`torch.nn.Parameter`.
+    """
 
     mup_type: MupType
     mup_scaling_depth: Optional[int]
+    shape: torch.Size  # repeated from nn.Parameter, for convenience
 
 
 def has_parameter_data(parameter: nn.Parameter) -> TypeGuard[ParameterData]:
@@ -56,7 +61,9 @@ def _parameter_reduce_ex(self: nn.Parameter, protocol: int) -> Any:
     )
 
 
-def Parameter(data: Tensor, mup_type: MupType) -> nn.Parameter:
+def Parameter(
+    data: Tensor, mup_type: MupType, mup_scaling_depth: Optional[int] = None
+) -> nn.Parameter:
     """Construct a u-muP parameter object, an annotated :class:`torch.nn.Parameter`.
 
     The returned parameter also supports the :class:`ParameterData` protocol:
@@ -67,7 +74,7 @@ def Parameter(data: Tensor, mup_type: MupType) -> nn.Parameter:
     """
     p = nn.Parameter(data)
     p.mup_type = mup_type
-    p.mup_scaling_depth = None
+    p.mup_scaling_depth = mup_scaling_depth
     p.__deepcopy__ = _parameter_deepcopy.__get__(p)
     p.__reduce_ex__ = _parameter_reduce_ex.__get__(p)
     # Note: cannot override __repr__ as it's __class__.__repr__
