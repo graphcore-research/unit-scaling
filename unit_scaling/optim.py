@@ -19,8 +19,8 @@ from torch import Tensor
 from torch.optim.optimizer import ParamsT
 
 from ._internal_utils import generate__all__
-from ._parameter import ParameterData, has_parameter_data
 from .docs import inherit_docstring
+from .parameter import ParameterData, has_parameter_data
 
 
 def lr_scale_for_depth(param: ParameterData) -> float:

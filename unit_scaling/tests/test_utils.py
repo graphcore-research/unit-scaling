@@ -23,17 +23,16 @@ def test_analyse_mlp() -> None:
     annotated_code = analyse_module(
         MLP(hidden_size), input, backward, syntax_highlight=False
     )
+    print(annotated_code)
 
     expected_code = """
 def forward(self, input : Tensor) -> Tensor:
-    input_1 = input;  (-> 1.0, <- 1.01)
-    linear_1_weight = self.linear_1.weight;  (-> 1.0, <- 0.716)
-    linear_1_bias = self.linear_1.bias;  (-> 0.0, <- 0.714)
-    linear = U.linear(input_1, linear_1_weight, linear_1_bias, 'to_output_scale');  (-> 0.707, <- 0.717)
-    gelu = U.gelu(linear, mult = 1.0, approximate = 'none', constraint = 'to_output_scale');  (-> 0.641, <- 0.708)
-    linear_2_weight = self.linear_2.weight;  (-> 1.0, <- 0.691)
-    linear_2_bias = self.linear_2.bias;  (-> 0.0, <- 0.998)
-    linear_1 = U.linear(gelu, linear_2_weight, linear_2_bias, 'to_output_scale');  (-> 0.973, <- 1.0)
+    input_1 = input;  (-> 1.0, <- 1.19)
+    linear_1_weight = self.linear_1.weight;  (-> 1.0, <- 0.596)
+    linear = U.linear(input_1, linear_1_weight, None, 'to_output_scale');  (-> 1.0, <- 0.597)
+    gelu = U.gelu(linear, mult = 1.0, approximate = 'none', constraint = 'to_output_scale');  (-> 1.04, <- 0.5)
+    linear_2_weight = self.linear_2.weight;  (-> 1.0, <- 1.15)
+    linear_1 = U.linear(gelu, linear_2_weight, None, 'to_output_scale');  (-> 1.14, <- 1.0)
     return linear_1
     """.strip()  # noqa: E501
 
@@ -49,8 +48,12 @@ def test_analyse_mhsa() -> None:
     backward = torch.randn(batch_size, seq_len, hidden_size)
 
     annotated_code = analyse_module(
-        MHSA(hidden_size, heads, dropout_p=0.1), input, backward, syntax_highlight=False
+        MHSA(hidden_size, heads, is_causal=False, dropout_p=0.1),
+        input,
+        backward,
+        syntax_highlight=False,
     )
+    print(annotated_code)
 
     expected_code = """
 def forward(self, input : Tensor) -> Tensor:

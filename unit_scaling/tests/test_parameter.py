@@ -5,7 +5,7 @@ import pickle
 
 import torch
 
-from .._parameter import Parameter, has_parameter_data
+from ..parameter import Parameter, has_parameter_data
 
 
 def test_parameter() -> None:

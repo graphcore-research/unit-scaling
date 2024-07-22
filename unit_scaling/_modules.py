@@ -12,7 +12,7 @@ from torch import Tensor, nn
 
 from . import functional as U
 from ._internal_utils import generate__all__
-from ._parameter import MupType, Parameter, has_parameter_data
+from .core.functional import ResidualScalingFn, transformer_residual_scaling_rule
 from .docs import (
     binary_constraint_docstring,
     format_docstring,
@@ -20,6 +20,7 @@ from .docs import (
     mult_docstring,
     variadic_constraint_docstring,
 )
+from .parameter import MupType, Parameter, has_parameter_data
 
 
 @inherit_docstring(
@@ -118,6 +119,7 @@ class Dropout(nn.Dropout):
 @inherit_docstring(
     short_description=(
         "Applies a **unit-scaled** linear transformation to the incoming data."
+        "\nNote that this layer sets :code:`bias=False` by default."
     ),
     add_args=[binary_constraint_docstring],
 )
@@ -126,7 +128,7 @@ class Linear(nn.Linear):
         self,
         in_features: int,
         out_features: int,
-        bias: bool = True,
+        bias: bool = False,
         device: Any = None,
         dtype: Any = None,
         constraint: Optional[str] = "to_output_scale",
@@ -150,6 +152,7 @@ class Linear(nn.Linear):
 @inherit_docstring(
     short_description=(
         "Applies a **unit-scaled** Layer Normalization over a mini-batch of inputs."
+        "\nNote that this layer sets :code:`elementwise_affine=False` by default."
     ),
 )
 class LayerNorm(nn.LayerNorm):
@@ -157,7 +160,7 @@ class LayerNorm(nn.LayerNorm):
         self,
         normalized_shape: Union[int, List[int], torch.Size],
         eps: float = 1e-5,
-        elementwise_affine: bool = True,
+        elementwise_affine: bool = False,
         bias: bool = True,
         device: Any = None,
         dtype: Any = None,
@@ -190,12 +193,14 @@ class RMSNorm(nn.Module):
     .. math::
         y = \\frac{x}{ \\sqrt{\\sum x^2 + \\epsilon}} * \\gamma
 
+    Note that this layer sets :code:`elementwise_affine=False` by default.
+
     Args:
         normalized_shape (Tuple[int]): input shape, for an expected input tensor
           of shape `(*, *normalized_shape)`.
         elementwise_affine (bool): a boolean value that when set to True, this
           module has learnable per-element weight parameters initialized to ones.
-          Default: True.
+          Default: False.
         eps (float): a value added to the denominator for numerical stability.
           Default: 1e-5.
 
@@ -208,7 +213,7 @@ class RMSNorm(nn.Module):
         self,
         normalized_shape: Union[int, Tuple[int, ...]],
         eps: float = 1e-5,
-        elementwise_affine: bool = True,
+        elementwise_affine: bool = False,
     ):
         super().__init__()
         self.normalized_shape = (
@@ -361,8 +366,8 @@ class MHSA(nn.Module):
     Args:
         hidden_size (int): the hidden dimension size of the input.
         heads (int): the number of attention heads.
+        is_causal (bool): causal masking (for non-padded sequences).
         dropout_p (float, optional): the probability of the post-softmax dropout.
-        is_causal (bool, optional): causal masking (for non-padded sequences).
         {0}
         {1}
     """
@@ -371,8 +376,8 @@ class MHSA(nn.Module):
         self,
         hidden_size: int,
         heads: int,
-        dropout_p: float,
-        is_causal: bool = False,
+        is_causal: bool,
+        dropout_p: float = 0.0,
         mult: float = 1.0,
         constraint: Optional[str] = "to_output_scale",
     ) -> None:
@@ -381,12 +386,8 @@ class MHSA(nn.Module):
         self.dropout_p = dropout_p
         self.is_causal = is_causal
         self.mult = mult
-        self.linear_qkv = Linear(
-            hidden_size, 3 * hidden_size, bias=False, constraint=constraint
-        )
-        self.linear_o = Linear(
-            hidden_size, hidden_size, bias=False, constraint=constraint
-        )
+        self.linear_qkv = Linear(hidden_size, 3 * hidden_size, constraint=constraint)
+        self.linear_o = Linear(hidden_size, hidden_size, constraint=constraint)
         self.constraint = constraint
 
     def forward(self, input: Tensor) -> Tensor:
@@ -409,12 +410,15 @@ class TransformerLayer(nn.Module):
     Args:
         hidden_size (int): the hidden dimension size of the input.
         heads (int): the number of attention heads.
-        dropout_p (float, optional): the probability of the post-softmax dropout.
-        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.
-        mhsa_tau (float, optional): the weighting of the multi-head-self-attention
-            branch relative to the skip connection. Defaults to 0.01.
-        mlp_tau (float, optional): the weighting of the MLP
-            branch relative to the skip connection. Defaults to 0.5.
+        mhsa_tau (float): the weighting of the multi-head-self-attention
+            branch relative to the skip connection.
+        mlp_tau (float): the weighting of the MLP
+            branch relative to the skip connection.
+        is_causal (bool): causal masking (for non-padded sequences).
+        dropout_p (float, optional): the probability of residual and post-softmax
+            dropout.
+        act_fn (nn.Module, optional): the activation function module.
+            Defaults to :code:`GELU()`.
         {0}
     """
 
@@ -422,30 +426,37 @@ class TransformerLayer(nn.Module):
         self,
         hidden_size: int,
         heads: int,
-        dropout_p: float,
+        mhsa_tau: float,
+        mlp_tau: float,
+        is_causal: bool,
+        dropout_p: float = 0.0,
         act_fn: nn.Module = GELU(),
-        mhsa_tau: float = 0.01,
-        mlp_tau: float = 0.5,
         constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         self.dropout_p = dropout_p
         self.mhsa_tau = mhsa_tau
         self.mlp_tau = mlp_tau
-        self.mhsa_layer_norm = LayerNorm(hidden_size)
-        self.mhsa = MHSA(hidden_size, heads, dropout_p, constraint=constraint)
-        self.mlp_layer_norm = LayerNorm(hidden_size)
+        self.mhsa_norm = RMSNorm(hidden_size)
+        self.mhsa = MHSA(
+            hidden_size,
+            heads,
+            is_causal=is_causal,
+            dropout_p=dropout_p,
+            constraint=constraint,
+        )
+        self.mlp_norm = RMSNorm(hidden_size)
         self.mlp = MLP(hidden_size, act_fn, constraint=constraint)
 
     def forward(self, input: Tensor) -> Tensor:
         input, skip = U.residual_split(input, tau=self.mhsa_tau)
-        input = self.mhsa_layer_norm(input)
+        input = self.mhsa_norm(input)
         input = self.mhsa(input)
         input = U.dropout(input, self.dropout_p, self.training)
         input = U.residual_add(input, skip, tau=self.mhsa_tau)
 
         input, skip = U.residual_split(input, tau=self.mlp_tau)
-        input = self.mlp_layer_norm(input)
+        input = self.mlp_norm(input)
         input = self.mlp(input)
         input = U.dropout(input, self.dropout_p, self.training)
         return U.residual_add(input, skip, tau=self.mlp_tau)
@@ -467,12 +478,43 @@ class Trunk(nn.Sequential):
             parameter.mup_scaling_depth = len(self)
 
 
+class TransformerStack(Trunk):
+    """A **unit-scaled** transformer stack, applying a residual scaling rule.
+
+    See :code:`TransformerLayer` for arguments.
+
+    Args:
+        layers (int): number of transformer layers.
+        residual_scaling (Callable[[int, int], float], optional): scheme for
+            controlling residual weights in the transformer trunk; see
+            :func:`unit_scaling.core.functional.transformer_residual_scaling_rule`
+            (default).
+    """
+
+    def __init__(
+        self,
+        layers: int,
+        residual_scaling: ResidualScalingFn = transformer_residual_scaling_rule(),
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            *(
+                TransformerLayer(
+                    **kwargs,
+                    mhsa_tau=residual_scaling(2 * i, 2 * layers),
+                    mlp_tau=residual_scaling(2 * i + 1, 2 * layers),
+                )
+                for i in range(layers)
+            )
+        )
+
+
 @format_docstring(variadic_constraint_docstring)
-class TransformerDecoder(nn.Module):  # pragma: no cover
+class TransformerDecoder(nn.Sequential):  # pragma: no cover
     """A **unit-scaled** implementation of a decoder-type transformer.
 
     Note: this class is currently just for demonstrating scaling and lacks key
-    functionality (for example causal masking, positional embeddings, usage for
+    functionality (for example masking, positional embeddings, usage for
     inference).
 
     Warning: using `constraint=None` here will likely give incorrect gradients.
@@ -482,12 +524,13 @@ class TransformerDecoder(nn.Module):  # pragma: no cover
         vocab_size (int): the number of tokens in the vocabulary.
         layers (int): the number of transformer layers.
         heads (int): the number of attention heads.
-        dropout_p (float, optional): the probability of the post-softmax dropout.
+        dropout_p (float, optional): the probability of embedding, residual and
+            post-softmax dropout.
         act_fn (nn.Module): the activation function module. Defaults to `GELU()`.
-        mhsa_tau (float, optional): the weighting of the multi-head-self-attention
-            branch relative to the skip connection. Defaults to 0.01.
-        mlp_tau (float, optional): the weighting of the MLP
-            branch relative to the skip connection. Defaults to 0.5.
+        residual_scaling (Callable[[int, int], float], optional): scheme for
+            controlling residual weights in the transformer trunk; see
+            :func:`unit_scaling.core.functional.transformer_residual_scaling_rule`
+            (default).
         {0}
     """
 
@@ -497,34 +540,34 @@ class TransformerDecoder(nn.Module):  # pragma: no cover
         vocab_size: int,
         layers: int,
         heads: int,
-        dropout_p: float,
+        dropout_p: float = 0.0,
         act_fn: nn.Module = GELU(),
-        mhsa_tau: float = 0.01,
-        mlp_tau: float = 0.5,
+        residual_scaling: ResidualScalingFn = transformer_residual_scaling_rule(),
         constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
+        # Layers are applied in order
         self.embedding = Embedding(vocab_size, hidden_size)
-        self.dropout_p = dropout_p
-        self.initial_layer_norm = LayerNorm(hidden_size)
-        self.transformer_layers = Trunk(
-            *(
-                TransformerLayer(
-                    hidden_size, heads, dropout_p, act_fn, mhsa_tau, mlp_tau, constraint
-                )
-                for _ in range(layers)
-            )
+        self.embedding_dropout = Dropout(dropout_p)
+        self.embedding_norm = RMSNorm(hidden_size)
+        self.layers = TransformerStack(
+            layers=layers,
+            hidden_size=hidden_size,
+            heads=heads,
+            is_causal=True,
+            dropout_p=dropout_p,
+            act_fn=act_fn,
+            residual_scaling=residual_scaling,
+            constraint=constraint,
         )
-        self.final_layer_norm = LayerNorm(hidden_size)
+        self.final_norm = RMSNorm(hidden_size)
+        self.projection = Linear(
+            hidden_size, vocab_size, weight_mup_type="output", constraint=None
+        )
 
-    def forward(self, input_ids: Tensor, labels: Tensor) -> Tensor:
-        input = self.embedding(input_ids)
-        input = U.dropout(input, self.dropout_p, self.training)
-        input = self.initial_layer_norm(input)
-        input = self.transformer_layers(input)
-        input = self.final_layer_norm(input)
-        input = U.linear(input, self.embedding.weight, bias=None, constraint=None)
-        return U.cross_entropy(input.flatten(end_dim=-2), labels.flatten())
+    def loss(self, input_ids: Tensor, labels: Tensor) -> Tensor:
+        logits = self(input_ids).flatten(end_dim=-2)
+        return U.cross_entropy(logits, labels.flatten())
 
 
 __all__ = generate__all__(__name__)

@@ -1,5 +1,7 @@
 # Copyright (c) 2024 Graphcore Ltd. All rights reserved.
 
+"""Extends :class:`torch.nn.Parameter` with attributes for u-muP."""
+
 # mypy: disable-error-code="attr-defined, method-assign, no-untyped-call"
 
 from collections import OrderedDict

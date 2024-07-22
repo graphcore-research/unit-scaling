@@ -7,7 +7,7 @@ from __future__ import annotations  # required for docs to alias type annotation
 import sys
 from math import log, pi, prod
 from types import FunctionType
-from typing import Dict, Optional, Sequence, Tuple, Union, cast
+from typing import Callable, Dict, Optional, Sequence, Tuple, Union, cast
 
 import torch
 import torch.nn.functional as F
@@ -329,7 +329,7 @@ def add(
     return scale_fwd(out, output_scale)
 
 
-def residual_split(input: Tensor, tau: float = 0.5) -> Tuple[Tensor, Tensor]:
+def residual_split(input: Tensor, tau: float = 1.0) -> Tuple[Tensor, Tensor]:
     """Splits a tensor into an `residual` and `skip` tensor, prior to being used
     in a residual layer, with a relative weighting tau applied to the residual branch.
     Should be used in conjunction with :py:func:`unit_scaling.functional.residual_add`.
@@ -343,50 +343,59 @@ def residual_split(input: Tensor, tau: float = 0.5) -> Tuple[Tensor, Tensor]:
     The tau factor allows unit scaling to behave as though the branches have different
     scales.
 
-    For MLP layers tau=0.5 is recommended, and for self-attention layers tau=0.01.
-
-    These values reflect the relative scales of the skip-vs-residual branches in a
-    standard transformer. Empirically, the self-attention tau is fairly insensitive
-    (i.e. tau=0.1 or tau=0.001 work well), but the default tau=0.5 causes significant
-    degradation.
-
     Args:
         input (Tensor): the tensor to which the residual layer is to be applied.
-        tau (float, optional): the weighting of the residual branch relative to the skip
-            connection. Defaults to 0.5.
+        tau (float, optional): the ratio of scale of contributions of the residual
+            branch to the skip connection. Larger values favor skip over residual.
+            Defaults to 1 (equal contribution).
 
     Returns:
         Tuple[Tensor, Tensor]: resulting tensors in the order: `residual, skip`.
     """
-    residual = scale_bwd(input, tau**0.5)
-    skip = scale_bwd(input, (1 - tau) ** 0.5)
+    denom = (1 + tau**2) ** 0.5
+    residual = scale_bwd(input, tau / denom)
+    skip = scale_bwd(input, 1 / denom)
     return residual, skip
 
 
-def residual_add(residual: Tensor, skip: Tensor, tau: float = 0.5) -> Tensor:
+def residual_add(residual: Tensor, skip: Tensor, tau: float = 1.0) -> Tensor:
     """Adds a residual connection and skip connection together, with a relative
     weighting tau applied to the residual branch. Should be used in conjunction with
     :py:func:`unit_scaling.functional.residual_split`.
 
-    For MLP layers tau=0.5 is recommended, and for self-attention layers tau=0.01.
-
-    These values reflect the relative scales of the skip-vs-residual branches in a
-    standard transformer. Empirically, the self-attention tau is fairly insensitive
-    (i.e. tau=0.1 or tau=0.001 work well), but the default tau=0.5 causes significant
-    degradation.
-
     Args:
         residual (Tensor): the tensor coming out of the residual connection.
         skip (Tensor): the tensor coming out of the skip connection.
-        tau (float, optional): the weighting of the residual branch relative to the skip
-            connection. Defaults to 0.5.
+        tau (float, optional): the ratio of scale of contributions of the residual
+            branch to the skip connection. Larger values favor skip over residual.
+            Defaults to 1 (equal contribution).
 
     Returns:
         Tensor: the result of the combined residual and skip tensors.
     """
-    residual = scale_fwd(residual, tau**0.5)
-    skip = scale_fwd(skip, (1 - tau) ** 0.5)
+    denom = (1 + tau**2) ** 0.5
+    residual = scale_fwd(residual, tau / denom)
+    skip = scale_fwd(skip, 1 / denom)
     return residual + skip
+
+
+def residual_apply(
+    fn: Callable[[Tensor], Tensor], input: Tensor, tau: float = 1.0
+) -> Tensor:
+    """Apply a weighted residual branch, maintaining unit scale.
+
+    Combines :func:`residual_split` and :func:`residual_add` into a single function.
+
+    Args:
+        fn (Callable): the residual function to apply.
+        input (Tensor): input tensor, also to use for the skip connection.
+        tau (float, optional): the ratio of scale of contributions of the residual
+            branch to the skip connection. Larger values favor skip over residual.
+            Defaults to 1 (equal contribution).
+    """
+    residual, skip = residual_split(input, tau=tau)
+    residual = fn(residual)
+    return residual_add(residual, skip, tau=tau)
 
 
 @docstring_from(

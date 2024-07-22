@@ -67,7 +67,7 @@ def test_dropout() -> None:
 
 def test_linear() -> None:
     input = randn(2**8, 2**10, requires_grad=True)
-    model = Linear(2**10, 2**12)
+    model = Linear(2**10, 2**12, bias=True)
     output = model(input)
 
     assert_unit_scaled(model.weight)
@@ -85,7 +85,7 @@ def test_linear() -> None:
 
 def test_layer_norm() -> None:
     input = randn(2**8, 2**10, requires_grad=True)
-    model = LayerNorm(2**10)
+    model = LayerNorm(2**10, elementwise_affine=True)
     output = model(input)
 
     assert output.shape == torch.Size([2**8, 2**10])
@@ -98,7 +98,7 @@ def test_layer_norm() -> None:
 
 def test_rms_norm() -> None:
     input = randn(2**8, 2**10, requires_grad=True)
-    model = RMSNorm(2**10)
+    model = RMSNorm(2**10, elementwise_affine=True)
     output = model(input)
 
     assert output.shape == torch.Size([2**8, 2**10])
@@ -150,7 +150,6 @@ def test_mlp() -> None:
     output = model(input)
 
     assert_unit_scaled(model.linear_1.weight, model.linear_2.weight)
-    assert_zeros(model.linear_1.bias, model.linear_2.bias)
     assert output.shape == torch.Size([2**8, 2**10])
 
     unit_backward(output)
@@ -159,13 +158,12 @@ def test_mlp() -> None:
     assert float(output.std()) == pytest.approx(1, abs=0.2)
 
     assert_not_unit_scaled(model.linear_1.weight, model.linear_2.weight)
-    assert_non_zeros(model.linear_1.bias, model.linear_2.bias)
 
 
 def test_mhsa() -> None:
     batch_sz, seq_len, hidden_dim = 2**8, 2**6, 2**6
     input = randn(batch_sz, seq_len, hidden_dim, requires_grad=True)
-    model = MHSA(hidden_dim, heads=8, dropout_p=0.1)
+    model = MHSA(hidden_dim, heads=8, is_causal=False, dropout_p=0.1)
     output = model(input)
 
     assert_unit_scaled(model.linear_qkv.weight, model.linear_o.weight)
@@ -182,7 +180,14 @@ def test_mhsa() -> None:
 def test_transformer_layer() -> None:
     batch_sz, seq_len, hidden_dim, heads = 2**8, 2**6, 2**6, 8
     input = randn(batch_sz, seq_len, hidden_dim, requires_grad=True)
-    model = TransformerLayer(hidden_dim, heads=heads, dropout_p=0.1)
+    model = TransformerLayer(
+        hidden_dim,
+        heads=heads,
+        is_causal=False,
+        dropout_p=0.1,
+        mhsa_tau=0.1,
+        mlp_tau=1.0,
+    )
     output = model(input)
 
     assert output.shape == torch.Size([batch_sz, seq_len, hidden_dim])
@@ -204,17 +209,14 @@ def test_transformer_decoder() -> None:
     input_idxs = torch.randint(low=0, high=vocab_size, size=(batch_size, seq_len))
     labels = torch.roll(input_idxs, -1, 1)
     model = TransformerDecoder(hidden_size, vocab_size, layers, heads, dropout_p=0.1)
-    loss = model(input_idxs, labels)
+    loss = model.loss(input_idxs, labels)
 
     assert loss.shape == torch.Size([])
 
-    loss.backward()
+    loss.backward()  # type:ignore[no-untyped-call]
     SGD(model.parameters(), lr=1).step()
 
     for name, p in model.named_parameters():
-        if "layer_norm.bias" in name:
-            threshold = 20.0
-        else:
-            threshold = 5.0
+        threshold = 5.0
         assert p.grad is not None
         assert 1 / threshold <= p.grad.std().detach() <= threshold, name

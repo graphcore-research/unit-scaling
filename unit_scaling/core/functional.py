@@ -77,4 +77,44 @@ def rms(
     return mean.sqrt().to(x.dtype)
 
 
+ResidualScalingFn = Callable[[int, int], float]
+
+
+def transformer_residual_scaling_rule(
+    residual_mult: float = 1.0, residual_attn_ratio: float = 1.0
+) -> ResidualScalingFn:
+    """Compute the residual tau ratios for the default transformer rule.
+
+    For a transformer stack that starts with embedding, then alternates
+    between self-attention and MLP layers, this rule ensures:
+
+     - Embedding contributes :code:`1 / sqrt(1 + 2 * residual_mult**2)`.
+     - Every Attn layer contributes the same scale.
+     - Every MLP layer contributes the same scale.
+     - The ratio of Attn to MLP contributions is `residual_attn_ratio`.
+
+    Args:
+        residual_mult (float, optional): contribution of residual layers
+            (relative to an initial/embedding layer).
+        residual_attn_ratio (float, optional): contribution of attn
+            layers relative to FFN layers.
+
+    Returns:
+        :code:`fn(index, layers) -> tau` : a function for calculating tau
+        at a given depth.
+    """
+    alpha_mlp = residual_mult * (2 / (1 + residual_attn_ratio**2)) ** 0.5
+    alpha_attn = residual_attn_ratio * alpha_mlp
+
+    def _tau(index: int, layers: int) -> float:
+        n_attn = (index + 1) // 2
+        n_mlp = index // 2
+        tau = (alpha_attn if (index % 2) == 0 else alpha_mlp) / (
+            layers / 2 + n_attn * alpha_attn**2 + n_mlp * alpha_mlp**2
+        ) ** 0.5
+        return tau  # type:ignore[no-any-return]
+
+    return _tau
+
+
 __all__ = generate__all__(__name__)

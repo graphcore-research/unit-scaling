@@ -35,7 +35,9 @@ dropout_p = 0.1
 input = torch.randn(batch_size, seq_len, hidden_size).requires_grad_()
 backward = torch.randn(batch_size, seq_len, hidden_size)
 
-annotated_code = analyse_module(uu.MHSA(hidden_size, heads, dropout_p), input, backward)
+annotated_code = analyse_module(
+    uu.MHSA(hidden_size, heads, False, dropout_p), input, backward
+)
 print(annotated_code)
 
 print("=== Unit-scaled Transformer Layer ===\n")
@@ -49,7 +51,7 @@ input = torch.randn(batch_size, seq_len, hidden_size).requires_grad_()
 backward = torch.randn(batch_size, seq_len, hidden_size)
 
 annotated_code = analyse_module(
-    uu.TransformerLayer(hidden_size, heads, dropout_p), input, backward
+    uu.TransformerLayer(hidden_size, heads, 0.1, 1.0, False, dropout_p), input, backward
 )
 print(annotated_code)
 
