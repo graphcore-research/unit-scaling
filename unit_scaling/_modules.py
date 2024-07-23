@@ -597,7 +597,7 @@ class TransformerDecoder(nn.Sequential):  # pragma: no cover
         self.projection = LinearReadout(hidden_size, vocab_size)
 
     def loss(self, input_ids: Tensor) -> Tensor:
-        logits = self(input_ids)
+        logits = self(input_ids).float()
         return U.cross_entropy(
             logits[..., :-1, :].flatten(end_dim=-2), input_ids[..., 1:].flatten()
         )
