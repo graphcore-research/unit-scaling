@@ -85,7 +85,8 @@ def format(check: bool) -> None:
 def copyright() -> None:
     """check for Graphcore copyright headers on relevant files"""
     command = (
-        f"find {' '.join(PYTHON_ROOTS)} -type f -not -name *.pyc -not -name *.json"
+        f"find {' '.join(PYTHON_ROOTS)} -type f"
+        " -not -name *.pyc -not -name *.json -not -name .gitignore"
         " | xargs grep -L 'Copyright (c) 202. Graphcore Ltd[.] All rights reserved[.]'"
     )
     print(f"$ {command}", file=sys.stderr)
