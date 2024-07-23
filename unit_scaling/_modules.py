@@ -581,8 +581,6 @@ class TransformerDecoder(nn.Sequential):  # pragma: no cover
         super().__init__()
         # Layers are applied in order
         self.embedding = Embedding(vocab_size, hidden_size)
-        self.embedding_dropout = Dropout(dropout_p)
-        self.embedding_norm = RMSNorm(hidden_size)
         self.layers = TransformerStack(
             layers=layers,
             hidden_size=hidden_size,

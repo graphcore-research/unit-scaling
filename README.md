@@ -1,10 +1,9 @@
-# Unit Scaling
+# Unit-Scaled Maximal Update Parameterization (u-μP)
 
-A library for unit scaling in PyTorch, based on the paper
-[Unit Scaling: Out-of-the-Box Low-Precision Training](https://arxiv.org/abs/2303.11257).
+A library for unit scaling in PyTorch, based on the paper [Unit-Scaled Maximal Update Parametrization](https://openreview.net/forum?id=44NKKzz1n5) and previous work [Unit Scaling: Out-of-the-Box Low-Precision Training](https://arxiv.org/abs/2303.11257).
 
 Documentation can be found at
-[https://graphcore-research.github.io/unit-scaling](https://graphcore-research.github.io/unit-scaling).
+[https://graphcore-research.github.io/unit-scaling](https://graphcore-research.github.io/unit-scaling) and an example notebook at [examples/demo.ipynb](examples/demo.ipynb).
 
 **Note:** The library is currently in its _beta_ release.
 Some features have yet to be implemented and occasional bugs may be present.

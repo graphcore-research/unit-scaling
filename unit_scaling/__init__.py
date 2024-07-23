@@ -24,6 +24,7 @@ from ._modules import (
 )
 from ._version import __version__
 from .analysis import visualiser
+from .core.functional import transformer_residual_scaling_rule
 from .parameter import MupType, Parameter
 
 __all__ = [
@@ -50,6 +51,7 @@ __all__ = [
     "parameter",
     # Functions
     "Parameter",
+    "transformer_residual_scaling_rule",
     "visualiser",
     "__version__",
 ]
