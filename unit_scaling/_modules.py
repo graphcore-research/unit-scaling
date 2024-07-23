@@ -510,6 +510,7 @@ class DepthModuleList(nn.ModuleList):
                     f"Parameter {name} is not a unit_scaling.Parameter."
                     " Is it from a regular nn.Module?"
                 )
+            assert parameter.mup_scaling_depth is None
             parameter.mup_scaling_depth = len(self)
 
 
@@ -528,6 +529,7 @@ class Stack(nn.Sequential):
                     f"Parameter {name} is not a unit_scaling.Parameter."
                     " Is it from a regular nn.Module?"
                 )
+            assert parameter.mup_scaling_depth is None
             parameter.mup_scaling_depth = len(self)
 
 
