@@ -215,20 +215,25 @@ def matmul(
 @docstring_from(
     F.linear,
     short_description="Applies a **unit-scaled** linear transformation.",
-    add_args=[binary_constraint_docstring],
+    add_args=[
+        binary_constraint_docstring,
+        "scale_power ((float, float, float), optional): scaling power"
+        " for each of (output, grad(input), grad(weight|bias))",
+    ],
 )
 def linear(
     input: Tensor,
     weight: Tensor,
     bias: Optional[Tensor],
     constraint: Optional[str] = "to_output_scale",
+    scale_power: Tuple[float, float, float] = (0.5, 0.5, 0.5),
 ) -> Tensor:
     fan_out, fan_in = weight.shape
     batch_size = input.numel() // fan_in
 
-    output_scale = fan_in**-0.5
-    grad_input_scale = fan_out**-0.5
-    grad_weight_scale = grad_bias_scale = batch_size**-0.5
+    output_scale = 1 / fan_in ** scale_power[0]
+    grad_input_scale = 1 / fan_out ** scale_power[1]
+    grad_weight_scale = grad_bias_scale = 1 / batch_size ** scale_power[2]
 
     output_scale, grad_input_scale = apply_constraint(
         constraint, output_scale, grad_input_scale
@@ -239,6 +244,23 @@ def linear(
     bias = scale_bwd(bias, grad_bias_scale) if bias is not None else None
     output = F.linear(input, weight, bias)
     return scale_fwd(output, output_scale)
+
+
+@docstring_from(
+    F.linear,
+    short_description="Applies a **unit-scaled** linear transformation,"
+    " for the final network output.",
+    add_args=[binary_constraint_docstring],
+)
+def linear_readout(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor],
+    constraint: Optional[str] = None,
+) -> Tensor:
+    return linear(
+        input, weight, bias, constraint=constraint, scale_power=(1.0, 0.5, 0.5)
+    )
 
 
 @docstring_from(

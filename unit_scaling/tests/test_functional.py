@@ -12,6 +12,7 @@ from ..functional import (
     gelu,
     layer_norm,
     linear,
+    linear_readout,
     matmul,
     mse_loss,
     residual_add,
@@ -259,6 +260,20 @@ def test_linear_scale_for_grad_input() -> None:
 
     assert_unit_scaled(input.grad, weight.grad, bias.grad)
     assert_not_unit_scaled(output)
+
+
+# --- test linear_readout() ---
+
+
+def test_linear_readout() -> None:
+    input = randn(2**8, 2**10, requires_grad=True)
+    weight = randn(2**12, 2**10, requires_grad=True)
+    bias = zeros(2**12).requires_grad_()
+    output = linear_readout(input, weight, bias)
+    unit_backward(output)
+
+    assert_unit_scaled(weight.grad, bias.grad)  # constraint=None
+    assert_scale(output, target=2**-5)  # 1/sqrt(fan_in)
 
 
 # --- test layer_norm() ---

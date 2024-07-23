@@ -5,7 +5,7 @@
 # This all has to be done manually to keep mypy happy.
 # Removing the `--no-implicit-reexport` option ought to fix this, but doesn't appear to.
 
-from . import core, optim, parameter
+from . import core, functional, optim, parameter
 from ._modules import (
     GELU,
     MHSA,
@@ -26,6 +26,7 @@ from .analysis import visualiser
 from .parameter import MupType, Parameter
 
 __all__ = [
+    # Modules
     "CrossEntropyLoss",
     "Dropout",
     "Embedding",
@@ -35,15 +36,18 @@ __all__ = [
     "MHSA",
     "MLP",
     "MupType",
-    "Parameter",
     "RMSNorm",
     "SiLU",
     "Softmax",
     "TransformerDecoder",
     "TransformerLayer",
     "Trunk",
+    # Modules
     "core",
+    "functional",
     "optim",
     "parameter",
+    # Functions
+    "Parameter",
     "visualiser",
 ]

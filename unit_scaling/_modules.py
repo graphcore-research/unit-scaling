@@ -151,6 +151,39 @@ class Linear(nn.Linear):
 
 @inherit_docstring(
     short_description=(
+        "Applies a **unit-scaled** linear transformation to the incoming data,"
+        " scaled appropriately for the final network output."
+        "\nNote that this layer sets :code:`bias=False` by default."
+    ),
+    add_args=[binary_constraint_docstring],
+)
+class LinearReadout(Linear):
+    def __init__(
+        self,
+        in_features: int,
+        out_features: int,
+        bias: bool = False,
+        device: Any = None,
+        dtype: Any = None,
+        constraint: Optional[str] = None,
+        weight_mup_type: MupType = "output",
+    ) -> None:
+        super().__init__(
+            in_features,
+            out_features,
+            bias,
+            device,
+            dtype,
+            constraint=constraint,
+            weight_mup_type=weight_mup_type,
+        )
+
+    def forward(self, input: Tensor) -> Tensor:
+        return U.linear_readout(input, self.weight, self.bias, self.constraint)
+
+
+@inherit_docstring(
+    short_description=(
         "Applies a **unit-scaled** Layer Normalization over a mini-batch of inputs."
         "\nNote that this layer sets :code:`elementwise_affine=False` by default."
     ),
@@ -561,9 +594,7 @@ class TransformerDecoder(nn.Sequential):  # pragma: no cover
             constraint=constraint,
         )
         self.final_norm = RMSNorm(hidden_size)
-        self.projection = Linear(
-            hidden_size, vocab_size, weight_mup_type="output", constraint=None
-        )
+        self.projection = LinearReadout(hidden_size, vocab_size)
 
     def loss(self, input_ids: Tensor, labels: Tensor) -> Tensor:
         logits = self(input_ids).flatten(end_dim=-2)

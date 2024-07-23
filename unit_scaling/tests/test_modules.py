@@ -14,6 +14,7 @@ from .._modules import (
     Embedding,
     LayerNorm,
     Linear,
+    LinearReadout,
     RMSNorm,
     SiLU,
     Softmax,
@@ -81,6 +82,21 @@ def test_linear() -> None:
 
     assert_not_unit_scaled(model.weight)
     assert_non_zeros(model.bias)
+
+
+def test_linear_readout() -> None:
+    input = randn(2**8, 2**10, requires_grad=True)
+    model = LinearReadout(2**10, 2**12)
+    output = model(input)
+
+    assert model.weight.mup_type == "output"  # type:ignore[attr-defined]
+    assert_unit_scaled(model.weight)
+    assert output.shape == torch.Size([2**8, 2**12])
+    assert float(output.std()) == pytest.approx(2**-5, rel=0.1)
+
+    unit_backward(output)
+    SGD(model.parameters(), lr=1).step()
+    assert_not_unit_scaled(model.weight)
 
 
 def test_layer_norm() -> None:
