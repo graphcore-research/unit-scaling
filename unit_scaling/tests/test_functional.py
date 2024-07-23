@@ -16,6 +16,7 @@ from ..functional import (
     matmul,
     mse_loss,
     residual_add,
+    residual_apply,
     residual_split,
     rms_norm,
     scaled_dot_product_attention,
@@ -385,7 +386,7 @@ def test_add_scalar() -> None:
 
 
 def test_residual() -> None:
-    for tau in [0.2, 0.5, 0.8]:
+    for tau in [0.2, 1.0, 3.0]:
         input = randn(2**10, requires_grad=True)
         residual, skip = residual_split(input, tau)
         residual = linear(residual, randn(2**10, 2**10), bias=None)
@@ -395,6 +396,18 @@ def test_residual() -> None:
         unit_backward(output)
 
         assert_unit_scaled(residual, output, residual.grad, skip.grad, input.grad)
+
+
+def test_residual_apply() -> None:
+    for tau in [0.2, 1.0, 3.0]:
+        input = randn(2**10, requires_grad=True)
+        weight = randn(2**10, 2**10, requires_grad=True)
+        output = residual_apply(
+            lambda x: linear(x, weight, bias=None, constraint=None), input, tau
+        )
+        unit_backward(output)
+
+        assert_unit_scaled(output, input.grad, weight.grad)
 
 
 # --- test embedding() ---

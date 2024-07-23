@@ -40,7 +40,7 @@ def test_optim_optimizers(opt_type: Type[torch.optim.Optimizer]) -> None:
 def test_scaled_parameters(opt: str) -> None:
     model = nn.Sequential(
         uu.Embedding(2**8, 2**4),
-        uu.Trunk(*(uu.Linear(2**4, 2**4) for _ in range(3))),
+        uu.Stack(*(uu.Linear(2**4, 2**4) for _ in range(3))),
         uu.Linear(2**4, 2**10, bias=False, weight_mup_type="output"),
     )
 
@@ -58,14 +58,14 @@ def test_scaled_parameters(opt: str) -> None:
     shape_to_expected_lr = dict(
         sgd={
             (2**8, 2**4): base_lr * 2**2,  # embedding.weight
-            (2**4, 2**4): base_lr * 2**2 / sqrt_d,  # trunk.linear.weight
-            (2**4,): base_lr * 2**4 / sqrt_d,  # trunk.linear.bias
+            (2**4, 2**4): base_lr * 2**2 / sqrt_d,  # stack.linear.weight
+            (2**4,): base_lr * 2**4 / sqrt_d,  # stack.linear.bias
             (2**10, 2**4): base_lr,  # linear.weight (output)
         },
         adam={
             (2**8, 2**4): base_lr / 2**2,  # embedding.weight
-            (2**4, 2**4): base_lr / 2**2 / sqrt_d,  # trunk.linear.weight
-            (2**4,): base_lr / sqrt_d,  # trunk.linear.bias
+            (2**4, 2**4): base_lr / 2**2 / sqrt_d,  # stack.linear.weight
+            (2**4,): base_lr / sqrt_d,  # stack.linear.bias
             (2**10, 2**4): base_lr,  # linear.weight (output)
         },
     )[opt]

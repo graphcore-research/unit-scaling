@@ -9,6 +9,7 @@ from .._modules import (
     MHSA,
     MLP,
     CrossEntropyLoss,
+    DepthModuleList,
     Dropout,
     Embedding,
     LayerNorm,
@@ -17,10 +18,12 @@ from .._modules import (
     RMSNorm,
     SiLU,
     Softmax,
+    Stack,
     TransformerDecoder,
     TransformerLayer,
 )
 from ..optim import SGD
+from ..parameter import has_parameter_data
 from .helper import (
     assert_non_zeros,
     assert_not_unit_scaled,
@@ -212,6 +215,31 @@ def test_transformer_layer() -> None:
     SGD(model.parameters(), lr=1).step()
 
     assert float(output.std()) == pytest.approx(1, abs=0.1)
+
+
+def test_depth_module_list() -> None:
+    layers = DepthModuleList([Linear(10, 10) for _ in range(5)])
+    assert len(layers) == 5
+    for layer in layers:
+        assert layer.weight.mup_scaling_depth == 5
+
+    with pytest.raises(ValueError):
+        DepthModuleList([torch.nn.Linear(10, 10) for _ in range(5)])
+
+
+def test_stack() -> None:
+    model = Stack(*(Linear(2**6, 2**6) for _ in range(7)))
+    for param in model.parameters():
+        assert has_parameter_data(param)
+        assert param.mup_scaling_depth == 7
+
+    input = randn(2**4, 2**6, requires_grad=True)
+    output = model(input)
+    unit_backward(output)
+    assert_unit_scaled(output, input.grad)
+
+    with pytest.raises(ValueError):
+        Stack(*[torch.nn.Linear(2**6, 2**6) for _ in range(7)])
 
 
 def test_transformer_decoder() -> None:

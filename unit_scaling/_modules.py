@@ -4,7 +4,7 @@
 
 from __future__ import annotations  # required for docs to alias type annotations
 
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, Iterable, List, Optional, Tuple, Union
 
 import einops
 import torch
@@ -496,10 +496,30 @@ class TransformerLayer(nn.Module):
 
 
 @inherit_docstring(
+    "A :class:`torch.nn.ModuleList` that automatically configures the depth"
+    " for sake of scaling."
+    "\nNote that this does not track depth changes caused by modifications"
+    " after initial construction."
+)
+class DepthModuleList(nn.ModuleList):
+    def __init__(self, modules: Iterable[nn.Module]) -> None:
+        super().__init__(modules)
+        for name, parameter in self.named_parameters():
+            if not has_parameter_data(parameter):
+                raise ValueError(
+                    f"Parameter {name} is not a unit_scaling.Parameter."
+                    " Is it from a regular nn.Module?"
+                )
+            parameter.mup_scaling_depth = len(self)
+
+
+@inherit_docstring(
     "A :class:`torch.nn.Sequential` that automatically configures the depth"
     " for sake of scaling."
+    "\nNote that this does not track depth changes caused by modifications"
+    " after initial construction."
 )
-class Trunk(nn.Sequential):
+class Stack(nn.Sequential):
     def __init__(self, *args: Any) -> None:
         super().__init__(*args)
         for name, parameter in self.named_parameters():
@@ -511,7 +531,7 @@ class Trunk(nn.Sequential):
             parameter.mup_scaling_depth = len(self)
 
 
-class TransformerStack(Trunk):
+class TransformerStack(Stack):
     """A **unit-scaled** transformer stack, applying a residual scaling rule.
 
     See :code:`TransformerLayer` for arguments.
@@ -519,7 +539,7 @@ class TransformerStack(Trunk):
     Args:
         layers (int): number of transformer layers.
         residual_scaling (Callable[[int, int], float], optional): scheme for
-            controlling residual weights in the transformer trunk; see
+            controlling residual weights in the transformer stack; see
             :func:`unit_scaling.core.functional.transformer_residual_scaling_rule`
             (default).
     """

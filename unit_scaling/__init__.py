@@ -11,6 +11,7 @@ from ._modules import (
     MHSA,
     MLP,
     CrossEntropyLoss,
+    DepthModuleList,
     Dropout,
     Embedding,
     LayerNorm,
@@ -18,9 +19,9 @@ from ._modules import (
     RMSNorm,
     SiLU,
     Softmax,
+    Stack,
     TransformerDecoder,
     TransformerLayer,
-    Trunk,
 )
 from ._version import __version__
 from .analysis import visualiser
@@ -30,6 +31,7 @@ from .parameter import MupType, Parameter
 __all__ = [
     # Modules
     "CrossEntropyLoss",
+    "DepthModuleList",
     "Dropout",
     "Embedding",
     "GELU",
@@ -41,9 +43,9 @@ __all__ = [
     "RMSNorm",
     "SiLU",
     "Softmax",
+    "Stack",
     "TransformerDecoder",
     "TransformerLayer",
-    "Trunk",
     # Modules
     "core",
     "functional",
