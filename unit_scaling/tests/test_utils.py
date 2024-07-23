@@ -27,13 +27,15 @@ def test_analyse_mlp() -> None:
 
     expected_code = """
 def forward(self, input : Tensor) -> Tensor:
-    input_1 = input;  (-> 1.0, <- 1.19)
-    linear_1_weight = self.linear_1.weight;  (-> 1.0, <- 0.596)
-    linear = U.linear(input_1, linear_1_weight, None, 'to_output_scale');  (-> 1.0, <- 0.597)
-    gelu = U.gelu(linear, mult = 1.0, approximate = 'none', constraint = 'to_output_scale');  (-> 1.04, <- 0.5)
-    linear_2_weight = self.linear_2.weight;  (-> 1.0, <- 1.15)
-    linear_1 = U.linear(gelu, linear_2_weight, None, 'to_output_scale');  (-> 1.14, <- 1.0)
-    return linear_1
+    input_1 = input;  (-> 1.0, <- 1.44)
+    linear_1_weight = self.linear_1.weight;  (-> 1.0, <- 0.503)
+    linear = U.linear(input_1, linear_1_weight, None, 'to_output_scale');  (-> 1.0, <- 0.502)
+    linear_gate_weight = self.linear_gate.weight;  (-> 1.0, <- 0.519)
+    linear_1 = U.linear(input_1, linear_gate_weight, None, 'to_output_scale');  (-> 1.0, <- 0.518)
+    silu_glu = U.silu_glu(linear, linear_1);  (-> 1.0, <- 0.5)
+    linear_2_weight = self.linear_2.weight;  (-> 1.0, <- 1.0)
+    linear_2 = U.linear(silu_glu, linear_2_weight, None, 'to_output_scale');  (-> 1.0, <- 1.0)
+    return linear_2
     """.strip()  # noqa: E501
 
     assert remove_scales(annotated_code) == remove_scales(expected_code)

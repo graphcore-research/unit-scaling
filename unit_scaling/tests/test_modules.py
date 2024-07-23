@@ -168,7 +168,9 @@ def test_mlp() -> None:
     model = MLP(2**10)
     output = model(input)
 
-    assert_unit_scaled(model.linear_1.weight, model.linear_2.weight)
+    assert_unit_scaled(
+        model.linear_1.weight, model.linear_gate.weight, model.linear_2.weight
+    )
     assert output.shape == torch.Size([2**8, 2**10])
 
     unit_backward(output)
@@ -176,7 +178,9 @@ def test_mlp() -> None:
 
     assert float(output.std()) == pytest.approx(1, abs=0.2)
 
-    assert_not_unit_scaled(model.linear_1.weight, model.linear_2.weight)
+    assert_not_unit_scaled(
+        model.linear_1.weight, model.linear_gate.weight, model.linear_2.weight
+    )
 
 
 def test_mhsa() -> None:

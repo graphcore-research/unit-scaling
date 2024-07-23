@@ -361,11 +361,10 @@ class CrossEntropyLoss(nn.CrossEntropyLoss):
 
 @format_docstring(binary_constraint_docstring)
 class MLP(nn.Module):
-    """A **unit-scaled** implementation of an MLP layer.
+    """A **unit-scaled** implementation of an MLP layer using SwiGLU.
 
     Args:
         hidden_size (int): the hidden dimension size of the input.
-        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.
         expansion_factor (int): the factor by which the MLP's intermediate size
             increases relative to `hidden_size`.
         {0}
@@ -374,20 +373,18 @@ class MLP(nn.Module):
     def __init__(
         self,
         hidden_size: int,
-        act_fn: nn.Module = GELU(),
         expansion_factor: int = 4,
         constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         intermediate_size = hidden_size * expansion_factor
         self.linear_1 = Linear(hidden_size, intermediate_size, constraint=constraint)
-        self.act_fn = act_fn
+        self.linear_gate = Linear(hidden_size, intermediate_size, constraint=constraint)
         self.linear_2 = Linear(intermediate_size, hidden_size, constraint=constraint)
 
     def forward(self, input: Tensor) -> Tensor:
-        input = self.linear_1(input)
-        input = self.act_fn(input)
-        return self.linear_2(input)  # type:ignore[no-any-return]
+        z = U.silu_glu(self.linear_1(input), self.linear_gate(input))
+        return self.linear_2(z)  # type:ignore[no-any-return]
 
 
 @format_docstring(mult_docstring(), variadic_constraint_docstring)
@@ -450,8 +447,6 @@ class TransformerLayer(nn.Module):
         is_causal (bool): causal masking (for non-padded sequences).
         dropout_p (float, optional): the probability of residual and post-softmax
             dropout.
-        act_fn (nn.Module, optional): the activation function module.
-            Defaults to :code:`GELU()`.
         {0}
     """
 
@@ -463,7 +458,6 @@ class TransformerLayer(nn.Module):
         mlp_tau: float,
         is_causal: bool,
         dropout_p: float = 0.0,
-        act_fn: nn.Module = GELU(),
         constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
@@ -479,7 +473,7 @@ class TransformerLayer(nn.Module):
             constraint=constraint,
         )
         self.mlp_norm = RMSNorm(hidden_size)
-        self.mlp = MLP(hidden_size, act_fn, constraint=constraint)
+        self.mlp = MLP(hidden_size, constraint=constraint)
 
     def forward(self, input: Tensor) -> Tensor:
         input, skip = U.residual_split(input, tau=self.mhsa_tau)
@@ -581,7 +575,6 @@ class TransformerDecoder(nn.Sequential):  # pragma: no cover
         heads (int): the number of attention heads.
         dropout_p (float, optional): the probability of embedding, residual and
             post-softmax dropout.
-        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.
         residual_scaling (Callable[[int, int], float], optional): scheme for
             controlling residual weights in the transformer trunk; see
             :func:`unit_scaling.core.functional.transformer_residual_scaling_rule`
@@ -596,12 +589,10 @@ class TransformerDecoder(nn.Sequential):  # pragma: no cover
         layers: int,
         heads: int,
         dropout_p: float = 0.0,
-        act_fn: nn.Module = GELU(),
         residual_scaling: ResidualScalingFn = transformer_residual_scaling_rule(),
         constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
-        # Layers are applied in order
         self.embedding = Embedding(vocab_size, hidden_size)
         self.layers = TransformerStack(
             layers=layers,
@@ -609,7 +600,6 @@ class TransformerDecoder(nn.Sequential):  # pragma: no cover
             heads=heads,
             is_causal=True,
             dropout_p=dropout_p,
-            act_fn=act_fn,
             residual_scaling=residual_scaling,
             constraint=constraint,
         )
