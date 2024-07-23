@@ -22,6 +22,7 @@ from ._modules import (
     TransformerLayer,
     Trunk,
 )
+from ._version import __version__
 from .analysis import visualiser
 from .parameter import MupType, Parameter
 
@@ -50,4 +51,5 @@ __all__ = [
     # Functions
     "Parameter",
     "visualiser",
+    "__version__",
 ]

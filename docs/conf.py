@@ -9,6 +9,7 @@
 # Setup based on https://example-sphinx-basic.readthedocs.io
 import os
 import sys
+from unit_scaling._version import __version__
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -18,6 +19,7 @@ sys.path.insert(0, os.path.abspath(".."))
 project = "unit-scaling"
 copyright = "(c) 2023 Graphcore Ltd. All rights reserved"
 author = "Charlie Blake, Douglas Orr"
+version = __version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
