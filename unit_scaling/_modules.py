@@ -596,9 +596,11 @@ class TransformerDecoder(nn.Sequential):  # pragma: no cover
         self.final_norm = RMSNorm(hidden_size)
         self.projection = LinearReadout(hidden_size, vocab_size)
 
-    def loss(self, input_ids: Tensor, labels: Tensor) -> Tensor:
-        logits = self(input_ids).flatten(end_dim=-2)
-        return U.cross_entropy(logits, labels.flatten())
+    def loss(self, input_ids: Tensor) -> Tensor:
+        logits = self(input_ids)
+        return U.cross_entropy(
+            logits[..., :-1, :].flatten(end_dim=-2), input_ids[..., 1:].flatten()
+        )
 
 
 __all__ = generate__all__(__name__)

@@ -222,12 +222,12 @@ def test_transformer_decoder() -> None:
     layers = 2
     heads = 4
 
-    input_idxs = torch.randint(low=0, high=vocab_size, size=(batch_size, seq_len))
-    labels = torch.roll(input_idxs, -1, 1)
+    input_ids = torch.randint(low=0, high=vocab_size, size=(batch_size, seq_len))
     model = TransformerDecoder(hidden_size, vocab_size, layers, heads, dropout_p=0.1)
-    loss = model.loss(input_idxs, labels)
+    loss = model.loss(input_ids)
 
-    assert loss.shape == torch.Size([])
+    expected_loss = torch.tensor(vocab_size).log()
+    assert expected_loss / 2 < loss.item() < expected_loss * 2
 
     loss.backward()  # type:ignore[no-untyped-call]
     SGD(model.parameters(), lr=1).step()
