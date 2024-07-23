@@ -3,7 +3,6 @@
 import pytest
 import torch
 from torch import randint, randn
-from torch.optim import SGD
 
 from .._modules import (
     GELU,
@@ -21,6 +20,7 @@ from .._modules import (
     TransformerDecoder,
     TransformerLayer,
 )
+from ..optim import SGD
 from .helper import (
     assert_non_zeros,
     assert_not_unit_scaled,
