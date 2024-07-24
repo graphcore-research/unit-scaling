@@ -39,7 +39,9 @@ Click below for the full documentation:
    unit_scaling.constraints
    unit_scaling.formats
    unit_scaling.functional
+   unit_scaling.optim
    unit_scaling.scale
    unit_scaling.transforms
    unit_scaling.transforms.utils
    unit_scaling.utils
+   unit_scaling.core.functional

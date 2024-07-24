@@ -4,40 +4,71 @@
 
 from __future__ import annotations  # required for docs to alias type annotations
 
-from typing import Any, Optional
+from typing import Any, Iterable, List, Optional, Tuple, Union
 
 import einops
+import torch
 from torch import Tensor, nn
 
 from . import functional as U
 from ._internal_utils import generate__all__
+from .core.functional import ResidualScalingFn, transformer_residual_scaling_rule
 from .docs import (
     binary_constraint_docstring,
     format_docstring,
     inherit_docstring,
+    mult_docstring,
     variadic_constraint_docstring,
 )
+from .parameter import MupType, Parameter, has_parameter_data
 
 
 @inherit_docstring(
     short_description="Applies a **unit-scaled** Gaussian Error Linear Units function:",
-    add_args=[binary_constraint_docstring],
-    unsupported_args=["approximate"],
+    add_args=[mult_docstring(), binary_constraint_docstring],
 )
 class GELU(nn.GELU):
     def __init__(
         self,
+        mult: float = 1.0,
+        constraint: Optional[str] = "to_output_scale",
         approximate: str = "none",
-        constraint: Optional[str] = "gmean",
     ) -> None:
         super().__init__(approximate=approximate)
+        self.mult = mult
         self.constraint = constraint
 
     def forward(self, input: Tensor) -> Tensor:
         return U.gelu(
             input,
+            mult=self.mult,
             approximate=self.approximate,
             constraint=self.constraint,
+        )
+
+
+@inherit_docstring(
+    short_description="Applies a **unit-scaled** Sigmoid Linear Unit function:",
+    add_args=[mult_docstring(), binary_constraint_docstring],
+    unsupported_args=["inplace"],
+)
+class SiLU(nn.SiLU):
+    def __init__(
+        self,
+        mult: float = 1.0,
+        constraint: Optional[str] = "to_output_scale",
+        inplace: bool = False,
+    ) -> None:
+        super().__init__(inplace=inplace)
+        self.mult = mult
+        self.constraint = constraint
+
+    def forward(self, input: Tensor) -> Tensor:
+        return U.silu(
+            input,
+            mult=self.mult,
+            constraint=self.constraint,
+            inplace=self.inplace,
         )
 
 
@@ -53,19 +84,23 @@ class GELU(nn.GELU):
         " implementation. Values there (for example [0,1] ranges) should be adjusted"
         " accordingly."
     ),
-    add_args=[binary_constraint_docstring],
+    add_args=[mult_docstring(), binary_constraint_docstring],
 )
 class Softmax(nn.Softmax):
     def __init__(
         self,
         dim: int,
-        constraint: Optional[str] = "gmean",
+        mult: float = 1.0,
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__(dim=dim)
+        self.mult = mult
         self.constraint = constraint
 
     def forward(self, input: Tensor) -> Tensor:
-        return U.softmax(input, dim=self.dim, constraint=self.constraint)
+        return U.softmax(
+            input, dim=self.dim, mult=self.mult, constraint=self.constraint
+        )
 
 
 @inherit_docstring(
@@ -83,6 +118,7 @@ class Dropout(nn.Dropout):
 @inherit_docstring(
     short_description=(
         "Applies a **unit-scaled** linear transformation to the incoming data."
+        "\nNote that this layer sets :code:`bias=False` by default."
     ),
     add_args=[binary_constraint_docstring],
 )
@@ -91,13 +127,17 @@ class Linear(nn.Linear):
         self,
         in_features: int,
         out_features: int,
-        bias: bool = True,
+        bias: bool = False,
         device: Any = None,
         dtype: Any = None,
-        constraint: Optional[str] = "gmean",
+        constraint: Optional[str] = "to_output_scale",
+        weight_mup_type: MupType = "weight",
     ) -> None:
         super().__init__(in_features, out_features, bias, device, dtype)
         self.constraint = constraint
+        self.weight = Parameter(self.weight.data, mup_type=weight_mup_type)
+        if self.bias is not None:
+            self.bias = Parameter(self.bias, mup_type="bias")
 
     def reset_parameters(self) -> None:
         nn.init.normal_(self.weight)
@@ -110,13 +150,122 @@ class Linear(nn.Linear):
 
 @inherit_docstring(
     short_description=(
+        "Applies a **unit-scaled** linear transformation to the incoming data,"
+        " scaled appropriately for the final network output."
+        "\nNote that this layer sets :code:`bias=False` by default."
+    ),
+    add_args=[binary_constraint_docstring],
+)
+class LinearReadout(Linear):
+    def __init__(
+        self,
+        in_features: int,
+        out_features: int,
+        bias: bool = False,
+        device: Any = None,
+        dtype: Any = None,
+        constraint: Optional[str] = None,
+        weight_mup_type: MupType = "output",
+    ) -> None:
+        super().__init__(
+            in_features,
+            out_features,
+            bias,
+            device,
+            dtype,
+            constraint=constraint,
+            weight_mup_type=weight_mup_type,
+        )
+
+    def forward(self, input: Tensor) -> Tensor:
+        return U.linear_readout(input, self.weight, self.bias, self.constraint)
+
+
+@inherit_docstring(
+    short_description=(
         "Applies a **unit-scaled** Layer Normalization over a mini-batch of inputs."
+        "\nNote that this layer sets :code:`elementwise_affine=False` by default."
     ),
 )
 class LayerNorm(nn.LayerNorm):
+    def __init__(
+        self,
+        normalized_shape: Union[int, List[int], torch.Size],
+        eps: float = 1e-5,
+        elementwise_affine: bool = False,
+        bias: bool = True,
+        device: Any = None,
+        dtype: Any = None,
+    ) -> None:
+        super().__init__(
+            normalized_shape=normalized_shape,
+            eps=eps,
+            elementwise_affine=elementwise_affine,
+            bias=bias,
+            device=device,
+            dtype=dtype,
+        )
+        if self.weight is not None:
+            self.weight = Parameter(self.weight.data, mup_type="norm")
+        if self.bias is not None:
+            self.bias = Parameter(self.bias.data, mup_type="bias")
+
     def forward(self, input: Tensor) -> Tensor:
         return U.layer_norm(
             input, self.normalized_shape, self.weight, self.bias, self.eps
+        )
+
+
+class RMSNorm(nn.Module):
+    """Applies a **unit-scaled** RMS normalisation over trailing dimensions.
+
+    This layer implements the operation as described in the paper
+    `Root Mean Square Layer Normalization <https://arxiv.org/abs/1910.07467>`__.
+
+    .. math::
+        y = \\frac{x}{ \\sqrt{\\sum x^2 + \\epsilon}} * \\gamma
+
+    Note that this layer sets :code:`elementwise_affine=False` by default.
+
+    Args:
+        normalized_shape (Tuple[int]): input shape, for an expected input tensor
+          of shape `(*, *normalized_shape)`.
+        elementwise_affine (bool): a boolean value that when set to True, this
+          module has learnable per-element weight parameters initialized to ones.
+          Default: False.
+        eps (float): a value added to the denominator for numerical stability.
+          Default: 1e-5.
+
+    Attributes:
+        weight: the learnable weights of the module of shape `normalized_shape` when
+          elementwise_affine is set to True. The values are initialized to 1.
+    """
+
+    def __init__(
+        self,
+        normalized_shape: Union[int, Tuple[int, ...]],
+        eps: float = 1e-5,
+        elementwise_affine: bool = False,
+    ):
+        super().__init__()
+        self.normalized_shape = (
+            (normalized_shape,)
+            if isinstance(normalized_shape, int)
+            else normalized_shape
+        )
+        self.eps = eps
+        self.weight = (
+            Parameter(torch.ones(normalized_shape), "norm")
+            if elementwise_affine
+            else None
+        )
+
+    def forward(self, input: Tensor) -> Tensor:
+        return U.rms_norm(
+            input,
+            normalized_shape=self.normalized_shape,
+            weight=self.weight,
+            eps=self.eps,
         )
 
 
@@ -128,6 +277,35 @@ class LayerNorm(nn.LayerNorm):
     unsupported_args=["scale_grad_by_freq", "sparse"],
 )
 class Embedding(nn.Embedding):
+    def __init__(
+        self,
+        num_embeddings: int,
+        embedding_dim: int,
+        padding_idx: Optional[int] = None,
+        max_norm: Optional[float] = None,
+        norm_type: float = 2.0,
+        scale_grad_by_freq: bool = False,
+        sparse: bool = False,
+        _weight: Optional[Tensor] = None,
+        _freeze: bool = False,
+        device: Any = None,
+        dtype: Any = None,
+    ) -> None:
+        super().__init__(
+            num_embeddings=num_embeddings,
+            embedding_dim=embedding_dim,
+            padding_idx=padding_idx,
+            max_norm=max_norm,
+            norm_type=norm_type,
+            scale_grad_by_freq=scale_grad_by_freq,
+            sparse=sparse,
+            _weight=_weight,
+            _freeze=_freeze,
+            device=device,
+            dtype=dtype,
+        )
+        self.weight = Parameter(self.weight.data, mup_type="weight")
+
     def forward(self, input: Tensor) -> Tensor:
         return U.embedding(
             input,
@@ -145,8 +323,29 @@ class Embedding(nn.Embedding):
         "Computes a **unit-scaled** cross entropy loss between input logits and target."
     ),
     unsupported_args=["weight", "size_average", "reduce", "label_smoothing"],
+    add_args=[mult_docstring()],
 )
 class CrossEntropyLoss(nn.CrossEntropyLoss):
+    def __init__(
+        self,
+        mult: float = 1.0,
+        weight: Optional[Tensor] = None,
+        size_average: Optional[bool] = None,
+        ignore_index: int = -100,
+        reduce: Optional[bool] = None,
+        reduction: str = "mean",
+        label_smoothing: float = 0.0,
+    ):
+        super().__init__(
+            weight=weight,
+            size_average=size_average,
+            ignore_index=ignore_index,
+            reduce=reduce,
+            reduction=reduction,
+            label_smoothing=label_smoothing,
+        )
+        self.mult = mult
+
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
         return U.cross_entropy(
             input,
@@ -155,16 +354,16 @@ class CrossEntropyLoss(nn.CrossEntropyLoss):
             ignore_index=self.ignore_index,
             reduction=self.reduction,
             label_smoothing=self.label_smoothing,
+            mult=self.mult,
         )
 
 
 @format_docstring(binary_constraint_docstring)
 class MLP(nn.Module):
-    """A **unit-scaled** implementation of an MLP layer.
+    """A **unit-scaled** implementation of an MLP layer using SwiGLU.
 
     Args:
         hidden_size (int): the hidden dimension size of the input.
-        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.
         expansion_factor (int): the factor by which the MLP's intermediate size
             increases relative to `hidden_size`.
         {0}
@@ -173,23 +372,21 @@ class MLP(nn.Module):
     def __init__(
         self,
         hidden_size: int,
-        act_fn: nn.Module = GELU(),
         expansion_factor: int = 4,
-        constraint: Optional[str] = "gmean",
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         intermediate_size = hidden_size * expansion_factor
         self.linear_1 = Linear(hidden_size, intermediate_size, constraint=constraint)
-        self.act_fn = act_fn
+        self.linear_gate = Linear(hidden_size, intermediate_size, constraint=constraint)
         self.linear_2 = Linear(intermediate_size, hidden_size, constraint=constraint)
 
     def forward(self, input: Tensor) -> Tensor:
-        input = self.linear_1(input)
-        input = self.act_fn(input)
-        return self.linear_2(input)  # type: ignore
+        z = U.silu_glu(self.linear_1(input), self.linear_gate(input))
+        return self.linear_2(z)  # type:ignore[no-any-return]
 
 
-@format_docstring(variadic_constraint_docstring)
+@format_docstring(mult_docstring(), variadic_constraint_docstring)
 class MHSA(nn.Module):
     """A **unit-scaled** implementation of a multi-head self-attention layer.
 
@@ -198,35 +395,36 @@ class MHSA(nn.Module):
     Args:
         hidden_size (int): the hidden dimension size of the input.
         heads (int): the number of attention heads.
+        is_causal (bool): causal masking (for non-padded sequences).
         dropout_p (float, optional): the probability of the post-softmax dropout.
         {0}
+        {1}
     """
 
     def __init__(
         self,
         hidden_size: int,
         heads: int,
-        dropout_p: float,
-        constraint: Optional[str] = "gmean",
+        is_causal: bool,
+        dropout_p: float = 0.0,
+        mult: float = 1.0,
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         self.heads = heads
         self.dropout_p = dropout_p
-        self.linear_qkv = Linear(
-            hidden_size, 3 * hidden_size, bias=False, constraint=constraint
-        )
-        self.linear_o = Linear(
-            hidden_size, hidden_size, bias=False, constraint=constraint
-        )
+        self.is_causal = is_causal
+        self.mult = mult
+        self.linear_qkv = Linear(hidden_size, 3 * hidden_size, constraint=constraint)
+        self.linear_o = Linear(hidden_size, hidden_size, constraint=constraint)
         self.constraint = constraint
 
     def forward(self, input: Tensor) -> Tensor:
         q_k_v = self.linear_qkv(input)
         q, k, v = einops.rearrange(q_k_v, "b s (z h d) -> z b h s d", h=self.heads, z=3)
-        qk = U.matmul(q, k.transpose(-1, -2), constraint=self.constraint)
-        qk = U.softmax(qk, dim=-1, constraint=self.constraint)
-        qk = U.dropout(qk, self.dropout_p, training=self.training)
-        qkv = U.matmul(qk, v, constraint=self.constraint)
+        qkv = U.scaled_dot_product_attention(
+            q, k, v, dropout_p=self.dropout_p, is_causal=self.is_causal, mult=self.mult
+        )
         qkv = einops.rearrange(qkv, "b h s d -> b s (h d)")
         return self.linear_o(qkv)  # type: ignore
 
@@ -241,12 +439,13 @@ class TransformerLayer(nn.Module):
     Args:
         hidden_size (int): the hidden dimension size of the input.
         heads (int): the number of attention heads.
-        dropout_p (float, optional): the probability of the post-softmax dropout.
-        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.
-        mhsa_tau (float, optional): the weighting of the multi-head-self-attention
-            branch relative to the skip connection. Defaults to 0.01.
-        mlp_tau (float, optional): the weighting of the MLP
-            branch relative to the skip connection. Defaults to 0.5.
+        mhsa_tau (float): the weighting of the multi-head-self-attention
+            branch relative to the skip connection.
+        mlp_tau (float): the weighting of the MLP
+            branch relative to the skip connection.
+        is_causal (bool): causal masking (for non-padded sequences).
+        dropout_p (float, optional): the probability of residual and post-softmax
+            dropout.
         {0}
     """
 
@@ -254,41 +453,116 @@ class TransformerLayer(nn.Module):
         self,
         hidden_size: int,
         heads: int,
-        dropout_p: float,
-        act_fn: nn.Module = GELU(),
-        mhsa_tau: float = 0.01,
-        mlp_tau: float = 0.5,
-        constraint: Optional[str] = "gmean",
+        mhsa_tau: float,
+        mlp_tau: float,
+        is_causal: bool,
+        dropout_p: float = 0.0,
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         self.dropout_p = dropout_p
         self.mhsa_tau = mhsa_tau
         self.mlp_tau = mlp_tau
-        self.mhsa_layer_norm = LayerNorm(hidden_size)
-        self.mhsa = MHSA(hidden_size, heads, dropout_p, constraint=constraint)
-        self.mlp_layer_norm = LayerNorm(hidden_size)
-        self.mlp = MLP(hidden_size, act_fn, constraint=constraint)
+        self.mhsa_norm = RMSNorm(hidden_size)
+        self.mhsa = MHSA(
+            hidden_size,
+            heads,
+            is_causal=is_causal,
+            dropout_p=dropout_p,
+            constraint=constraint,
+        )
+        self.mlp_norm = RMSNorm(hidden_size)
+        self.mlp = MLP(hidden_size, constraint=constraint)
 
     def forward(self, input: Tensor) -> Tensor:
         input, skip = U.residual_split(input, tau=self.mhsa_tau)
-        input = self.mhsa_layer_norm(input)
+        input = self.mhsa_norm(input)
         input = self.mhsa(input)
         input = U.dropout(input, self.dropout_p, self.training)
         input = U.residual_add(input, skip, tau=self.mhsa_tau)
 
         input, skip = U.residual_split(input, tau=self.mlp_tau)
-        input = self.mlp_layer_norm(input)
+        input = self.mlp_norm(input)
         input = self.mlp(input)
         input = U.dropout(input, self.dropout_p, self.training)
         return U.residual_add(input, skip, tau=self.mlp_tau)
 
 
+@inherit_docstring(
+    "A :class:`torch.nn.ModuleList` that automatically configures the depth"
+    " for sake of scaling."
+    "\nNote that this does not track depth changes caused by modifications"
+    " after initial construction."
+)
+class DepthModuleList(nn.ModuleList):
+    def __init__(self, modules: Iterable[nn.Module]) -> None:
+        super().__init__(modules)
+        for name, parameter in self.named_parameters():
+            if not has_parameter_data(parameter):
+                raise ValueError(
+                    f"Parameter {name} is not a unit_scaling.Parameter."
+                    " Is it from a regular nn.Module?"
+                )
+            assert parameter.mup_scaling_depth is None
+            parameter.mup_scaling_depth = len(self)
+
+
+@inherit_docstring(
+    "A :class:`torch.nn.Sequential` that automatically configures the depth"
+    " for sake of scaling."
+    "\nNote that this does not track depth changes caused by modifications"
+    " after initial construction."
+)
+class DepthSequential(nn.Sequential):
+    def __init__(self, *args: Any) -> None:
+        super().__init__(*args)
+        for name, parameter in self.named_parameters():
+            if not has_parameter_data(parameter):
+                raise ValueError(
+                    f"Parameter {name} is not a unit_scaling.Parameter."
+                    " Is it from a regular nn.Module?"
+                )
+            assert parameter.mup_scaling_depth is None
+            parameter.mup_scaling_depth = len(self)
+
+
+class TransformerStack(DepthSequential):
+    """A **unit-scaled** transformer stack, applying a residual scaling rule.
+
+    See :code:`TransformerLayer` for arguments.
+
+    Args:
+        layers (int): number of transformer layers.
+        residual_scaling (Callable[[int, int], float], optional): scheme for
+            controlling residual weights in the transformer stack; see
+            :func:`unit_scaling.core.functional.transformer_residual_scaling_rule`
+            (default).
+    """
+
+    def __init__(
+        self,
+        layers: int,
+        residual_scaling: ResidualScalingFn = transformer_residual_scaling_rule(),
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            *(
+                TransformerLayer(
+                    **kwargs,
+                    mhsa_tau=residual_scaling(2 * i, 2 * layers),
+                    mlp_tau=residual_scaling(2 * i + 1, 2 * layers),
+                )
+                for i in range(layers)
+            )
+        )
+
+
 @format_docstring(variadic_constraint_docstring)
-class TransformerDecoder(nn.Module):  # pragma: no cover
+class TransformerDecoder(nn.Sequential):  # pragma: no cover
     """A **unit-scaled** implementation of a decoder-type transformer.
 
     Note: this class is currently just for demonstrating scaling and lacks key
-    functionality (for example causal masking, positional embeddings, usage for
+    functionality (for example masking, positional embeddings, usage for
     inference).
 
     Warning: using `constraint=None` here will likely give incorrect gradients.
@@ -298,12 +572,12 @@ class TransformerDecoder(nn.Module):  # pragma: no cover
         vocab_size (int): the number of tokens in the vocabulary.
         layers (int): the number of transformer layers.
         heads (int): the number of attention heads.
-        dropout_p (float, optional): the probability of the post-softmax dropout.
-        act_fn (nn.Module): the activation function module. Defaults to `GELU()`.
-        mhsa_tau (float, optional): the weighting of the multi-head-self-attention
-            branch relative to the skip connection. Defaults to 0.01.
-        mlp_tau (float, optional): the weighting of the MLP
-            branch relative to the skip connection. Defaults to 0.5.
+        dropout_p (float, optional): the probability of embedding, residual and
+            post-softmax dropout.
+        residual_scaling (Callable[[int, int], float], optional): scheme for
+            controlling residual weights in the transformer trunk; see
+            :func:`unit_scaling.core.functional.transformer_residual_scaling_rule`
+            (default).
         {0}
     """
 
@@ -313,34 +587,29 @@ class TransformerDecoder(nn.Module):  # pragma: no cover
         vocab_size: int,
         layers: int,
         heads: int,
-        dropout_p: float,
-        act_fn: nn.Module = GELU(),
-        mhsa_tau: float = 0.01,
-        mlp_tau: float = 0.5,
-        constraint: Optional[str] = "gmean",
+        dropout_p: float = 0.0,
+        residual_scaling: ResidualScalingFn = transformer_residual_scaling_rule(),
+        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         self.embedding = Embedding(vocab_size, hidden_size)
-        self.dropout_p = dropout_p
-        self.initial_layer_norm = LayerNorm(hidden_size)
-        self.transformer_layers = nn.Sequential(
-            *(
-                TransformerLayer(
-                    hidden_size, heads, dropout_p, act_fn, mhsa_tau, mlp_tau, constraint
-                )
-                for _ in range(layers)
-            )
+        self.layers = TransformerStack(
+            layers=layers,
+            hidden_size=hidden_size,
+            heads=heads,
+            is_causal=True,
+            dropout_p=dropout_p,
+            residual_scaling=residual_scaling,
+            constraint=constraint,
         )
-        self.final_layer_norm = LayerNorm(hidden_size)
+        self.final_norm = RMSNorm(hidden_size)
+        self.projection = LinearReadout(hidden_size, vocab_size)
 
-    def forward(self, input_ids: Tensor, labels: Tensor) -> Tensor:
-        input = self.embedding(input_ids)
-        input = U.dropout(input, self.dropout_p, self.training)
-        input = self.initial_layer_norm(input)
-        input = self.transformer_layers(input)
-        input = self.final_layer_norm(input)
-        input = U.linear(input, self.embedding.weight, bias=None, constraint=None)
-        return U.cross_entropy(input.flatten(end_dim=-2), labels.flatten())
+    def loss(self, input_ids: Tensor) -> Tensor:
+        logits = self(input_ids).float()
+        return U.cross_entropy(
+            logits[..., :-1, :].flatten(end_dim=-2), input_ids[..., 1:].flatten()
+        )
 
 
 __all__ = generate__all__(__name__)

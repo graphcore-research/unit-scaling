@@ -23,18 +23,19 @@ def test_analyse_mlp() -> None:
     annotated_code = analyse_module(
         MLP(hidden_size), input, backward, syntax_highlight=False
     )
+    print(annotated_code)
 
     expected_code = """
 def forward(self, input : Tensor) -> Tensor:
-    input_1 = input;  (-> 1.0, <- 1.01)
-    linear_1_weight = self.linear_1.weight;  (-> 1.0, <- 0.716)
-    linear_1_bias = self.linear_1.bias;  (-> 0.0, <- 0.714)
-    linear = U.linear(input_1, linear_1_weight, linear_1_bias, 'gmean');  (-> 0.707, <- 0.717)
-    gelu = U.gelu(linear, approximate = 'none', constraint = 'gmean');  (-> 0.641, <- 0.708)
-    linear_2_weight = self.linear_2.weight;  (-> 1.0, <- 0.691)
-    linear_2_bias = self.linear_2.bias;  (-> 0.0, <- 0.998)
-    linear_1 = U.linear(gelu, linear_2_weight, linear_2_bias, 'gmean');  (-> 0.973, <- 1.0)
-    return linear_1
+    input_1 = input;  (-> 1.0, <- 1.44)
+    linear_1_weight = self.linear_1.weight;  (-> 1.0, <- 0.503)
+    linear = U.linear(input_1, linear_1_weight, None, 'to_output_scale');  (-> 1.0, <- 0.502)
+    linear_gate_weight = self.linear_gate.weight;  (-> 1.0, <- 0.519)
+    linear_1 = U.linear(input_1, linear_gate_weight, None, 'to_output_scale');  (-> 1.0, <- 0.518)
+    silu_glu = U.silu_glu(linear, linear_1);  (-> 1.0, <- 0.5)
+    linear_2_weight = self.linear_2.weight;  (-> 1.0, <- 1.0)
+    linear_2 = U.linear(silu_glu, linear_2_weight, None, 'to_output_scale');  (-> 1.0, <- 1.0)
+    return linear_2
     """.strip()  # noqa: E501
 
     assert remove_scales(annotated_code) == remove_scales(expected_code)
@@ -49,26 +50,26 @@ def test_analyse_mhsa() -> None:
     backward = torch.randn(batch_size, seq_len, hidden_size)
 
     annotated_code = analyse_module(
-        MHSA(hidden_size, heads, dropout_p=0.1), input, backward, syntax_highlight=False
+        MHSA(hidden_size, heads, is_causal=False, dropout_p=0.1),
+        input,
+        backward,
+        syntax_highlight=False,
     )
+    print(annotated_code)
 
     expected_code = """
 def forward(self, input : Tensor) -> Tensor:
-    input_1 = input;  (-> 1.0, <- 0.819)
-    linear_qkv_weight = self.linear_qkv.weight;  (-> 1.01, <- 0.681)
-    linear = U.linear(input_1, linear_qkv_weight, None, 'gmean');  (-> 0.766, <- 0.631)
-    rearrange = einops_einops_rearrange(linear, 'b s (z h d) -> z b h s d', h = 4, z = 3);  (-> 0.766, <- 0.631)
-    getitem = rearrange[0];  (-> 0.774, <- 0.463)
-    getitem_1 = rearrange[1];  (-> 0.773, <- 0.34)
-    getitem_2 = rearrange[2];  (-> 0.752, <- 0.929)
-    transpose = getitem_1.transpose(-1, -2);  (-> 0.773, <- 0.34)
-    matmul = U.matmul(getitem, transpose, constraint = 'gmean');  (-> 0.376, <- 0.344)
-    softmax = U.softmax(matmul, dim = -1, constraint = 'gmean');  (-> 0.264, <- 0.477)
-    dropout = U.dropout(softmax, 0.1, training = True);  (-> 0.34, <- 0.477)
-    matmul_1 = U.matmul(dropout, getitem_2, constraint = 'gmean');  (-> 0.739, <- 1.0)
-    rearrange_1 = einops_einops_rearrange(matmul_1, 'b h s d -> b s (h d)');  (-> 0.739, <- 1.0)
-    linear_o_weight = self.linear_o.weight;  (-> 1.0, <- 0.73)
-    linear_1 = U.linear(rearrange_1, linear_o_weight, None, 'gmean');  (-> 0.738, <- 1.0)
+    input_1 = input;  (-> 1.0, <- 1.13)
+    linear_qkv_weight = self.linear_qkv.weight;  (-> 1.01, <- 0.662)
+    linear = U.linear(input_1, linear_qkv_weight, None, 'to_output_scale');  (-> 1.01, <- 0.633)
+    rearrange = einops_einops_rearrange(linear, 'b s (z h d) -> z b h s d', h = 4, z = 3);  (-> 1.01, <- 0.633)
+    getitem = rearrange[0];  (-> 1.0, <- 0.344)
+    getitem_1 = rearrange[1];  (-> 1.0, <- 0.257)
+    getitem_2 = rearrange[2];  (-> 1.02, <- 1.01)
+    scaled_dot_product_attention = U.scaled_dot_product_attention(getitem, getitem_1, getitem_2, dropout_p = 0.1, is_causal = False, mult = 1.0);  (-> 1.04, <- 1.0)
+    rearrange_1 = einops_einops_rearrange(scaled_dot_product_attention, 'b h s d -> b s (h d)');  (-> 1.04, <- 1.0)
+    linear_o_weight = self.linear_o.weight;  (-> 1.0, <- 1.03)
+    linear_1 = U.linear(rearrange_1, linear_o_weight, None, 'to_output_scale');  (-> 1.06, <- 1.0)
     return linear_1
     """.strip()  # noqa: E501
 
