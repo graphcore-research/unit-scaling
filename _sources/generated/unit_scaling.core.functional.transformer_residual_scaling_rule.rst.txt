@@ -1,0 +1,6 @@
+unit\_scaling.core.functional.transformer\_residual\_scaling\_rule
+==================================================================
+
+.. currentmodule:: unit_scaling.core.functional
+
+.. autofunction:: transformer_residual_scaling_rule

@@ -1,0 +1,6 @@
+unit\_scaling.functional.mse\_loss
+==================================
+
+.. currentmodule:: unit_scaling.functional
+
+.. autofunction:: mse_loss

@@ -21,6 +21,8 @@ unit\_scaling
    .. autosummary::
       :toctree:
    
+      Parameter
+      transformer_residual_scaling_rule
       visualiser
    
 
@@ -32,14 +34,19 @@ unit\_scaling
       :toctree:
       :template: custom-class-template.rst
    
-      GELU
-      MHSA
-      MLP
       CrossEntropyLoss
+      DepthModuleList
+      DepthSequential
       Dropout
       Embedding
+      GELU
       LayerNorm
       Linear
+      LinearReadout
+      MHSA
+      MLP
+      RMSNorm
+      SiLU
       Softmax
       TransformerDecoder
       TransformerLayer
@@ -51,4 +58,24 @@ unit\_scaling
    
 
 
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   
+      unit_scaling.core
+   
+   
+      unit_scaling.functional
+   
+   
+      unit_scaling.optim
+   
+   
+      unit_scaling.parameter
+   
 

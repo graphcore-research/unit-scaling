@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5.9. unit_scaling.utils &mdash; unit-scaling  documentation</title>
+  <title>5.8. unit_scaling.utils &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/scales.png"/>
@@ -18,8 +18,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="5.9.1. unit_scaling.utils.analyse_module" href="unit_scaling.utils.analyse_module.html" />
-    <link rel="prev" title="5.8.4. unit_scaling.transforms.utils.torch_nn_modules_to_user_modules" href="unit_scaling.transforms.utils.torch_nn_modules_to_user_modules.html" /> 
+    <link rel="next" title="5.8.1. unit_scaling.utils.analyse_module" href="unit_scaling.utils.analyse_module.html" />
+    <link rel="prev" title="5.7.4. unit_scaling.transforms.utils.torch_nn_modules_to_user_modules" href="unit_scaling.transforms.utils.torch_nn_modules_to_user_modules.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -34,7 +34,7 @@
             unit-scaling
           </a>
               <div class="version">
-                0.1
+                0.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -55,17 +55,19 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">5.2. unit_scaling.analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">5.3. unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">5.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.5. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.6. unit_scaling.scale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">5.7. unit_scaling.transforms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.8. unit_scaling.transforms.utils</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">5.9. unit_scaling.utils</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.analyse_module.html">5.9.1. unit_scaling.utils.analyse_module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScalePair.html">5.9.2. unit_scaling.utils.ScalePair</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScaleTracker.html">5.9.3. unit_scaling.utils.ScaleTracker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScaleTrackingInterpreter.html">5.9.4. unit_scaling.utils.ScaleTrackingInterpreter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">5.1.22. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.5. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">5.6. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.7. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">5.8. unit_scaling.utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.analyse_module.html">5.8.1. unit_scaling.utils.analyse_module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScalePair.html">5.8.2. unit_scaling.utils.ScalePair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScaleTracker.html">5.8.3. unit_scaling.utils.ScaleTracker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScaleTrackingInterpreter.html">5.8.4. unit_scaling.utils.ScaleTrackingInterpreter</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">5.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -85,7 +87,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">5. </span>API reference</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">5.9. </span>unit_scaling.utils</li>
+      <li class="breadcrumb-item active"><span class="section-number">5.8. </span>unit_scaling.utils</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/generated/unit_scaling.utils.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -96,7 +98,7 @@
            <div itemprop="articleBody">
              
   <section id="module-unit_scaling.utils">
-<span id="unit-scaling-utils"></span><h1><span class="section-number">5.9. </span>unit_scaling.utils<a class="headerlink" href="#module-unit_scaling.utils" title="Permalink to this heading"></a></h1>
+<span id="unit-scaling-utils"></span><h1><span class="section-number">5.8. </span>unit_scaling.utils<a class="headerlink" href="#module-unit_scaling.utils" title="Permalink to this heading"></a></h1>
 <p>Utility functions for developing unit-scaled models.</p>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
@@ -126,8 +128,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.transforms.utils.torch_nn_modules_to_user_modules.html" class="btn btn-neutral float-left" title="5.8.4. unit_scaling.transforms.utils.torch_nn_modules_to_user_modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.utils.analyse_module.html" class="btn btn-neutral float-right" title="5.9.1. unit_scaling.utils.analyse_module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.transforms.utils.torch_nn_modules_to_user_modules.html" class="btn btn-neutral float-left" title="5.7.4. unit_scaling.transforms.utils.torch_nn_modules_to_user_modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.utils.analyse_module.html" class="btn btn-neutral float-right" title="5.8.1. unit_scaling.utils.analyse_module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

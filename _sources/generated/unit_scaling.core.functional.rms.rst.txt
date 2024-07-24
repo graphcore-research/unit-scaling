@@ -1,0 +1,6 @@
+unit\_scaling.core.functional.rms
+=================================
+
+.. currentmodule:: unit_scaling.core.functional
+
+.. autofunction:: rms

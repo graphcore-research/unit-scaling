@@ -31,7 +31,7 @@
             unit-scaling
           </a>
               <div class="version">
-                0.1
+                0.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -195,9 +195,7 @@
 
         <span class="k">class</span> <span class="nc">QuantiseForward</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
             <span class="nd">@staticmethod</span>
-            <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
-                <span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantise</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
             <span class="nd">@staticmethod</span>
@@ -220,9 +218,7 @@
 
         <span class="k">class</span> <span class="nc">QuantiseBackward</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
             <span class="nd">@staticmethod</span>
-            <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
-                <span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">x</span>
 
             <span class="nd">@staticmethod</span>

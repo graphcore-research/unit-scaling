@@ -1,0 +1,6 @@
+unit\_scaling.core.functional.scale\_elementwise
+================================================
+
+.. currentmodule:: unit_scaling.core.functional
+
+.. autofunction:: scale_elementwise

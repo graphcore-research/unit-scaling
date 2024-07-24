@@ -1,0 +1,49 @@
+..
+   # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
+   # Copyright (c) 2007-2023 by the Sphinx team. All rights reserved.
+
+unit\_scaling.optim
+===================
+
+.. automodule:: unit_scaling.optim
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      lr_scale_for_depth
+      lr_scale_func_adam
+      lr_scale_func_sgd
+      scaled_parameters
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      Adam
+      AdamW
+      SGD
+   
+   
+
+   
+   
+   
+
+
+

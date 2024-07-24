@@ -1,0 +1,6 @@
+unit\_scaling.optim.lr\_scale\_for\_depth
+=========================================
+
+.. currentmodule:: unit_scaling.optim
+
+.. autofunction:: lr_scale_for_depth

@@ -1,0 +1,6 @@
+unit\_scaling.parameter.has\_parameter\_data
+============================================
+
+.. currentmodule:: unit_scaling.parameter
+
+.. autofunction:: has_parameter_data

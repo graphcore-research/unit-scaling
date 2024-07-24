@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="5.2.1. unit_scaling.analysis.example_batch" href="unit_scaling.analysis.example_batch.html" />
-    <link rel="prev" title="5.1.12. unit_scaling.TransformerLayer" href="unit_scaling.TransformerLayer.html" /> 
+    <link rel="prev" title="5.1.23.6. unit_scaling.parameter.Tensor" href="unit_scaling.parameter.Tensor.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -34,7 +34,7 @@
             unit-scaling
           </a>
               <div class="version">
-                0.1
+                0.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,11 +61,13 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">5.3. unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">5.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.5. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.6. unit_scaling.scale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">5.7. unit_scaling.transforms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.8. unit_scaling.transforms.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">5.9. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">5.1.22. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.5. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">5.6. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.7. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">5.8. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">5.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -105,13 +107,13 @@
 <td><p>Generates a batch of token IDs from a given dataset, along with an attention mask and labels (just the shifted token IDs).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.analysis.graph_to_dataframe.html#unit_scaling.analysis.graph_to_dataframe" title="unit_scaling.analysis.graph_to_dataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_to_dataframe</span></code></a>(g)</p></td>
-<td><p>Converts a <a class="reference external" href="https://pytorch.org/docs/stable/fx.html#torch.fx.Graph" title="(in PyTorch v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.fx.Graph</span></code></a> with annotated <a class="reference internal" href="unit_scaling.transforms.Metrics.html#unit_scaling.transforms.Metrics" title="unit_scaling.transforms.Metrics"><code class="xref py py-class docutils literal notranslate"><span class="pre">unit_scaling.transforms.Metrics</span></code></a> into a <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>.</p></td>
+<td><p>Converts a <a class="reference external" href="https://pytorch.org/docs/stable/fx.html#torch.fx.Graph" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.fx.Graph</span></code></a> with annotated <a class="reference internal" href="unit_scaling.transforms.Metrics.html#unit_scaling.transforms.Metrics" title="unit_scaling.transforms.Metrics"><code class="xref py py-class docutils literal notranslate"><span class="pre">unit_scaling.transforms.Metrics</span></code></a> into a <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.analysis.plot.html#unit_scaling.analysis.plot" title="unit_scaling.analysis.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>(g[, title, metric, prune_same_scale, ...])</p></td>
 <td><p>Generate a <code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code> plot visualising the scales in the forward (and optionally backward) pass of all tensors in an FX graph.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.analysis.visualiser.html#unit_scaling.analysis.visualiser" title="unit_scaling.analysis.visualiser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualiser</span></code></a>(model, tokenizer, batch_size, seq_len)</p></td>
-<td><p>[Experimental] Generate a plot visualising the scales in the forward (and optionally backward) pass of all tensors in an arbitrary <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a>.</p></td>
+<td><p>[Experimental] Generate a plot visualising the scales in the forward (and optionally backward) pass of all tensors in an arbitrary <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -121,7 +123,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.TransformerLayer.html" class="btn btn-neutral float-left" title="5.1.12. unit_scaling.TransformerLayer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.parameter.Tensor.html" class="btn btn-neutral float-left" title="5.1.23.6. unit_scaling.parameter.Tensor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="unit_scaling.analysis.example_batch.html" class="btn btn-neutral float-right" title="5.2.1. unit_scaling.analysis.example_batch" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -1,0 +1,6 @@
+unit\_scaling.Parameter
+=======================
+
+.. currentmodule:: unit_scaling
+
+.. autofunction:: Parameter

@@ -1,0 +1,48 @@
+..
+   # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
+   # Copyright (c) 2007-2023 by the Sphinx team. All rights reserved.
+
+unit\_scaling.parameter
+=======================
+
+.. automodule:: unit_scaling.parameter
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      Parameter
+      has_parameter_data
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      OrderedDict
+      ParameterData
+      Protocol
+      Tensor
+   
+   
+
+   
+   
+   
+
+
+

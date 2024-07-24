@@ -18,7 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="5.5. unit_scaling.functional" href="unit_scaling.functional.html" />
+    <link rel="next" title="5.5. unit_scaling.scale" href="unit_scaling.scale.html" />
     <link rel="prev" title="5.4.2. unit_scaling.formats.tuple_to_format" href="unit_scaling.formats.tuple_to_format.html" /> 
 </head>
 
@@ -34,7 +34,7 @@
             unit-scaling
           </a>
               <div class="version">
-                0.1
+                0.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -63,11 +63,13 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.5. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.6. unit_scaling.scale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">5.7. unit_scaling.transforms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.8. unit_scaling.transforms.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">5.9. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">5.1.22. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.5. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">5.6. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.7. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">5.8. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">5.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -130,19 +132,19 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.formats.FPFormat.quantise">
-<span class="sig-name descname"><span class="pre">quantise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.3)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.3)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/formats.html#FPFormat.quantise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.formats.FPFormat.quantise" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">quantise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/formats.html#FPFormat.quantise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.formats.FPFormat.quantise" title="Permalink to this definition"></a></dt>
 <dd><p>Non-differentiably quantise the given tensor in this format.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.formats.FPFormat.quantise_bwd">
-<span class="sig-name descname"><span class="pre">quantise_bwd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.3)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.3)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/formats.html#FPFormat.quantise_bwd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.formats.FPFormat.quantise_bwd" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">quantise_bwd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/formats.html#FPFormat.quantise_bwd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.formats.FPFormat.quantise_bwd" title="Permalink to this definition"></a></dt>
 <dd><p>Quantise the given tensor in the backward pass only.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.formats.FPFormat.quantise_fwd">
-<span class="sig-name descname"><span class="pre">quantise_fwd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.3)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.3)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/formats.html#FPFormat.quantise_fwd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.formats.FPFormat.quantise_fwd" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">quantise_fwd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/formats.html#FPFormat.quantise_fwd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.formats.FPFormat.quantise_fwd" title="Permalink to this definition"></a></dt>
 <dd><p>Quantise the given tensor in the forward pass only.</p>
 </dd></dl>
 
@@ -155,7 +157,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="unit_scaling.formats.tuple_to_format.html" class="btn btn-neutral float-left" title="5.4.2. unit_scaling.formats.tuple_to_format" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.functional.html" class="btn btn-neutral float-right" title="5.5. unit_scaling.functional" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.scale.html" class="btn btn-neutral float-right" title="5.5. unit_scaling.scale" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

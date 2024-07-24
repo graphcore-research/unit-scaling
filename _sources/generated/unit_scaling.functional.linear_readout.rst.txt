@@ -1,0 +1,6 @@
+unit\_scaling.functional.linear\_readout
+========================================
+
+.. currentmodule:: unit_scaling.functional
+
+.. autofunction:: linear_readout

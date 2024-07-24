@@ -1,0 +1,6 @@
+unit\_scaling.optim.lr\_scale\_func\_sgd
+========================================
+
+.. currentmodule:: unit_scaling.optim
+
+.. autofunction:: lr_scale_func_sgd

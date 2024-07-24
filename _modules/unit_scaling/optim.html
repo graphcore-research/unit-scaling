@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>unit_scaling.optim &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/scales.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+              <div class="version">
+                0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blog.html">4. Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">5. API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">unit_scaling.optim</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for unit_scaling.optim</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2024 Graphcore Ltd. All rights reserved.</span>
+
+<span class="sd">&quot;&quot;&quot;Optimizer wrappers that apply scaling rules for u-muP.</span>
+
+<span class="sd">Provides :class:`Adam`, :class:`AdamW`, :class:`SGD` as out-of-the-box</span>
+<span class="sd">optimizers.</span>
+
+<span class="sd">Alternatively, :func:`scaled_parameters` provides finer control by</span>
+<span class="sd">transforming a parameter group for any downstream optimizer, given a</span>
+<span class="sd">function that defines the LR scaling rules.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># mypy: disable-error-code=&quot;no-any-return&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span> <span class="nn">torch.optim.optimizer</span> <span class="kn">import</span> <span class="n">ParamsT</span>
+
+<span class="kn">from</span> <span class="nn">._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
+<span class="kn">from</span> <span class="nn">.docs</span> <span class="kn">import</span> <span class="n">inherit_docstring</span>
+<span class="kn">from</span> <span class="nn">.parameter</span> <span class="kn">import</span> <span class="n">ParameterData</span><span class="p">,</span> <span class="n">has_parameter_data</span>
+
+
+<div class="viewcode-block" id="lr_scale_for_depth"><a class="viewcode-back" href="../../generated/unit_scaling.optim.lr_scale_for_depth.html#unit_scaling.optim.lr_scale_for_depth">[docs]</a><span class="k">def</span> <span class="nf">lr_scale_for_depth</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the LR scaling factor for depth only.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_scaling_depth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_scaling_depth</span><span class="o">**-</span><span class="mf">0.5</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_fan_in</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="c1"># Note: the &quot;fan_in&quot; of an embedding layer is the hidden (output) dimension</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Cannot get fan_in of `ndim &gt;= 3` param, shape=</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="lr_scale_func_sgd"><a class="viewcode-back" href="../../generated/unit_scaling.optim.lr_scale_func_sgd.html#unit_scaling.optim.lr_scale_func_sgd">[docs]</a><span class="k">def</span> <span class="nf">lr_scale_func_sgd</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the LR scaling factor for :class:`torch.optim.SGD`.&quot;&quot;&quot;</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">lr_scale_for_depth</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="s2">&quot;norm&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="o">==</span> <span class="s2">&quot;weight&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">_get_fan_in</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="o">==</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">scale</span>
+    <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Unexpected mup_type </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">mup_type</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="lr_scale_func_adam"><a class="viewcode-back" href="../../generated/unit_scaling.optim.lr_scale_func_adam.html#unit_scaling.optim.lr_scale_func_adam">[docs]</a><span class="k">def</span> <span class="nf">lr_scale_func_adam</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the LR scaling factor for :class:`torch.optim.Adam`</span>
+<span class="sd">    and :class:`torch.optim.AdamW`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">lr_scale_for_depth</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="s2">&quot;norm&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">scale</span>
+    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="o">==</span> <span class="s2">&quot;weight&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">_get_fan_in</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="o">**</span> <span class="o">-</span><span class="mf">0.5</span>
+    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="o">==</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">scale</span>
+    <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Unexpected mup_type </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">mup_type</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="scaled_parameters"><a class="viewcode-back" href="../../generated/unit_scaling.optim.scaled_parameters.html#unit_scaling.optim.scaled_parameters">[docs]</a><span class="k">def</span> <span class="nf">scaled_parameters</span><span class="p">(</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
+    <span class="n">lr_scale_func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ParameterData</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">weight_decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">independent_weight_decay</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">allow_non_unit_scaling_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParamsT</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create optimizer-appropriate **lr-scaled** parameter groups.</span>
+
+<span class="sd">    This method creates param_groups that apply the relevant scaling factors for u-muP</span>
+<span class="sd">    models. For example::</span>
+
+<span class="sd">        torch.optim.Adam(uu.optim.scaled_parameters(</span>
+<span class="sd">            model.parameters(), uu.optim.adam_lr_scale_func, lr=1.0</span>
+<span class="sd">        ))</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        params (ParamsT): an iterable of parameters of parameter groups, as passed to</span>
+<span class="sd">            a torch optimizer.</span>
+<span class="sd">        lr_scale_func (Callable): gets the optimizer-appropriate learning rate scale,</span>
+<span class="sd">            based on a parameter tagged with `mup_type` and `mup_scaling_depth`. For</span>
+<span class="sd">            example, :func:`lr_scale_func_sgd`.</span>
+<span class="sd">        lr (float, optional): global learning rate (overridden by groups).</span>
+<span class="sd">        weight_decay (float, optional): weight decay value (overridden by groups).</span>
+<span class="sd">        independent_weight_decay (bool, optional): enable lr-independent weight decay,</span>
+<span class="sd">            which performs an update per-step that does not depend on lr.</span>
+<span class="sd">        allow_non_unit_scaling_params (bool, optional): by default, this method fails</span>
+<span class="sd">            if passed any regular non-unit-scaled params; set to `True` to disable this</span>
+<span class="sd">            check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ParamsT: for passing on to the optimizer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="n">entry</span><span class="p">])</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">)</span> <span class="k">else</span> <span class="n">entry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">group</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;lr&quot;</span><span class="p">,</span> <span class="n">lr</span><span class="p">)</span>
+        <span class="n">group</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;weight_decay&quot;</span><span class="p">,</span> <span class="n">weight_decay</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;scaled_params() requires lr to be provided,&quot;</span>
+                <span class="s2">&quot; unless passing parameter groups which already have an lr&quot;</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]:</span>
+            <span class="c1"># Careful not to overwrite `lr` or `weight_decay`</span>
+            <span class="n">param_lr</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">has_parameter_data</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param_lr</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">):</span>
+                    <span class="n">param_lr</span> <span class="o">=</span> <span class="n">param_lr</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+                <span class="n">param_lr</span> <span class="o">*=</span> <span class="n">lr_scale_func</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">allow_non_unit_scaling_params</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Non-unit-scaling parameter (no mup_type),&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; shape </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="n">param_weight_decay</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;weight_decay&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">independent_weight_decay</span><span class="p">:</span>
+                <span class="c1"># Note: only independent of peak LR, not of schedule</span>
+                <span class="n">param_weight_decay</span> <span class="o">/=</span> <span class="nb">float</span><span class="p">(</span><span class="n">param_lr</span><span class="p">)</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="n">param</span><span class="p">],</span>
+                    <span class="n">lr</span><span class="o">=</span><span class="n">param_lr</span><span class="p">,</span>
+                    <span class="n">weight_decay</span><span class="o">=</span><span class="n">param_weight_decay</span><span class="p">,</span>
+                    <span class="o">**</span><span class="p">{</span>
+                        <span class="n">k</span><span class="p">:</span> <span class="n">v</span>
+                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="s2">&quot;lr&quot;</span><span class="p">,</span> <span class="s2">&quot;weight_decay&quot;</span><span class="p">)</span>
+                    <span class="p">},</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="SGD"><a class="viewcode-back" href="../../generated/unit_scaling.optim.SGD.html#unit_scaling.optim.SGD">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;An **lr-scaled** version of :class:`torch.optim.SGD` for u-muP.&quot;</span>
+<span class="p">)</span>
+<span class="k">class</span> <span class="nc">SGD</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">):</span>  <span class="c1"># type:ignore[name-defined,misc]</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
+        <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">weight_decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">independent_weight_decay</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">allow_non_unit_scaling_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">scaled_parameters</span><span class="p">(</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="n">lr_scale_func_sgd</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">weight_decay</span><span class="o">=</span><span class="n">weight_decay</span><span class="p">,</span>
+            <span class="n">independent_weight_decay</span><span class="o">=</span><span class="n">independent_weight_decay</span><span class="p">,</span>
+            <span class="n">allow_non_unit_scaling_params</span><span class="o">=</span><span class="n">allow_non_unit_scaling_params</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># No need to forward {lr, weight_decay}, as each group has these specified</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Adam"><a class="viewcode-back" href="../../generated/unit_scaling.optim.Adam.html#unit_scaling.optim.Adam">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;An **lr-scaled** version of :class:`torch.optim.Adam` for u-muP.&quot;</span>
+<span class="p">)</span>
+<span class="k">class</span> <span class="nc">Adam</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">):</span>  <span class="c1"># type:ignore[name-defined,misc]</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
+        <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">weight_decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">independent_weight_decay</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">allow_non_unit_scaling_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">scaled_parameters</span><span class="p">(</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="n">lr_scale_func_adam</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">weight_decay</span><span class="o">=</span><span class="n">weight_decay</span><span class="p">,</span>
+            <span class="n">independent_weight_decay</span><span class="o">=</span><span class="n">independent_weight_decay</span><span class="p">,</span>
+            <span class="n">allow_non_unit_scaling_params</span><span class="o">=</span><span class="n">allow_non_unit_scaling_params</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># No need to forward {lr, weight_decay}, as each group has these specified</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AdamW"><a class="viewcode-back" href="../../generated/unit_scaling.optim.AdamW.html#unit_scaling.optim.AdamW">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+    <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;An **lr-scaled** version of :class:`torch.optim.AdamW` for u-muP.&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="k">class</span> <span class="nc">AdamW</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">):</span>  <span class="c1"># type:ignore[name-defined,misc]</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
+        <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">weight_decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">independent_weight_decay</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">allow_non_unit_scaling_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">scaled_parameters</span><span class="p">(</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="n">lr_scale_func_adam</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">weight_decay</span><span class="o">=</span><span class="n">weight_decay</span><span class="p">,</span>
+            <span class="n">independent_weight_decay</span><span class="o">=</span><span class="n">independent_weight_decay</span><span class="p">,</span>
+            <span class="n">allow_non_unit_scaling_params</span><span class="o">=</span><span class="n">allow_non_unit_scaling_params</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># No need to forward {lr, weight_decay}, as each group has these specified</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="n">generate__all__</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

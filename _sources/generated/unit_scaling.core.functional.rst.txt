@@ -1,0 +1,39 @@
+..
+   # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
+   # Copyright (c) 2007-2023 by the Sphinx team. All rights reserved.
+
+unit\_scaling.core.functional
+=============================
+
+.. automodule:: unit_scaling.core.functional
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      logarithmic_interpolation
+      rms
+      scale_elementwise
+      transformer_residual_scaling_rule
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

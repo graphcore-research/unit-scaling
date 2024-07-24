@@ -34,7 +34,7 @@
             unit-scaling
           </a>
               <div class="version">
-                0.1
+                0.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -55,11 +55,13 @@
 <li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.analysis.html">5.2. unit_scaling.analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.constraints.html">5.3. unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.formats.html">5.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.functional.html">5.5. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.scale.html">5.6. unit_scaling.scale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.transforms.html">5.7. unit_scaling.transforms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.transforms.utils.html">5.8. unit_scaling.transforms.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.utils.html">5.9. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.functional.html">5.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.optim.html">5.1.22. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.scale.html">5.5. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.transforms.html">5.6. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.transforms.utils.html">5.7. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.utils.html">5.8. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/unit_scaling.core.functional.html">5.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -127,17 +129,23 @@ classes and functions can easily be swapped-out for their unit-scaled equivalent
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/unit_scaling.functional.html#module-unit_scaling.functional" title="unit_scaling.functional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.functional</span></code></a></p></td>
 <td><p>Unit-scaled versions of common <cite>torch.nn.functional</cite> functions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/unit_scaling.scale.html#module-unit_scaling.scale" title="unit_scaling.scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.scale</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/unit_scaling.optim.html#module-unit_scaling.optim" title="unit_scaling.optim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.optim</span></code></a></p></td>
+<td><p>Optimizer wrappers that apply scaling rules for u-muP.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/unit_scaling.scale.html#module-unit_scaling.scale" title="unit_scaling.scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.scale</span></code></a></p></td>
 <td><p>Operations to enable different scaling factors in the forward and backward passes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/unit_scaling.transforms.html#module-unit_scaling.transforms" title="unit_scaling.transforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.transforms</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/unit_scaling.transforms.html#module-unit_scaling.transforms" title="unit_scaling.transforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.transforms</span></code></a></p></td>
 <td><p>Useful torch dynamo transforms of modules for the sake of numerics and unit scaling.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/unit_scaling.transforms.utils.html#module-unit_scaling.transforms.utils" title="unit_scaling.transforms.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.transforms.utils</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/unit_scaling.transforms.utils.html#module-unit_scaling.transforms.utils" title="unit_scaling.transforms.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.transforms.utils</span></code></a></p></td>
 <td><p>Utilities for working with transforms.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/unit_scaling.utils.html#module-unit_scaling.utils" title="unit_scaling.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.utils</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/unit_scaling.utils.html#module-unit_scaling.utils" title="unit_scaling.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.utils</span></code></a></p></td>
 <td><p>Utility functions for developing unit-scaled models.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/unit_scaling.core.functional.html#module-unit_scaling.core.functional" title="unit_scaling.core.functional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_scaling.core.functional</span></code></a></p></td>
+<td><p>Core functionality for implementing <cite>unit_scaling.functional</cite>.</p></td>
 </tr>
 </tbody>
 </table>

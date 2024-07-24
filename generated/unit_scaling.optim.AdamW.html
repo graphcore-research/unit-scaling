@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5.1.22.6. unit_scaling.optim.AdamW &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/scales.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5.1.22.7. unit_scaling.optim.SGD" href="unit_scaling.optim.SGD.html" />
+    <link rel="prev" title="5.1.22.5. unit_scaling.optim.Adam" href="unit_scaling.optim.Adam.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+              <div class="version">
+                0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog.html">4. Blog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">5. API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.html">5.1. unit_scaling</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Parameter.html">5.1.1. unit_scaling.Parameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transformer_residual_scaling_rule.html">5.1.2. unit_scaling.transformer_residual_scaling_rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.visualiser.html">5.1.3. unit_scaling.visualiser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.CrossEntropyLoss.html">5.1.4. unit_scaling.CrossEntropyLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.DepthModuleList.html">5.1.5. unit_scaling.DepthModuleList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.DepthSequential.html">5.1.6. unit_scaling.DepthSequential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Dropout.html">5.1.7. unit_scaling.Dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Embedding.html">5.1.8. unit_scaling.Embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.GELU.html">5.1.9. unit_scaling.GELU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.LayerNorm.html">5.1.10. unit_scaling.LayerNorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Linear.html">5.1.11. unit_scaling.Linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.LinearReadout.html">5.1.12. unit_scaling.LinearReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MHSA.html">5.1.13. unit_scaling.MHSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MLP.html">5.1.14. unit_scaling.MLP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.RMSNorm.html">5.1.15. unit_scaling.RMSNorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.SiLU.html">5.1.16. unit_scaling.SiLU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Softmax.html">5.1.17. unit_scaling.Softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerDecoder.html">5.1.18. unit_scaling.TransformerDecoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerLayer.html">5.1.19. unit_scaling.TransformerLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.core.html">5.1.20. unit_scaling.core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.html">5.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="unit_scaling.optim.html">5.1.22. unit_scaling.optim</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.optim.lr_scale_for_depth.html">5.1.22.1. unit_scaling.optim.lr_scale_for_depth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.optim.lr_scale_func_adam.html">5.1.22.2. unit_scaling.optim.lr_scale_func_adam</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.optim.lr_scale_func_sgd.html">5.1.22.3. unit_scaling.optim.lr_scale_func_sgd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.optim.scaled_parameters.html">5.1.22.4. unit_scaling.optim.scaled_parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.optim.Adam.html">5.1.22.5. unit_scaling.optim.Adam</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.1.22.6. unit_scaling.optim.AdamW</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.optim.SGD.html">5.1.22.7. unit_scaling.optim.SGD</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.parameter.html">5.1.23. unit_scaling.parameter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">5.2. unit_scaling.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">5.3. unit_scaling.constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">5.4. unit_scaling.formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.optim.html">5.1.22. unit_scaling.optim</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.optim.lr_scale_for_depth.html">5.1.22.1. unit_scaling.optim.lr_scale_for_depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.optim.lr_scale_func_adam.html">5.1.22.2. unit_scaling.optim.lr_scale_func_adam</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.optim.lr_scale_func_sgd.html">5.1.22.3. unit_scaling.optim.lr_scale_func_sgd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.optim.scaled_parameters.html">5.1.22.4. unit_scaling.optim.scaled_parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.optim.Adam.html">5.1.22.5. unit_scaling.optim.Adam</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">5.1.22.6. unit_scaling.optim.AdamW</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.optim.AdamW"><code class="docutils literal notranslate"><span class="pre">AdamW</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.optim.SGD.html">5.1.22.7. unit_scaling.optim.SGD</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.5. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">5.6. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.7. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">5.8. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">5.1.20.1. unit_scaling.core.functional</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">5. </span>API reference</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.html"><span class="section-number">5.1. </span>unit_scaling</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.optim.html"><span class="section-number">5.1.22. </span>unit_scaling.optim</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.1.22.6. </span>unit_scaling.optim.AdamW</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/unit_scaling.optim.AdamW.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="unit-scaling-optim-adamw">
+<h1><span class="section-number">5.1.22.6. </span>unit_scaling.optim.AdamW<a class="headerlink" href="#unit-scaling-optim-adamw" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.optim.</span></span><span class="sig-name descname"><span class="pre">AdamW</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">independent_weight_decay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_non_unit_scaling_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/optim.html#AdamW"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.optim.AdamW" title="Permalink to this definition"></a></dt>
+<dd><p>An <strong>lr-scaled</strong> version of <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.AdamW.html#torch.optim.AdamW" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.optim.AdamW</span></code></a> for u-muP.</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\begin{split}\begin{aligned}
+     &amp;\rule{110mm}{0.4pt}                                                                 \\
+     &amp;\textbf{input}      : \gamma \text{(lr)}, \: \beta_1, \beta_2
+         \text{(betas)}, \: \theta_0 \text{(params)}, \: f(\theta) \text{(objective)},
+         \: \epsilon \text{ (epsilon)}                                                    \\
+     &amp;\hspace{13mm}      \lambda \text{(weight decay)},  \: \textit{amsgrad},
+         \: \textit{maximize}                                                             \\
+     &amp;\textbf{initialize} : m_0 \leftarrow 0 \text{ (first moment)}, v_0 \leftarrow 0
+         \text{ ( second moment)}, \: \widehat{v_0}^{max}\leftarrow 0              \\[-1.ex]
+     &amp;\rule{110mm}{0.4pt}                                                                 \\
+     &amp;\textbf{for} \: t=1 \: \textbf{to} \: \ldots \: \textbf{do}                         \\\end{split}\\\begin{split}     &amp;\hspace{5mm}\textbf{if} \: \textit{maximize}:                                       \\
+     &amp;\hspace{10mm}g_t           \leftarrow   -\nabla_{\theta} f_t (\theta_{t-1})          \\
+     &amp;\hspace{5mm}\textbf{else}                                                           \\
+     &amp;\hspace{10mm}g_t           \leftarrow   \nabla_{\theta} f_t (\theta_{t-1})           \\
+     &amp;\hspace{5mm} \theta_t \leftarrow \theta_{t-1} - \gamma \lambda \theta_{t-1}         \\
+     &amp;\hspace{5mm}m_t           \leftarrow   \beta_1 m_{t-1} + (1 - \beta_1) g_t          \\
+     &amp;\hspace{5mm}v_t           \leftarrow   \beta_2 v_{t-1} + (1-\beta_2) g^2_t          \\
+     &amp;\hspace{5mm}\widehat{m_t} \leftarrow   m_t/\big(1-\beta_1^t \big)                   \\
+     &amp;\hspace{5mm}\widehat{v_t} \leftarrow   v_t/\big(1-\beta_2^t \big)                   \\
+     &amp;\hspace{5mm}\textbf{if} \: amsgrad                                                  \\
+     &amp;\hspace{10mm}\widehat{v_t}^{max} \leftarrow \mathrm{max}(\widehat{v_t}^{max},
+         \widehat{v_t})                                                                   \\
+     &amp;\hspace{10mm}\theta_t \leftarrow \theta_t - \gamma \widehat{m_t}/
+         \big(\sqrt{\widehat{v_t}^{max}} + \epsilon \big)                                 \\
+     &amp;\hspace{5mm}\textbf{else}                                                           \\
+     &amp;\hspace{10mm}\theta_t \leftarrow \theta_t - \gamma \widehat{m_t}/
+         \big(\sqrt{\widehat{v_t}} + \epsilon \big)                                       \\
+     &amp;\rule{110mm}{0.4pt}                                                          \\[-1.ex]
+     &amp;\bf{return} \:  \theta_t                                                     \\[-1.ex]
+     &amp;\rule{110mm}{0.4pt}                                                          \\[-1.ex]
+\end{aligned}\end{split}\end{aligned}\end{align} \]</div>
+<p>For further details regarding the algorithm we refer to <a href="#id1"><span class="problematic" id="id2">`Decoupled Weight Decay Regularization`_</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>iterable</em>) – iterable of parameters to optimize or dicts defining
+parameter groups</p></li>
+<li><p><strong>lr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>Tensor?</em>) – learning rate (default: 1e-3). A tensor LR
+is not yet supported for all our implementations. Please use a float
+LR if you are not also specifying fused=True or capturable=True.</p></li>
+<li><p><strong>betas</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>]</em><em>?</em>) – coefficients used for computing
+running averages of gradient and its square (default: (0.9, 0.999))</p></li>
+<li><p><strong>eps</strong> (<em>float?</em>) – term added to the denominator to improve
+numerical stability (default: 1e-8)</p></li>
+<li><p><strong>weight_decay</strong> (<em>float?</em>) – weight decay coefficient (default: 1e-2)</p></li>
+<li><p><strong>amsgrad</strong> (<em>bool?</em>) – whether to use the AMSGrad variant of this
+algorithm from the paper <a href="#id3"><span class="problematic" id="id4">`On the Convergence of Adam and Beyond`_</span></a>
+(default: False)</p></li>
+<li><p><strong>maximize</strong> (<em>bool?</em>) – maximize the objective with respect to the
+params, instead of minimizing (default: False)</p></li>
+<li><p><strong>foreach</strong> (<em>bool?</em>) – whether foreach implementation of optimizer
+is used. If unspecified by the user (so foreach is None), we will try to use
+foreach over the for-loop implementation on CUDA, since it is usually
+significantly more performant. Note that the foreach implementation uses
+~ sizeof(params) more peak memory than the for-loop version due to the intermediates
+being a tensorlist vs just one tensor. If memory is prohibitive, batch fewer
+parameters through the optimizer at a time or switch this flag to False (default: None)</p></li>
+<li><p><strong>capturable</strong> (<em>bool?</em>) – whether this instance is safe to
+capture in a CUDA graph. Passing True can impair ungraphed performance,
+so if you don’t intend to graph capture this instance, leave it False
+(default: False)</p></li>
+<li><p><strong>differentiable</strong> (<em>bool?</em>) – whether autograd should
+occur through the optimizer step in training. Otherwise, the step()
+function runs in a torch.no_grad() context. Setting to True can impair
+performance, so leave it False if you don’t intend to run autograd
+through this instance (default: False)</p></li>
+<li><p><strong>fused</strong> (<em>bool?</em>) – whether the fused implementation is used.
+Currently, <cite>torch.float64</cite>, <cite>torch.float32</cite>, <cite>torch.float16</cite>, and <cite>torch.bfloat16</cite>
+are supported. (default: None)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW.add_param_group">
+<span class="sig-name descname"><span class="pre">add_param_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#unit_scaling.optim.AdamW.add_param_group" title="Permalink to this definition"></a></dt>
+<dd><p>Add a param group to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code> s <cite>param_groups</cite>.</p>
+<p>This can be useful when fine tuning a pre-trained network as frozen layers can be made
+trainable and added to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code> as training progresses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param_group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – Specifies what Tensors should be optimized along with group
+specific optimization options.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW.load_state_dict">
+<span class="sig-name descname"><span class="pre">load_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#unit_scaling.optim.AdamW.load_state_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the optimizer state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – optimizer state. Should be an object returned
+from a call to <a class="reference internal" href="#unit_scaling.optim.AdamW.state_dict" title="unit_scaling.optim.AdamW.state_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW.register_load_state_dict_post_hook">
+<span class="sig-name descname"><span class="pre">register_load_state_dict_post_hook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hook</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/optim.html#torch.optim.Optimizer" title="(in PyTorch v2.4)"><span class="pre">Optimizer</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RemovableHandle</span></span></span><a class="headerlink" href="#unit_scaling.optim.AdamW.register_load_state_dict_post_hook" title="Permalink to this definition"></a></dt>
+<dd><p>Register a load_state_dict post-hook which will be called after
+<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.load_state_dict.html#torch.optim.Optimizer.load_state_dict" title="(in PyTorch v2.4)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_state_dict()</span></code></a> is called. It should have the
+following signature:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hook</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> argument is the optimizer instance being used.</p>
+<p>The hook will be called with argument <code class="docutils literal notranslate"><span class="pre">self</span></code> after calling
+<code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code> on <code class="docutils literal notranslate"><span class="pre">self</span></code>. The registered hook can be used to
+perform post-processing after <code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code> has loaded the
+<code class="docutils literal notranslate"><span class="pre">state_dict</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hook</strong> (<em>Callable</em>) – The user defined hook to be registered.</p></li>
+<li><p><strong>prepend</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If True, the provided post <code class="docutils literal notranslate"><span class="pre">hook</span></code> will be fired before
+all the already registered post-hooks on <code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code>. Otherwise,
+the provided <code class="docutils literal notranslate"><span class="pre">hook</span></code> will be fired after all the already registered
+post-hooks. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a handle that can be used to remove the added hook by calling
+<code class="docutils literal notranslate"><span class="pre">handle.remove()</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.hooks.RemoveableHandle</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW.register_load_state_dict_pre_hook">
+<span class="sig-name descname"><span class="pre">register_load_state_dict_pre_hook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hook</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/optim.html#torch.optim.Optimizer" title="(in PyTorch v2.4)"><span class="pre">Optimizer</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RemovableHandle</span></span></span><a class="headerlink" href="#unit_scaling.optim.AdamW.register_load_state_dict_pre_hook" title="Permalink to this definition"></a></dt>
+<dd><p>Register a load_state_dict pre-hook which will be called before
+<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.load_state_dict.html#torch.optim.Optimizer.load_state_dict" title="(in PyTorch v2.4)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_state_dict()</span></code></a> is called. It should have the
+following signature:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hook</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">state_dict</span> <span class="ow">or</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> argument is the optimizer instance being used and the
+<code class="docutils literal notranslate"><span class="pre">state_dict</span></code> argument is a shallow copy of the <code class="docutils literal notranslate"><span class="pre">state_dict</span></code> the user
+passed in to <code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code>. The hook may modify the state_dict inplace
+or optionally return a new one. If a state_dict is returned, it will be used
+to be loaded into the optimizer.</p>
+<p>The hook will be called with argument <code class="docutils literal notranslate"><span class="pre">self</span></code> and <code class="docutils literal notranslate"><span class="pre">state_dict</span></code> before
+calling <code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code> on <code class="docutils literal notranslate"><span class="pre">self</span></code>. The registered hook can be used to
+perform pre-processing before the <code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code> call is made.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hook</strong> (<em>Callable</em>) – The user defined hook to be registered.</p></li>
+<li><p><strong>prepend</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If True, the provided pre <code class="docutils literal notranslate"><span class="pre">hook</span></code> will be fired before
+all the already registered pre-hooks on <code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code>. Otherwise,
+the provided <code class="docutils literal notranslate"><span class="pre">hook</span></code> will be fired after all the already registered
+pre-hooks. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a handle that can be used to remove the added hook by calling
+<code class="docutils literal notranslate"><span class="pre">handle.remove()</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.hooks.RemoveableHandle</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW.register_state_dict_post_hook">
+<span class="sig-name descname"><span class="pre">register_state_dict_post_hook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hook</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/optim.html#torch.optim.Optimizer" title="(in PyTorch v2.4)"><span class="pre">Optimizer</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RemovableHandle</span></span></span><a class="headerlink" href="#unit_scaling.optim.AdamW.register_state_dict_post_hook" title="Permalink to this definition"></a></dt>
+<dd><p>Register a state dict post-hook which will be called after
+<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.state_dict.html#torch.optim.Optimizer.state_dict" title="(in PyTorch v2.4)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code></a> is called. It should have the
+following signature:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hook</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">state_dict</span> <span class="ow">or</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>The hook will be called with arguments <code class="docutils literal notranslate"><span class="pre">self</span></code> and <code class="docutils literal notranslate"><span class="pre">state_dict</span></code> after generating
+a <code class="docutils literal notranslate"><span class="pre">state_dict</span></code> on <code class="docutils literal notranslate"><span class="pre">self</span></code>. The hook may modify the state_dict inplace or optionally
+return a new one. The registered hook can be used to perform post-processing
+on the <code class="docutils literal notranslate"><span class="pre">state_dict</span></code> before it is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hook</strong> (<em>Callable</em>) – The user defined hook to be registered.</p></li>
+<li><p><strong>prepend</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If True, the provided post <code class="docutils literal notranslate"><span class="pre">hook</span></code> will be fired before
+all the already registered post-hooks on <code class="docutils literal notranslate"><span class="pre">state_dict</span></code>. Otherwise,
+the provided <code class="docutils literal notranslate"><span class="pre">hook</span></code> will be fired after all the already registered
+post-hooks. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a handle that can be used to remove the added hook by calling
+<code class="docutils literal notranslate"><span class="pre">handle.remove()</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.hooks.RemoveableHandle</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW.register_state_dict_pre_hook">
+<span class="sig-name descname"><span class="pre">register_state_dict_pre_hook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hook</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/stable/optim.html#torch.optim.Optimizer" title="(in PyTorch v2.4)"><span class="pre">Optimizer</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RemovableHandle</span></span></span><a class="headerlink" href="#unit_scaling.optim.AdamW.register_state_dict_pre_hook" title="Permalink to this definition"></a></dt>
+<dd><p>Register a state dict pre-hook which will be called before
+<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.state_dict.html#torch.optim.Optimizer.state_dict" title="(in PyTorch v2.4)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code></a> is called. It should have the
+following signature:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hook</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> argument is the optimizer instance being used.
+The hook will be called with argument <code class="docutils literal notranslate"><span class="pre">self</span></code> before calling <code class="docutils literal notranslate"><span class="pre">state_dict</span></code> on <code class="docutils literal notranslate"><span class="pre">self</span></code>.
+The registered hook can be used to perform pre-processing before the <code class="docutils literal notranslate"><span class="pre">state_dict</span></code>
+call is made.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hook</strong> (<em>Callable</em>) – The user defined hook to be registered.</p></li>
+<li><p><strong>prepend</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If True, the provided pre <code class="docutils literal notranslate"><span class="pre">hook</span></code> will be fired before
+all the already registered pre-hooks on <code class="docutils literal notranslate"><span class="pre">state_dict</span></code>. Otherwise,
+the provided <code class="docutils literal notranslate"><span class="pre">hook</span></code> will be fired after all the already registered
+pre-hooks. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a handle that can be used to remove the added hook by calling
+<code class="docutils literal notranslate"><span class="pre">handle.remove()</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.hooks.RemoveableHandle</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW.register_step_post_hook">
+<span class="sig-name descname"><span class="pre">register_step_post_hook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hook</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RemovableHandle</span></span></span><a class="headerlink" href="#unit_scaling.optim.AdamW.register_step_post_hook" title="Permalink to this definition"></a></dt>
+<dd><p>Register an optimizer step post hook which will be called after optimizer step.
+It should have the following signature:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hook</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> argument is the optimizer instance being used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>hook</strong> (<em>Callable</em>) – The user defined hook to be registered.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a handle that can be used to remove the added hook by calling
+<code class="docutils literal notranslate"><span class="pre">handle.remove()</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.hooks.RemovableHandle</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW.register_step_pre_hook">
+<span class="sig-name descname"><span class="pre">register_step_pre_hook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hook</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RemovableHandle</span></span></span><a class="headerlink" href="#unit_scaling.optim.AdamW.register_step_pre_hook" title="Permalink to this definition"></a></dt>
+<dd><p>Register an optimizer step pre hook which will be called before
+optimizer step. It should have the following signature:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hook</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">modified</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">kwargs</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> argument is the optimizer instance being used. If
+args and kwargs are modified by the pre-hook, then the transformed
+values are returned as a tuple containing the new_args and new_kwargs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>hook</strong> (<em>Callable</em>) – The user defined hook to be registered.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a handle that can be used to remove the added hook by calling
+<code class="docutils literal notranslate"><span class="pre">handle.remove()</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.hooks.RemovableHandle</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW.state_dict">
+<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#unit_scaling.optim.AdamW.state_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the state of the optimizer as a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>.</p>
+<p>It contains two entries:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">state</span></code>: a Dict holding current optimization state. Its content</dt><dd><p>differs between optimizer classes, but some common characteristics
+hold. For example, state is saved per parameter, and the parameter
+itself is NOT saved. <code class="docutils literal notranslate"><span class="pre">state</span></code> is a Dictionary mapping parameter ids
+to a Dict with state corresponding to each parameter.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">param_groups</span></code>: a List containing all parameter groups where each</dt><dd><p>parameter group is a Dict. Each parameter group contains metadata
+specific to the optimizer, such as learning rate and weight decay,
+as well as a List of parameter IDs of the parameters in the group.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>NOTE: The parameter IDs may look like indices but they are just IDs
+associating state with param_group. When loading from a state_dict,
+the optimizer will zip the param_group <code class="docutils literal notranslate"><span class="pre">params</span></code> (int IDs) and the
+optimizer <code class="docutils literal notranslate"><span class="pre">param_groups</span></code> (actual <code class="docutils literal notranslate"><span class="pre">nn.Parameter</span></code> s) in order to
+match state WITHOUT additional verification.</p>
+<p>A returned state dict might look something like:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
+    &#39;state&#39;: {
+        0: {&#39;momentum_buffer&#39;: tensor(...), ...},
+        1: {&#39;momentum_buffer&#39;: tensor(...), ...},
+        2: {&#39;momentum_buffer&#39;: tensor(...), ...},
+        3: {&#39;momentum_buffer&#39;: tensor(...), ...}
+    },
+    &#39;param_groups&#39;: [
+        {
+            &#39;lr&#39;: 0.01,
+            &#39;weight_decay&#39;: 0,
+            ...
+            &#39;params&#39;: [0]
+        },
+        {
+            &#39;lr&#39;: 0.001,
+            &#39;weight_decay&#39;: 0.5,
+            ...
+            &#39;params&#39;: [1, 2, 3]
+        }
+    ]
+}
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">closure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torch/optim/adamw.html#AdamW.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.optim.AdamW.step" title="Permalink to this definition"></a></dt>
+<dd><p>Perform a single optimization step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>closure</strong> (<em>Callable</em><em>, </em><em>optional</em>) – A closure that reevaluates the model
+and returns the loss.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="unit_scaling.optim.AdamW.zero_grad">
+<span class="sig-name descname"><span class="pre">zero_grad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">set_to_none</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#unit_scaling.optim.AdamW.zero_grad" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the gradients of all optimized <a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a> s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>set_to_none</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – instead of setting to zero, set the grads to None.
+This will in general have lower memory footprint, and can modestly improve performance.
+However, it changes certain behaviors. For example:
+1. When the user tries to access a gradient and perform manual ops on it,
+a None attribute or a Tensor full of 0s will behave differently.
+2. If the user requests <code class="docutils literal notranslate"><span class="pre">zero_grad(set_to_none=True)</span></code> followed by a backward pass, <code class="docutils literal notranslate"><span class="pre">.grad</span></code>s
+are guaranteed to be None for params that did not receive a gradient.
+3. <code class="docutils literal notranslate"><span class="pre">torch.optim</span></code> optimizers have a different behavior if the gradient is 0 or None
+(in one case it does the step with a gradient of 0 and in the other it skips
+the step altogether).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unit_scaling.optim.Adam.html" class="btn btn-neutral float-left" title="5.1.22.5. unit_scaling.optim.Adam" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.optim.SGD.html" class="btn btn-neutral float-right" title="5.1.22.7. unit_scaling.optim.SGD" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

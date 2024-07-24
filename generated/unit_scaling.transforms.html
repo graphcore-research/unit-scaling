@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5.7. unit_scaling.transforms &mdash; unit-scaling  documentation</title>
+  <title>5.6. unit_scaling.transforms &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/scales.png"/>
@@ -18,8 +18,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="5.7.1. unit_scaling.transforms.compile" href="unit_scaling.transforms.compile.html" />
-    <link rel="prev" title="5.6.2. unit_scaling.scale.scale_fwd" href="unit_scaling.scale.scale_fwd.html" /> 
+    <link rel="next" title="5.6.1. unit_scaling.transforms.compile" href="unit_scaling.transforms.compile.html" />
+    <link rel="prev" title="5.5.2. unit_scaling.scale.scale_fwd" href="unit_scaling.scale.scale_fwd.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -34,7 +34,7 @@
             unit-scaling
           </a>
               <div class="version">
-                0.1
+                0.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -55,22 +55,24 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">5.2. unit_scaling.analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">5.3. unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">5.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.5. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.6. unit_scaling.scale</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">5.7. unit_scaling.transforms</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.compile.html">5.7.1. unit_scaling.transforms.compile</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_non_float_tensors.html">5.7.2. unit_scaling.transforms.prune_non_float_tensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_same_scale_tensors.html">5.7.3. unit_scaling.transforms.prune_same_scale_tensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_selected_nodes.html">5.7.4. unit_scaling.transforms.prune_selected_nodes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_format.html">5.7.5. unit_scaling.transforms.simulate_format</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html">5.7.6. unit_scaling.transforms.simulate_fp8</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.track_scales.html">5.7.7. unit_scaling.transforms.track_scales</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.unit_scale.html">5.7.8. unit_scaling.transforms.unit_scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.Metrics.html">5.7.9. unit_scaling.transforms.Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">5.1.22. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.5. unit_scaling.scale</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">5.6. unit_scaling.transforms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.compile.html">5.6.1. unit_scaling.transforms.compile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_non_float_tensors.html">5.6.2. unit_scaling.transforms.prune_non_float_tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_same_scale_tensors.html">5.6.3. unit_scaling.transforms.prune_same_scale_tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_selected_nodes.html">5.6.4. unit_scaling.transforms.prune_selected_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_format.html">5.6.5. unit_scaling.transforms.simulate_format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html">5.6.6. unit_scaling.transforms.simulate_fp8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.track_scales.html">5.6.7. unit_scaling.transforms.track_scales</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.unit_scale.html">5.6.8. unit_scaling.transforms.unit_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.Metrics.html">5.6.9. unit_scaling.transforms.Metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.8. unit_scaling.transforms.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">5.9. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.7. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">5.8. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">5.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -90,7 +92,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">5. </span>API reference</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">5.7. </span>unit_scaling.transforms</li>
+      <li class="breadcrumb-item active"><span class="section-number">5.6. </span>unit_scaling.transforms</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/generated/unit_scaling.transforms.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -101,7 +103,7 @@
            <div itemprop="articleBody">
              
   <section id="module-unit_scaling.transforms">
-<span id="unit-scaling-transforms"></span><h1><span class="section-number">5.7. </span>unit_scaling.transforms<a class="headerlink" href="#module-unit_scaling.transforms" title="Permalink to this heading"></a></h1>
+<span id="unit-scaling-transforms"></span><h1><span class="section-number">5.6. </span>unit_scaling.transforms<a class="headerlink" href="#module-unit_scaling.transforms" title="Permalink to this heading"></a></h1>
 <p>Useful torch dynamo transforms of modules for the sake of numerics and unit
 scaling.</p>
 <p class="rubric">Functions</p>
@@ -147,8 +149,8 @@ scaling.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.scale.scale_fwd.html" class="btn btn-neutral float-left" title="5.6.2. unit_scaling.scale.scale_fwd" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.transforms.compile.html" class="btn btn-neutral float-right" title="5.7.1. unit_scaling.transforms.compile" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.scale.scale_fwd.html" class="btn btn-neutral float-left" title="5.5.2. unit_scaling.scale.scale_fwd" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.transforms.compile.html" class="btn btn-neutral float-right" title="5.6.1. unit_scaling.transforms.compile" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

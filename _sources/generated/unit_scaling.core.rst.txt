@@ -1,0 +1,46 @@
+..
+   # Copyright (c) 2023 Graphcore Ltd. All rights reserved.
+   # Copyright (c) 2007-2023 by the Sphinx team. All rights reserved.
+
+unit\_scaling.core
+==================
+
+.. automodule:: unit_scaling.core
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   
+      unit_scaling.core.functional
+   
+

@@ -1,0 +1,6 @@
+unit\_scaling.functional.silu
+=============================
+
+.. currentmodule:: unit_scaling.functional
+
+.. autofunction:: silu

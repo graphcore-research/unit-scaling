@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5.7.1. unit_scaling.transforms.compile &mdash; unit-scaling  documentation</title>
+  <title>5.6.1. unit_scaling.transforms.compile &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/scales.png"/>
@@ -18,8 +18,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="5.7.2. unit_scaling.transforms.prune_non_float_tensors" href="unit_scaling.transforms.prune_non_float_tensors.html" />
-    <link rel="prev" title="5.7. unit_scaling.transforms" href="unit_scaling.transforms.html" /> 
+    <link rel="next" title="5.6.2. unit_scaling.transforms.prune_non_float_tensors" href="unit_scaling.transforms.prune_non_float_tensors.html" />
+    <link rel="prev" title="5.6. unit_scaling.transforms" href="unit_scaling.transforms.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -34,7 +34,7 @@
             unit-scaling
           </a>
               <div class="version">
-                0.1
+                0.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -55,25 +55,27 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">5.2. unit_scaling.analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">5.3. unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">5.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.5. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.6. unit_scaling.scale</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.transforms.html">5.7. unit_scaling.transforms</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">5.7.1. unit_scaling.transforms.compile</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">5.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">5.1.22. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">5.5. unit_scaling.scale</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.transforms.html">5.6. unit_scaling.transforms</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">5.6.1. unit_scaling.transforms.compile</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#unit_scaling.transforms.compile"><code class="docutils literal notranslate"><span class="pre">compile()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_non_float_tensors.html">5.7.2. unit_scaling.transforms.prune_non_float_tensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_same_scale_tensors.html">5.7.3. unit_scaling.transforms.prune_same_scale_tensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_selected_nodes.html">5.7.4. unit_scaling.transforms.prune_selected_nodes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_format.html">5.7.5. unit_scaling.transforms.simulate_format</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html">5.7.6. unit_scaling.transforms.simulate_fp8</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.track_scales.html">5.7.7. unit_scaling.transforms.track_scales</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.unit_scale.html">5.7.8. unit_scaling.transforms.unit_scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.Metrics.html">5.7.9. unit_scaling.transforms.Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_non_float_tensors.html">5.6.2. unit_scaling.transforms.prune_non_float_tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_same_scale_tensors.html">5.6.3. unit_scaling.transforms.prune_same_scale_tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.prune_selected_nodes.html">5.6.4. unit_scaling.transforms.prune_selected_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_format.html">5.6.5. unit_scaling.transforms.simulate_format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html">5.6.6. unit_scaling.transforms.simulate_fp8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.track_scales.html">5.6.7. unit_scaling.transforms.track_scales</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.unit_scale.html">5.6.8. unit_scaling.transforms.unit_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.Metrics.html">5.6.9. unit_scaling.transforms.Metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.8. unit_scaling.transforms.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">5.9. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">5.7. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">5.8. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">5.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -93,8 +95,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">5. </span>API reference</a></li>
-          <li class="breadcrumb-item"><a href="unit_scaling.transforms.html"><span class="section-number">5.7. </span>unit_scaling.transforms</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">5.7.1. </span>unit_scaling.transforms.compile</li>
+          <li class="breadcrumb-item"><a href="unit_scaling.transforms.html"><span class="section-number">5.6. </span>unit_scaling.transforms</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.6.1. </span>unit_scaling.transforms.compile</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/generated/unit_scaling.transforms.compile.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -105,13 +107,13 @@
            <div itemprop="articleBody">
              
   <section id="unit-scaling-transforms-compile">
-<h1><span class="section-number">5.7.1. </span>unit_scaling.transforms.compile<a class="headerlink" href="#unit-scaling-transforms-compile" title="Permalink to this heading"></a></h1>
+<h1><span class="section-number">5.6.1. </span>unit_scaling.transforms.compile<a class="headerlink" href="#unit-scaling-transforms-compile" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="unit_scaling.transforms.compile">
 <span class="sig-prename descclassname"><span class="pre">unit_scaling.transforms.</span></span><span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">M</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">M</span></span></span><a class="reference internal" href="../_modules/unit_scaling/transforms/_compile.html#compile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.transforms.compile" title="Permalink to this definition"></a></dt>
 <dd><p>A transform that applies torch.compile to a module.</p>
 <p>Note that this is slightly different to calling <code class="code docutils literal notranslate"><span class="pre">torch.compile(module)</span></code>.</p>
-<p>The current version of <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> doesn’t allow for nested transforms, so
+<p>The current version of <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> doesn’t allow for nested transforms, so
 the following is not supported:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
 
@@ -134,12 +136,12 @@ transform. This means that the following can be written:</p>
 </div>
 <p>This will successfully combine the two transforms in a single module. Note that
 the call to compile must still come last, as its underlying backend returns a
-standard <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> rather than a <a class="reference external" href="https://pytorch.org/docs/stable/fx.html#torch.fx.GraphModule" title="(in PyTorch v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.fx.GraphModule</span></code></a>.</p>
+standard <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> rather than a <a class="reference external" href="https://pytorch.org/docs/stable/fx.html#torch.fx.GraphModule" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.fx.GraphModule</span></code></a>.</p>
 <p>Currently <a class="reference internal" href="#unit_scaling.transforms.compile" title="unit_scaling.transforms.compile"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_scaling.transforms.compile()</span></code></a> does not support the ops needed
 for the <a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html#unit_scaling.transforms.simulate_fp8" title="unit_scaling.transforms.simulate_fp8"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_scaling.transforms.simulate_fp8()</span></code></a> transform, though this may
 change in future PyTorch releases.</p>
 <p>Modules implemented manually with unit-scaled layers (i.e. without the global
-<code class="code docutils literal notranslate"><span class="pre">unit_scale(module)</span></code> transform) can still use <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> in the
+<code class="code docutils literal notranslate"><span class="pre">unit_scale(module)</span></code> transform) can still use <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> in the
 standard way.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -160,8 +162,8 @@ standard way.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.transforms.html" class="btn btn-neutral float-left" title="5.7. unit_scaling.transforms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.transforms.prune_non_float_tensors.html" class="btn btn-neutral float-right" title="5.7.2. unit_scaling.transforms.prune_non_float_tensors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.transforms.html" class="btn btn-neutral float-left" title="5.6. unit_scaling.transforms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.transforms.prune_non_float_tensors.html" class="btn btn-neutral float-right" title="5.6.2. unit_scaling.transforms.prune_non_float_tensors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
