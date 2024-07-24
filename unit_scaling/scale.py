@@ -24,7 +24,7 @@ class _ScaledGrad(torch.autograd.Function):  # pragma: no cover
     """Enables a custom backward method which has a different scale to forward."""
 
     @staticmethod
-    def forward(  # type:ignore[override]
+    def forward(
         ctx: torch.autograd.function.FunctionCtx,
         X: Tensor,
         fwd_scale: float,
