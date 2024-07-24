@@ -1,6 +1,6 @@
 # Copyright (c) 2024 Graphcore Ltd. All rights reserved.
 
-"""Extends :class:`torch.nn.Parameter` with attributes for u-muP."""
+"""Extends :class:`torch.nn.Parameter` with attributes for u-μP."""
 
 # mypy: disable-error-code="attr-defined, method-assign, no-untyped-call"
 
@@ -14,7 +14,7 @@ MupType = Literal["weight", "bias", "norm", "output"]
 
 
 class ParameterData(Protocol):
-    """Extra fields for :class:`torch.nn.Parameter`, tagging u-muP metadata.
+    """Extra fields for :class:`torch.nn.Parameter`, tagging u-μP metadata.
 
     Objects supporting this protocol should implicitly also support
     :class:`torch.nn.Parameter`.
@@ -66,7 +66,7 @@ def _parameter_reduce_ex(self: nn.Parameter, protocol: int) -> Any:
 def Parameter(
     data: Tensor, mup_type: MupType, mup_scaling_depth: Optional[int] = None
 ) -> nn.Parameter:
-    """Construct a u-muP parameter object, an annotated :class:`torch.nn.Parameter`.
+    """Construct a u-μP parameter object, an annotated :class:`torch.nn.Parameter`.
 
     The returned parameter also supports the :class:`ParameterData` protocol:
 

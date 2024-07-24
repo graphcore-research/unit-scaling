@@ -86,12 +86,18 @@ def transformer_residual_scaling_rule(
     """Compute the residual tau ratios for the default transformer rule.
 
     For a transformer stack that starts with embedding, then alternates
-    between self-attention and MLP layers, this rule ensures:
+    between attention and MLP layers, this rule ensures:
 
-     - Embedding contributes :code:`1 / sqrt(1 + 2 * residual_mult**2)`.
-     - Every Attn layer contributes the same scale.
+     - Every attention layer contributes the same scale.
      - Every MLP layer contributes the same scale.
+     - The ratio of the average (variance) contribution of all attention
+       and all MLP layers to the embedding layer is `residual_mult`.
      - The ratio of Attn to MLP contributions is `residual_attn_ratio`.
+
+    If both hyperparameters are set to 1.0, the total contribution of
+    embedding, attention and MLP layers are all equal.
+
+    This scheme is described in Appendix G of the u-μP paper,
 
     Args:
         residual_mult (float, optional): contribution of residual layers
