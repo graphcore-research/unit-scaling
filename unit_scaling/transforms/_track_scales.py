@@ -117,7 +117,7 @@ def _make_input_tensors_require_grad(module: nn.Module) -> None:
 
 class ScaleTrackingAutogradFunction(torch.autograd.Function):
     @staticmethod
-    def forward(  # type:ignore[override]
+    def forward(
         ctx: torch.autograd.function.FunctionCtx,
         t: Tensor,
         node_meta: Dict[str, Any],

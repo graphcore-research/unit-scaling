@@ -147,7 +147,7 @@ def scaled_parameters(
 @inherit_docstring(
     short_description="An **lr-scaled** version of :class:`torch.optim.SGD` for u-muP."
 )
-class SGD(torch.optim.SGD):
+class SGD(torch.optim.SGD):  # type:ignore[name-defined,misc]
     def __init__(
         self,
         params: ParamsT,
@@ -173,7 +173,7 @@ class SGD(torch.optim.SGD):
 @inherit_docstring(
     short_description="An **lr-scaled** version of :class:`torch.optim.Adam` for u-muP."
 )
-class Adam(torch.optim.Adam):
+class Adam(torch.optim.Adam):  # type:ignore[name-defined,misc]
     def __init__(
         self,
         params: ParamsT,
@@ -201,7 +201,7 @@ class Adam(torch.optim.Adam):
         "An **lr-scaled** version of :class:`torch.optim.AdamW` for u-muP."
     )
 )
-class AdamW(torch.optim.AdamW):
+class AdamW(torch.optim.AdamW):  # type:ignore[name-defined,misc]
     def __init__(
         self,
         params: ParamsT,

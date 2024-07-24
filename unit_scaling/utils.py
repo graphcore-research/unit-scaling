@@ -44,7 +44,7 @@ class ScaleTracker(torch.autograd.Function):
     backward pass in the supplied `ScalePair`."""
 
     @staticmethod
-    def forward(  # type:ignore[override]
+    def forward(
         ctx: torch.autograd.function.FunctionCtx,
         t: Tensor,
         scale_tracker: ScalePair,

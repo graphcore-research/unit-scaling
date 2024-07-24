@@ -118,9 +118,7 @@ class FPFormat:
 
         class QuantiseForward(torch.autograd.Function):
             @staticmethod
-            def forward(  # type:ignore[override]
-                ctx: torch.autograd.function.FunctionCtx, x: Tensor
-            ) -> Tensor:
+            def forward(ctx: torch.autograd.function.FunctionCtx, x: Tensor) -> Tensor:
                 return self.quantise(x)
 
             @staticmethod
@@ -143,9 +141,7 @@ class FPFormat:
 
         class QuantiseBackward(torch.autograd.Function):
             @staticmethod
-            def forward(  # type:ignore[override]
-                ctx: torch.autograd.function.FunctionCtx, x: Tensor
-            ) -> Tensor:
+            def forward(ctx: torch.autograd.function.FunctionCtx, x: Tensor) -> Tensor:
                 return x
 
             @staticmethod
