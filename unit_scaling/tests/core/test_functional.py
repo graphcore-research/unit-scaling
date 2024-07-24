@@ -86,11 +86,14 @@ def test_transformer_residual_scaling_rule(
 
     # Basic properties
     assert_close(scales.pow(2).sum(), tensor(1.0))
-    assert_close(embedding_scale, tensor((1 + 2 * residual_mult**2) ** -0.5))
-    assert_close(
-        attn_scales.pow(2).sum().sqrt() / mlp_scales.pow(2).sum().sqrt(),
-        tensor(residual_attn_ratio),
-    )
+
+    s_embedding = embedding_scale
+    s_attn = attn_scales.pow(2).sum().sqrt()
+    s_mlp = mlp_scales.pow(2).sum().sqrt()
+    s_attn_mlp_average = ((s_attn**2 + s_mlp**2) / 2).sqrt()
+
+    assert_close(s_attn_mlp_average / s_embedding, tensor(residual_mult))
+    assert_close(s_attn / s_mlp, tensor(residual_attn_ratio))
 
     # Per-layer scales are equal
     assert_close(attn_scales, attn_scales[:1].broadcast_to(attn_scales.shape))
