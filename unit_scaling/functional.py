@@ -45,7 +45,6 @@ def _unscaled_gelu(x: Tensor, mult: float, approximate: str) -> Tensor:
     F.gelu,
     short_description="Applies a **unit-scaled** GELU function.",
     add_args=[mult_docstring(), binary_constraint_docstring],
-    unsupported_args=["approximate"],
 )
 def gelu(
     input: Tensor,
@@ -368,8 +367,8 @@ def residual_split(input: Tensor, tau: float = 1.0) -> Tuple[Tensor, Tensor]:
     Args:
         input (Tensor): the tensor to which the residual layer is to be applied.
         tau (float, optional): the ratio of scale of contributions of the residual
-            branch to the skip connection. Larger values favor skip over residual.
-            Defaults to 1 (equal contribution).
+            branch to the skip connection. Values larger than one favor skip over
+            residual. Defaults to 1 (equal contribution).
 
     Returns:
         Tuple[Tensor, Tensor]: resulting tensors in the order: `residual, skip`.

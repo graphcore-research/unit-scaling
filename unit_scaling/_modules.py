@@ -26,7 +26,6 @@ from .parameter import MupType, Parameter, has_parameter_data
 @inherit_docstring(
     short_description="Applies a **unit-scaled** Gaussian Error Linear Units function:",
     add_args=[mult_docstring(), binary_constraint_docstring],
-    unsupported_args=["approximate"],
 )
 class GELU(nn.GELU):
     def __init__(
