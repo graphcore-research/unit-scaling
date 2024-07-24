@@ -10,6 +10,7 @@ from .._modules import (
     MLP,
     CrossEntropyLoss,
     DepthModuleList,
+    DepthSequential,
     Dropout,
     Embedding,
     LayerNorm,
@@ -18,7 +19,6 @@ from .._modules import (
     RMSNorm,
     SiLU,
     Softmax,
-    Stack,
     TransformerDecoder,
     TransformerLayer,
 )
@@ -231,8 +231,8 @@ def test_depth_module_list() -> None:
         DepthModuleList([torch.nn.Linear(10, 10) for _ in range(5)])
 
 
-def test_stack() -> None:
-    model = Stack(*(Linear(2**6, 2**6) for _ in range(7)))
+def test_depth_sequential() -> None:
+    model = DepthSequential(*(Linear(2**6, 2**6) for _ in range(7)))
     for param in model.parameters():
         assert has_parameter_data(param)
         assert param.mup_scaling_depth == 7
@@ -243,7 +243,7 @@ def test_stack() -> None:
     assert_unit_scaled(output, input.grad)
 
     with pytest.raises(ValueError):
-        Stack(*[torch.nn.Linear(2**6, 2**6) for _ in range(7)])
+        DepthSequential(*[torch.nn.Linear(2**6, 2**6) for _ in range(7)])
 
 
 def test_transformer_decoder() -> None:

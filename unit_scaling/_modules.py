@@ -513,7 +513,7 @@ class DepthModuleList(nn.ModuleList):
     "\nNote that this does not track depth changes caused by modifications"
     " after initial construction."
 )
-class Stack(nn.Sequential):
+class DepthSequential(nn.Sequential):
     def __init__(self, *args: Any) -> None:
         super().__init__(*args)
         for name, parameter in self.named_parameters():
@@ -526,7 +526,7 @@ class Stack(nn.Sequential):
             parameter.mup_scaling_depth = len(self)
 
 
-class TransformerStack(Stack):
+class TransformerStack(DepthSequential):
     """A **unit-scaled** transformer stack, applying a residual scaling rule.
 
     See :code:`TransformerLayer` for arguments.

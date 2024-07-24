@@ -12,6 +12,7 @@ from ._modules import (
     MLP,
     CrossEntropyLoss,
     DepthModuleList,
+    DepthSequential,
     Dropout,
     Embedding,
     LayerNorm,
@@ -20,7 +21,6 @@ from ._modules import (
     RMSNorm,
     SiLU,
     Softmax,
-    Stack,
     TransformerDecoder,
     TransformerLayer,
 )
@@ -33,6 +33,7 @@ __all__ = [
     # Modules
     "CrossEntropyLoss",
     "DepthModuleList",
+    "DepthSequential",
     "Dropout",
     "Embedding",
     "GELU",
@@ -45,7 +46,6 @@ __all__ = [
     "RMSNorm",
     "SiLU",
     "Softmax",
-    "Stack",
     "TransformerDecoder",
     "TransformerLayer",
     # Modules
