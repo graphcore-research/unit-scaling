@@ -21,6 +21,6 @@ setuptools.setup(
     name="unit-scaling",
     version=version,
     description="A library for unit scaling in PyTorch.",
-    packages=["unit_scaling", "unit_scaling.transforms"],
+    packages=["unit_scaling", "unit_scaling.core", "unit_scaling.transforms"],
     install_requires=requirements,
 )
