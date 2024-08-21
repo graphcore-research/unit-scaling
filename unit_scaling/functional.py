@@ -515,7 +515,8 @@ def scaled_dot_product_attention(
     *_, seq_len, d_head = value.shape
     # Empirical model of attention output std given mult and seq_len
     scale = (1 - dropout_p) ** 0.5 / logarithmic_interpolation(
-        alpha=1 / (1 + 4 * d_head / mult**2),  # = sigmoid(log(mult**2 / (4 * d_head)))
+        alpha=1
+        / (1 + 4 * d_head / mult**2),  # = sigmoid(log(mult**2 / (4 * d_head)))
         lower=((log(seq_len) if is_causal else 1) / seq_len) ** 0.5,
         upper=1.0,
     )

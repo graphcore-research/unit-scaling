@@ -36,8 +36,10 @@ def _get_fan_in(param: ParameterData) -> int:
         return param.shape[0]
     if len(param.shape) == 2:
         return param.shape[1]
+    if len(param.shape) == 3:
+        return param.shape[1] * param.shape[2]
     raise ValueError(
-        f"Cannot get fan_in of `ndim >= 3` param, shape={tuple(param.shape)}"
+        f"Cannot get fan_in of `ndim >= 4` param, shape={tuple(param.shape)}"
     )
 
 
