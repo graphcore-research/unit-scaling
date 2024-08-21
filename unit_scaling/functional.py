@@ -263,6 +263,49 @@ def linear_readout(
 
 
 @docstring_from(
+    F.conv1d,
+    short_description="Applies a **unit-scaled** 1D convolution.",
+    add_args=[
+        binary_constraint_docstring,
+        "scale_power ((float, float, float), optional): scaling power"
+        " for each of (output, grad(input), grad(weight|bias))",
+    ],
+)
+def conv1d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: int = 1,
+    padding: int = 0,
+    dilation: int = 1,
+    groups: int = 1,
+    constraint: Optional[str] = "to_output_scale",
+    scale_power: Tuple[float, float, float] = (0.5, 0.5, 0.5),
+) -> Tensor:
+    fan_out, fan_in, kernel_size = weight.shape
+    seq_len = input.shape[-1]
+    out_size = (seq_len + 2 * padding - dilation * (kernel_size - 1) - 1) // stride + 1
+    batch_size = out_size
+    if len(input.shape) > 2:
+        batch_size *= input.shape[:-2].numel()
+
+    output_scale = 1 / (fan_in * kernel_size) ** scale_power[0]
+    grad_input_scale = (stride * groups / (fan_out * kernel_size)) ** scale_power[1]
+    grad_weight_scale = grad_bias_scale = 1 / batch_size ** scale_power[2]
+
+    output_scale, grad_input_scale = apply_constraint(
+        constraint, output_scale, grad_input_scale
+    )
+
+    input = scale_bwd(input, grad_input_scale)
+    weight = scale_bwd(weight, grad_weight_scale)
+    bias = scale_bwd(bias, grad_bias_scale) if bias is not None else None
+    output = F.conv1d(input, weight, bias, stride, padding, dilation, groups)
+    assert out_size == output.shape[-1]
+    return scale_fwd(output, output_scale)
+
+
+@docstring_from(
     F.layer_norm,
     short_description=(
         "Applies a **unit-scaled** Layer Normalization for last certain number"
