@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.1.21.2. unit_scaling.functional.cross_entropy &mdash; unit-scaling  documentation</title>
+  <title>4.1.21.3. unit_scaling.functional.cross_entropy &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/scales.png"/>
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4.1.21.3. unit_scaling.functional.dropout" href="unit_scaling.functional.dropout.html" />
-    <link rel="prev" title="4.1.21.1. unit_scaling.functional.add" href="unit_scaling.functional.add.html" /> 
+    <link rel="next" title="4.1.21.4. unit_scaling.functional.dropout" href="unit_scaling.functional.dropout.html" />
+    <link rel="prev" title="4.1.21.2. unit_scaling.functional.conv1d" href="unit_scaling.functional.conv1d.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -74,23 +74,24 @@
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.core.html">4.1.20. unit_scaling.core</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="unit_scaling.functional.html">4.1.21. unit_scaling.functional</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.add.html">4.1.21.1. unit_scaling.functional.add</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">4.1.21.2. unit_scaling.functional.cross_entropy</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.dropout.html">4.1.21.3. unit_scaling.functional.dropout</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.embedding.html">4.1.21.4. unit_scaling.functional.embedding</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.gelu.html">4.1.21.5. unit_scaling.functional.gelu</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">4.1.21.6. unit_scaling.functional.layer_norm</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.linear.html">4.1.21.7. unit_scaling.functional.linear</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.linear_readout.html">4.1.21.8. unit_scaling.functional.linear_readout</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.matmul.html">4.1.21.9. unit_scaling.functional.matmul</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.mse_loss.html">4.1.21.10. unit_scaling.functional.mse_loss</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_add.html">4.1.21.11. unit_scaling.functional.residual_add</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_apply.html">4.1.21.12. unit_scaling.functional.residual_apply</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_split.html">4.1.21.13. unit_scaling.functional.residual_split</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.rms_norm.html">4.1.21.14. unit_scaling.functional.rms_norm</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.scaled_dot_product_attention.html">4.1.21.15. unit_scaling.functional.scaled_dot_product_attention</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.silu.html">4.1.21.16. unit_scaling.functional.silu</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.silu_glu.html">4.1.21.17. unit_scaling.functional.silu_glu</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.softmax.html">4.1.21.18. unit_scaling.functional.softmax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.conv1d.html">4.1.21.2. unit_scaling.functional.conv1d</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">4.1.21.3. unit_scaling.functional.cross_entropy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.dropout.html">4.1.21.4. unit_scaling.functional.dropout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.embedding.html">4.1.21.5. unit_scaling.functional.embedding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.gelu.html">4.1.21.6. unit_scaling.functional.gelu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">4.1.21.7. unit_scaling.functional.layer_norm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.linear.html">4.1.21.8. unit_scaling.functional.linear</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.linear_readout.html">4.1.21.9. unit_scaling.functional.linear_readout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.matmul.html">4.1.21.10. unit_scaling.functional.matmul</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.mse_loss.html">4.1.21.11. unit_scaling.functional.mse_loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_add.html">4.1.21.12. unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_apply.html">4.1.21.13. unit_scaling.functional.residual_apply</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_split.html">4.1.21.14. unit_scaling.functional.residual_split</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.rms_norm.html">4.1.21.15. unit_scaling.functional.rms_norm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.scaled_dot_product_attention.html">4.1.21.16. unit_scaling.functional.scaled_dot_product_attention</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.silu.html">4.1.21.17. unit_scaling.functional.silu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.silu_glu.html">4.1.21.18. unit_scaling.functional.silu_glu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.softmax.html">4.1.21.19. unit_scaling.functional.softmax</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.optim.html">4.1.22. unit_scaling.optim</a></li>
@@ -102,26 +103,27 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">4.4. unit_scaling.formats</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.functional.html">4.1.21. unit_scaling.functional</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.add.html">4.1.21.1. unit_scaling.functional.add</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">4.1.21.2. unit_scaling.functional.cross_entropy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.conv1d.html">4.1.21.2. unit_scaling.functional.conv1d</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.1.21.3. unit_scaling.functional.cross_entropy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.cross_entropy"><code class="docutils literal notranslate"><span class="pre">cross_entropy()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">4.1.21.3. unit_scaling.functional.dropout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">4.1.21.4. unit_scaling.functional.embedding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">4.1.21.5. unit_scaling.functional.gelu</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">4.1.21.6. unit_scaling.functional.layer_norm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">4.1.21.7. unit_scaling.functional.linear</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear_readout.html">4.1.21.8. unit_scaling.functional.linear_readout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">4.1.21.9. unit_scaling.functional.matmul</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.mse_loss.html">4.1.21.10. unit_scaling.functional.mse_loss</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">4.1.21.11. unit_scaling.functional.residual_add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_apply.html">4.1.21.12. unit_scaling.functional.residual_apply</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">4.1.21.13. unit_scaling.functional.residual_split</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.rms_norm.html">4.1.21.14. unit_scaling.functional.rms_norm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scaled_dot_product_attention.html">4.1.21.15. unit_scaling.functional.scaled_dot_product_attention</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.silu.html">4.1.21.16. unit_scaling.functional.silu</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.silu_glu.html">4.1.21.17. unit_scaling.functional.silu_glu</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">4.1.21.18. unit_scaling.functional.softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">4.1.21.4. unit_scaling.functional.dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">4.1.21.5. unit_scaling.functional.embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">4.1.21.6. unit_scaling.functional.gelu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">4.1.21.7. unit_scaling.functional.layer_norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">4.1.21.8. unit_scaling.functional.linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear_readout.html">4.1.21.9. unit_scaling.functional.linear_readout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">4.1.21.10. unit_scaling.functional.matmul</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.mse_loss.html">4.1.21.11. unit_scaling.functional.mse_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">4.1.21.12. unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_apply.html">4.1.21.13. unit_scaling.functional.residual_apply</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">4.1.21.14. unit_scaling.functional.residual_split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.rms_norm.html">4.1.21.15. unit_scaling.functional.rms_norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scaled_dot_product_attention.html">4.1.21.16. unit_scaling.functional.scaled_dot_product_attention</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.silu.html">4.1.21.17. unit_scaling.functional.silu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.silu_glu.html">4.1.21.18. unit_scaling.functional.silu_glu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">4.1.21.19. unit_scaling.functional.softmax</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">4.1.22. unit_scaling.optim</a></li>
@@ -151,7 +153,7 @@
           <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.html"><span class="section-number">4.1. </span>unit_scaling</a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.functional.html"><span class="section-number">4.1.21. </span>unit_scaling.functional</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4.1.21.2. </span>unit_scaling.functional.cross_entropy</li>
+      <li class="breadcrumb-item active"><span class="section-number">4.1.21.3. </span>unit_scaling.functional.cross_entropy</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/generated/unit_scaling.functional.cross_entropy.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -162,7 +164,7 @@
            <div itemprop="articleBody">
              
   <section id="unit-scaling-functional-cross-entropy">
-<h1><span class="section-number">4.1.21.2. </span>unit_scaling.functional.cross_entropy<a class="headerlink" href="#unit-scaling-functional-cross-entropy" title="Permalink to this heading"></a></h1>
+<h1><span class="section-number">4.1.21.3. </span>unit_scaling.functional.cross_entropy<a class="headerlink" href="#unit-scaling-functional-cross-entropy" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="unit_scaling.functional.cross_entropy">
 <span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">cross_entropy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_average</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_smoothing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#cross_entropy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.cross_entropy" title="Permalink to this definition"></a></dt>
@@ -243,8 +245,8 @@ If containing class probabilities, same shape as the input and each value should
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.functional.add.html" class="btn btn-neutral float-left" title="4.1.21.1. unit_scaling.functional.add" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.functional.dropout.html" class="btn btn-neutral float-right" title="4.1.21.3. unit_scaling.functional.dropout" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.functional.conv1d.html" class="btn btn-neutral float-left" title="4.1.21.2. unit_scaling.functional.conv1d" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.functional.dropout.html" class="btn btn-neutral float-right" title="4.1.21.4. unit_scaling.functional.dropout" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

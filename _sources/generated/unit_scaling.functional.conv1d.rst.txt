@@ -1,0 +1,6 @@
+unit\_scaling.functional.conv1d
+===============================
+
+.. currentmodule:: unit_scaling.functional
+
+.. autofunction:: conv1d

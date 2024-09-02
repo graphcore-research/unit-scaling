@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.1.21.17. unit_scaling.functional.silu &mdash; unit-scaling  documentation</title>
+  <title>4.1.21.2. unit_scaling.functional.conv1d &mdash; unit-scaling  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/scales.png"/>
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4.1.21.18. unit_scaling.functional.silu_glu" href="unit_scaling.functional.silu_glu.html" />
-    <link rel="prev" title="4.1.21.16. unit_scaling.functional.scaled_dot_product_attention" href="unit_scaling.functional.scaled_dot_product_attention.html" /> 
+    <link rel="next" title="4.1.21.3. unit_scaling.functional.cross_entropy" href="unit_scaling.functional.cross_entropy.html" />
+    <link rel="prev" title="4.1.21.1. unit_scaling.functional.add" href="unit_scaling.functional.add.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -74,7 +74,7 @@
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.core.html">4.1.20. unit_scaling.core</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="unit_scaling.functional.html">4.1.21. unit_scaling.functional</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.add.html">4.1.21.1. unit_scaling.functional.add</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.conv1d.html">4.1.21.2. unit_scaling.functional.conv1d</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">4.1.21.2. unit_scaling.functional.conv1d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">4.1.21.3. unit_scaling.functional.cross_entropy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.dropout.html">4.1.21.4. unit_scaling.functional.dropout</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.embedding.html">4.1.21.5. unit_scaling.functional.embedding</a></li>
@@ -89,7 +89,7 @@
 <li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_split.html">4.1.21.14. unit_scaling.functional.residual_split</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.rms_norm.html">4.1.21.15. unit_scaling.functional.rms_norm</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.scaled_dot_product_attention.html">4.1.21.16. unit_scaling.functional.scaled_dot_product_attention</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">4.1.21.17. unit_scaling.functional.silu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.silu.html">4.1.21.17. unit_scaling.functional.silu</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.silu_glu.html">4.1.21.18. unit_scaling.functional.silu_glu</a></li>
 <li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.softmax.html">4.1.21.19. unit_scaling.functional.softmax</a></li>
 </ul>
@@ -103,7 +103,10 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">4.4. unit_scaling.formats</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.functional.html">4.1.21. unit_scaling.functional</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.add.html">4.1.21.1. unit_scaling.functional.add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.conv1d.html">4.1.21.2. unit_scaling.functional.conv1d</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.1.21.2. unit_scaling.functional.conv1d</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.conv1d"><code class="docutils literal notranslate"><span class="pre">conv1d()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">4.1.21.3. unit_scaling.functional.cross_entropy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">4.1.21.4. unit_scaling.functional.dropout</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">4.1.21.5. unit_scaling.functional.embedding</a></li>
@@ -118,10 +121,7 @@
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">4.1.21.14. unit_scaling.functional.residual_split</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.rms_norm.html">4.1.21.15. unit_scaling.functional.rms_norm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.scaled_dot_product_attention.html">4.1.21.16. unit_scaling.functional.scaled_dot_product_attention</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">4.1.21.17. unit_scaling.functional.silu</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.silu"><code class="docutils literal notranslate"><span class="pre">silu()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.silu.html">4.1.21.17. unit_scaling.functional.silu</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.silu_glu.html">4.1.21.18. unit_scaling.functional.silu_glu</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">4.1.21.19. unit_scaling.functional.softmax</a></li>
 </ul>
@@ -153,9 +153,9 @@
           <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.html"><span class="section-number">4.1. </span>unit_scaling</a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.functional.html"><span class="section-number">4.1.21. </span>unit_scaling.functional</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4.1.21.17. </span>unit_scaling.functional.silu</li>
+      <li class="breadcrumb-item active"><span class="section-number">4.1.21.2. </span>unit_scaling.functional.conv1d</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/unit_scaling.functional.silu.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/unit_scaling.functional.conv1d.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -163,33 +163,59 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="unit-scaling-functional-silu">
-<h1><span class="section-number">4.1.21.17. </span>unit_scaling.functional.silu<a class="headerlink" href="#unit-scaling-functional-silu" title="Permalink to this heading"></a></h1>
+  <section id="unit-scaling-functional-conv1d">
+<h1><span class="section-number">4.1.21.2. </span>unit_scaling.functional.conv1d<a class="headerlink" href="#unit-scaling-functional-conv1d" title="Permalink to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="unit_scaling.functional.silu">
-<span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">silu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'to_output_scale'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#silu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.silu" title="Permalink to this definition"></a></dt>
-<dd><p>Applies a <strong>unit-scaled</strong> SiLU function.</p>
-<p>The SiLU function is also known as the swish function.</p>
-<div class="math notranslate nohighlight">
-\[\text{silu}(x) = x * \sigma(x), \text{where } \sigma(x) \text{ is the logistic sigmoid.}\]</div>
+<dt class="sig sig-object py" id="unit_scaling.functional.conv1d">
+<span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">conv1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'to_output_scale'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.5,</span> <span class="pre">0.5,</span> <span class="pre">0.5)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#conv1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.conv1d" title="Permalink to this definition"></a></dt>
+<dd><p>Applies a <strong>unit-scaled</strong> 1D convolution.</p>
+<p>Applies a 1D convolution over an input signal composed of several input
+planes.</p>
+<p>This operator supports <a class="reference external" href="https://pytorch.org/docs/stable/notes/cuda.html#tf32-on-ampere" title="(in PyTorch v2.4)"><span class="xref std std-ref">TensorFloat32</span></a>.</p>
+<p>See <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html#torch.nn.Conv1d" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Conv1d</span></code></a> for details and output shape.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>See <a class="reference external" href="https://arxiv.org/abs/1606.08415">Gaussian Error Linear Units (GELUs)</a>
-where the SiLU (Sigmoid Linear Unit) was originally coined, and see
-<a class="reference external" href="https://arxiv.org/abs/1702.03118">Sigmoid-Weighted Linear Units for Neural Network Function Approximation
-in Reinforcement Learning</a> and <a class="reference external" href="https://arxiv.org/abs/1710.05941v1">Swish:
-a Self-Gated Activation Function</a>
-where the SiLU was experimented with later.</p>
+<p>In some circumstances when given tensors on a CUDA device and using CuDNN, this operator may select a nondeterministic algorithm to increase performance. If this is undesirable, you can try to make the operation deterministic (potentially at a performance cost) by setting <code class="docutils literal notranslate"><span class="pre">torch.backends.cudnn.deterministic</span> <span class="pre">=</span> <span class="pre">True</span></code>. See <span class="xref std std-doc">/notes/randomness</span> for more information.</p>
 </div>
-<p>See <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.SiLU.html#torch.nn.SiLU" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SiLU</span></code></a> for more details.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This operator supports complex data types i.e. <code class="docutils literal notranslate"><span class="pre">complex32,</span> <span class="pre">complex64,</span> <span class="pre">complex128</span></code>.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mult</strong> (<em>float?</em>) – a multiplier to be applied to change the shape of a nonlinear function. Typically, high multipliers (&gt; 1) correspond to a ‘sharper’ (low temperature) function, while low multipliers (&lt; 1) correspond to a ‘flatter’ (high temperature) function.</p></li>
+<li><p><strong>input</strong> – input tensor of shape <span class="math notranslate nohighlight">\((\text{minibatch} , \text{in\_channels} , iW)\)</span></p></li>
+<li><p><strong>weight</strong> – filters of shape <span class="math notranslate nohighlight">\((\text{out\_channels} , \frac{\text{in\_channels}}{\text{groups}} , kW)\)</span></p></li>
+<li><p><strong>bias</strong> – optional bias of shape <span class="math notranslate nohighlight">\((\text{out\_channels})\)</span>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>stride</strong> – the stride of the convolving kernel. Can be a single number or
+a one-element tuple <cite>(sW,)</cite>. Default: 1</p></li>
+<li><p><strong>padding</strong> – <p>implicit paddings on both sides of the input. Can be a string {‘valid’, ‘same’},
+single number or a one-element tuple <cite>(padW,)</cite>. Default: 0
+<code class="docutils literal notranslate"><span class="pre">padding='valid'</span></code> is the same as no padding. <code class="docutils literal notranslate"><span class="pre">padding='same'</span></code> pads
+the input so the output has the same shape as the input. However, this mode
+doesn’t support any stride values other than 1.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">padding='same'</span></code>, if the <code class="docutils literal notranslate"><span class="pre">weight</span></code> is even-length and
+<code class="docutils literal notranslate"><span class="pre">dilation</span></code> is odd in any dimension, a full <code class="xref py py-func docutils literal notranslate"><span class="pre">pad()</span></code> operation
+may be needed internally. Lowering performance.</p>
+</div>
+</p></li>
+<li><p><strong>dilation</strong> – the spacing between kernel elements. Can be a single number or
+a one-element tuple <cite>(dW,)</cite>. Default: 1</p></li>
+<li><p><strong>groups</strong> – split input into groups, <span class="math notranslate nohighlight">\(\text{in\_channels}\)</span> should be divisible by
+the number of groups. Default: 1</p></li>
 <li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em><em>?</em>) – The name of the constraint function to be applied to the outputs &amp; input gradient. In this case, the constraint name must be one of: [None, ‘gmean’, ‘hmean’, ‘amean’, ‘to_output_scale’, ‘to_grad_input_scale’] (see <cite>unit_scaling.constraints</cite> for details on these constraint functions). Defaults to <cite>gmean</cite>.</p></li>
+<li><p><strong>scale_power</strong> (<em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>)</em><em>?</em>) – scaling power for each of (output, grad(input), grad(weight|bias))</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">33</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filters</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">F</span><span class="o">.</span><span class="n">conv1d</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -198,8 +224,8 @@ where the SiLU was experimented with later.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.functional.scaled_dot_product_attention.html" class="btn btn-neutral float-left" title="4.1.21.16. unit_scaling.functional.scaled_dot_product_attention" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.functional.silu_glu.html" class="btn btn-neutral float-right" title="4.1.21.18. unit_scaling.functional.silu_glu" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.functional.add.html" class="btn btn-neutral float-left" title="4.1.21.1. unit_scaling.functional.add" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.functional.cross_entropy.html" class="btn btn-neutral float-right" title="4.1.21.3. unit_scaling.functional.cross_entropy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
