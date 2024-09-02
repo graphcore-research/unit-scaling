@@ -138,7 +138,7 @@ class Linear(nn.Linear):
         self.constraint = constraint
         self.weight = Parameter(self.weight.data, mup_type=weight_mup_type)
         if self.bias is not None:
-            self.bias = Parameter(self.bias, mup_type="bias")
+            self.bias = Parameter(self.bias.data, mup_type="bias")
 
     def reset_parameters(self) -> None:
         nn.init.normal_(self.weight)
@@ -186,6 +186,7 @@ class LinearReadout(Linear):
     short_description=(
         "Applies a **unit-scaled** 1D convolution to the incoming data."
         "\nNote that this layer sets :code:`bias=False` by default."
+        "We also require padding to be supplied as an integer, not a string."
     ),
     add_args=[binary_constraint_docstring],
 )
@@ -196,7 +197,7 @@ class Conv1d(nn.Conv1d):
         out_channels: int,
         kernel_size: int,
         stride: int = 1,
-        padding: Union[str, int] = 0,
+        padding: int = 0,
         dilation: int = 1,
         groups: int = 1,
         bias: bool = False,
@@ -219,6 +220,7 @@ class Conv1d(nn.Conv1d):
             device,
             dtype,
         )
+        assert isinstance(padding, int), "only `int` is supported for padding type"
         self.kernel_size = kernel_size  # type:ignore[assignment]
         self.stride = stride  # type:ignore[assignment]
         self.padding = padding  # type:ignore[assignment]
@@ -226,7 +228,7 @@ class Conv1d(nn.Conv1d):
         self.constraint = constraint
         self.weight = Parameter(self.weight.data, mup_type=weight_mup_type)
         if self.bias is not None:
-            self.bias = Parameter(self.bias, mup_type="bias")
+            self.bias = Parameter(self.bias.data, mup_type="bias")
 
     def reset_parameters(self) -> None:
         nn.init.normal_(self.weight)
