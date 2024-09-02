@@ -8,6 +8,7 @@ from typing import Any, Iterable, List, Optional, Tuple, Union
 
 import einops
 import torch
+import torch.nn.functional as F
 from torch import Tensor, nn
 
 from . import functional as U
@@ -137,7 +138,7 @@ class Linear(nn.Linear):
         self.constraint = constraint
         self.weight = Parameter(self.weight.data, mup_type=weight_mup_type)
         if self.bias is not None:
-            self.bias = Parameter(self.bias, mup_type="bias")
+            self.bias = Parameter(self.bias.data, mup_type="bias")
 
     def reset_parameters(self) -> None:
         nn.init.normal_(self.weight)
@@ -179,6 +180,75 @@ class LinearReadout(Linear):
 
     def forward(self, input: Tensor) -> Tensor:
         return U.linear_readout(input, self.weight, self.bias, self.constraint)
+
+
+@inherit_docstring(
+    short_description=(
+        "Applies a **unit-scaled** 1D convolution to the incoming data."
+        "\nNote that this layer sets :code:`bias=False` by default."
+        "We also require padding to be supplied as an integer, not a string."
+    ),
+    add_args=[binary_constraint_docstring],
+)
+class Conv1d(nn.Conv1d):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int,
+        stride: int = 1,
+        padding: int = 0,
+        dilation: int = 1,
+        groups: int = 1,
+        bias: bool = False,
+        padding_mode: str = "zeros",
+        device: Any = None,
+        dtype: Any = None,
+        constraint: Optional[str] = "to_output_scale",
+        weight_mup_type: MupType = "weight",
+    ) -> None:
+        super().__init__(
+            in_channels,
+            out_channels,
+            kernel_size,
+            stride,
+            padding,
+            dilation,
+            groups,
+            bias,
+            padding_mode,
+            device,
+            dtype,
+        )
+        assert isinstance(padding, int), "only `int` is supported for padding type"
+        self.kernel_size = kernel_size  # type:ignore[assignment]
+        self.stride = stride  # type:ignore[assignment]
+        self.padding = padding  # type:ignore[assignment]
+        self.dilation = dilation  # type:ignore[assignment]
+        self.constraint = constraint
+        self.weight = Parameter(self.weight.data, mup_type=weight_mup_type)
+        if self.bias is not None:
+            self.bias = Parameter(self.bias.data, mup_type="bias")
+
+    def reset_parameters(self) -> None:
+        nn.init.normal_(self.weight)
+        if self.bias is not None:
+            self.bias.data.zero_()
+
+    def forward(self, input: Tensor) -> Tensor:
+        if self.padding_mode != "zeros":
+            input = F.pad(
+                input, self._reversed_padding_repeated_twice, mode=self.padding_mode
+            )
+        return U.conv1d(
+            input,
+            self.weight,
+            self.bias,
+            self.stride,
+            self.padding,
+            self.dilation,
+            self.groups,
+        )
 
 
 @inherit_docstring(

@@ -8,6 +8,7 @@ from .._modules import (
     GELU,
     MHSA,
     MLP,
+    Conv1d,
     CrossEntropyLoss,
     DepthModuleList,
     DepthSequential,
@@ -77,6 +78,28 @@ def test_linear() -> None:
     assert_unit_scaled(model.weight)
     assert_zeros(model.bias)
     assert output.shape == torch.Size([2**8, 2**12])
+
+    unit_backward(output)
+    SGD(model.parameters(), lr=1).step()
+
+    assert float(output.std()) == pytest.approx(1, abs=0.1)
+
+    assert_not_unit_scaled(model.weight)
+    assert_non_zeros(model.bias)
+
+
+def test_conv1d() -> None:
+    batch_size = 2**6
+    d_in = 2**6 * 3
+    d_out = 2**6 * 5
+    kernel_size = 11
+    seq_len = 2**6 * 7
+    input = randn(batch_size, d_in, seq_len, requires_grad=True)
+    model = Conv1d(d_in, d_out, kernel_size, bias=True)
+    output = model(input)
+
+    assert_unit_scaled(model.weight)
+    assert_zeros(model.bias)
 
     unit_backward(output)
     SGD(model.parameters(), lr=1).step()

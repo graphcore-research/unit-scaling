@@ -6,6 +6,7 @@ from torch import Tensor, randint, randn, tensor, zeros
 
 from ..functional import (
     add,
+    conv1d,
     cross_entropy,
     dropout,
     embedding,
@@ -275,6 +276,92 @@ def test_linear_readout() -> None:
 
     assert_unit_scaled(weight.grad, bias.grad)  # constraint=None
     assert_scale(output, target=2**-5)  # 1/sqrt(fan_in)
+
+
+# --- test conv1d() ---
+
+
+def test_conv1d() -> None:
+    batch_size = 2**6
+    d_in = 2**6 * 3
+    d_out = 2**6 * 5
+    kernel_size = 11
+    seq_len = 2**6 * 7
+    input = randn(batch_size, d_in, seq_len, requires_grad=True)
+    weight = randn(d_out, d_in, kernel_size, requires_grad=True)
+    bias = zeros(d_out).requires_grad_()
+    output = conv1d(input, weight, bias, constraint=None)
+    unit_backward(output)
+
+    assert_unit_scaled(output, input.grad, weight.grad, bias.grad)
+
+
+def test_conv1d_stride() -> None:
+    batch_size = 2**6
+    d_in = 2**6 * 3
+    d_out = 2**6 * 5
+    kernel_size = 11
+    seq_len = 2**6 * 7
+    stride = 3
+
+    input = randn(batch_size, d_in, seq_len, requires_grad=True)
+    weight = randn(d_out, d_in, kernel_size, requires_grad=True)
+    bias = zeros(d_out).requires_grad_()
+    output = conv1d(input, weight, bias, stride=stride, constraint=None)
+    unit_backward(output)
+
+    assert_unit_scaled(output, input.grad, weight.grad, bias.grad)
+
+
+def test_conv1d_padding() -> None:
+    batch_size = 2**6
+    d_in = 2**6 * 3
+    d_out = 2**6 * 5
+    kernel_size = 11
+    seq_len = 2**6 * 7
+    padding = 23  # If this is large enough wrt seq_len, test fails
+
+    input = randn(batch_size, d_in, seq_len, requires_grad=True)
+    weight = randn(d_out, d_in, kernel_size, requires_grad=True)
+    bias = zeros(d_out).requires_grad_()
+    output = conv1d(input, weight, bias, padding=padding, constraint=None)
+    unit_backward(output)
+
+    assert_unit_scaled(output, input.grad, weight.grad, bias.grad)
+
+
+def test_conv1d_dilation() -> None:
+    batch_size = 2**6
+    d_in = 2**6 * 3
+    d_out = 2**6 * 5
+    kernel_size = 11
+    seq_len = 2**6 * 7
+    dilation = 8
+
+    input = randn(batch_size, d_in, seq_len, requires_grad=True)
+    weight = randn(d_out, d_in, kernel_size, requires_grad=True)
+    bias = zeros(d_out).requires_grad_()
+    output = conv1d(input, weight, bias, dilation=dilation, constraint=None)
+    unit_backward(output)
+
+    assert_unit_scaled(output, input.grad, weight.grad, bias.grad)
+
+
+def test_conv1d_groups() -> None:
+    batch_size = 2**6
+    d_in = 2**6 * 3
+    d_out = 2**6 * 5
+    kernel_size = 11
+    seq_len = 2**6 * 7
+    groups = 32
+
+    input = randn(batch_size, d_in, seq_len, requires_grad=True)
+    weight = randn(d_out, d_in // groups, kernel_size, requires_grad=True)
+    bias = zeros(d_out).requires_grad_()
+    output = conv1d(input, weight, bias, groups=groups, constraint=None)
+    unit_backward(output)
+
+    assert_unit_scaled(output, input.grad, weight.grad, bias.grad)
 
 
 # --- test layer_norm() ---
