@@ -6,6 +6,7 @@ For users who wish to develop using this codebase, the following setup is requir
 
 ```bash
 python3 -m venv .venv
+echo "export PYTHONPATH=\${PYTHONPATH}:\$(dirname \${VIRTUAL_ENV})" >> .venv/bin/activate
 source .venv/bin/activate
 pip install -r requirements-dev.txt  # Or requirements-dev-ipu.txt for the ipu
 ```
