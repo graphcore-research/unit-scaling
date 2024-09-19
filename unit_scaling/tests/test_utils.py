@@ -29,12 +29,12 @@ def test_analyse_mlp() -> None:
 def forward(self, input : Tensor) -> Tensor:
     input_1 = input;  (-> 1.0, <- 1.44)
     linear_1_weight = self.linear_1.weight;  (-> 1.0, <- 0.503)
-    linear = U.linear(input_1, linear_1_weight, None, 'to_output_scale');  (-> 1.0, <- 0.502)
+    linear = U.linear(input_1, linear_1_weight, None, None);  (-> 1.0, <- 0.502)
     linear_gate_weight = self.linear_gate.weight;  (-> 1.0, <- 0.519)
-    linear_1 = U.linear(input_1, linear_gate_weight, None, 'to_output_scale');  (-> 1.0, <- 0.518)
+    linear_1 = U.linear(input_1, linear_gate_weight, None, None);  (-> 1.0, <- 0.518)
     silu_glu = U.silu_glu(linear, linear_1);  (-> 1.0, <- 0.5)
     linear_2_weight = self.linear_2.weight;  (-> 1.0, <- 1.0)
-    linear_2 = U.linear(silu_glu, linear_2_weight, None, 'to_output_scale');  (-> 1.0, <- 1.0)
+    linear_2 = U.linear(silu_glu, linear_2_weight, None, None);  (-> 1.0, <- 1.0)
     return linear_2
     """.strip()  # noqa: E501
 
