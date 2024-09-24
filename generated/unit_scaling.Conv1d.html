@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.1.4. unit_scaling.Conv1d &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/scales.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4.1.5. unit_scaling.CrossEntropyLoss" href="unit_scaling.CrossEntropyLoss.html" />
+    <link rel="prev" title="4.1.3. unit_scaling.visualiser" href="unit_scaling.visualiser.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            unit-scaling
+          </a>
+              <div class="version">
+                0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">1. User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">2. Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">3. Limitations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">4. API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.html">4.1. unit_scaling</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Parameter.html">4.1.1. unit_scaling.Parameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.transformer_residual_scaling_rule.html">4.1.2. unit_scaling.transformer_residual_scaling_rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.visualiser.html">4.1.3. unit_scaling.visualiser</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.1.4. unit_scaling.Conv1d</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#unit_scaling.Conv1d"><code class="docutils literal notranslate"><span class="pre">Conv1d</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.CrossEntropyLoss.html">4.1.5. unit_scaling.CrossEntropyLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.DepthModuleList.html">4.1.6. unit_scaling.DepthModuleList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.DepthSequential.html">4.1.7. unit_scaling.DepthSequential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Dropout.html">4.1.8. unit_scaling.Dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Embedding.html">4.1.9. unit_scaling.Embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.GELU.html">4.1.10. unit_scaling.GELU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.LayerNorm.html">4.1.11. unit_scaling.LayerNorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Linear.html">4.1.12. unit_scaling.Linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.LinearReadout.html">4.1.13. unit_scaling.LinearReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MHSA.html">4.1.14. unit_scaling.MHSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MLP.html">4.1.15. unit_scaling.MLP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.RMSNorm.html">4.1.16. unit_scaling.RMSNorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.SiLU.html">4.1.17. unit_scaling.SiLU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Softmax.html">4.1.18. unit_scaling.Softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerDecoder.html">4.1.19. unit_scaling.TransformerDecoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerLayer.html">4.1.20. unit_scaling.TransformerLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.core.html">4.1.21. unit_scaling.core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.html">4.1.22. unit_scaling.functional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.optim.html">4.1.23. unit_scaling.optim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.parameter.html">4.1.24. unit_scaling.parameter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">4.2. unit_scaling.analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">4.3. unit_scaling.constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">4.4. unit_scaling.formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">4.1.22. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">4.1.23. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.5. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">4.6. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">4.7. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">4.8. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">4.1.21.1. unit_scaling.core.functional</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">unit-scaling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.html"><span class="section-number">4.1. </span>unit_scaling</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.1.4. </span>unit_scaling.Conv1d</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/unit_scaling.Conv1d.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="unit-scaling-conv1d">
+<h1><span class="section-number">4.1.4. </span>unit_scaling.Conv1d<a class="headerlink" href="#unit-scaling-conv1d" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="unit_scaling.Conv1d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.</span></span><span class="sig-name descname"><span class="pre">Conv1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'zeros'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'to_output_scale'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_mup_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.12)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'weight'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bias'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'norm'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'output'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'weight'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/_modules.html#Conv1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.Conv1d" title="Permalink to this definition"></a></dt>
+<dd><p>Applies a <strong>unit-scaled</strong> 1D convolution to the incoming data.
+Note that this layer sets <code class="code docutils literal notranslate"><span class="pre">bias=False</span></code> by default.We also require padding to be supplied as an integer, not a string.
+planes.</p>
+<p>In the simplest case, the output value of the layer with input size
+<span class="math notranslate nohighlight">\((N, C_{\text{in}}, L)\)</span> and output <span class="math notranslate nohighlight">\((N, C_{\text{out}}, L_{\text{out}})\)</span> can be
+precisely described as:</p>
+<div class="math notranslate nohighlight">
+\[\text{out}(N_i, C_{\text{out}_j}) = \text{bias}(C_{\text{out}_j}) +
+\sum_{k = 0}^{C_{in} - 1} \text{weight}(C_{\text{out}_j}, k)
+\star \text{input}(N_i, k)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\star\)</span> is the valid <a href="#id1"><span class="problematic" id="id2">`cross-correlation`_</span></a> operator,
+<span class="math notranslate nohighlight">\(N\)</span> is a batch size, <span class="math notranslate nohighlight">\(C\)</span> denotes a number of channels,
+<span class="math notranslate nohighlight">\(L\)</span> is a length of signal sequence.</p>
+<p>This module supports <a class="reference external" href="https://pytorch.org/docs/stable/notes/cuda.html#tf32-on-ampere" title="(in PyTorch v2.4)"><span class="xref std std-ref">TensorFloat32</span></a>.</p>
+<p>On certain ROCm devices, when using float16 inputs this module will use <a class="reference external" href="https://pytorch.org/docs/stable/notes/numerical_accuracy.html#fp16-on-mi200" title="(in PyTorch v2.4)"><span class="xref std std-ref">different precision</span></a> for backward.</p>
+<ul>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">stride</span></code> controls the stride for the cross-correlation, a single
+number or a one-element tuple.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">padding</span></code> controls the amount of padding applied to the input. It
+can be either a string {‘valid’, ‘same’} or a tuple of ints giving the
+amount of implicit padding applied on both sides.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">dilation</span></code> controls the spacing between the kernel points; also
+known as the uue0 trous algorithm. It is harder to describe, but this <a href="#id3"><span class="problematic" id="id4">`link`_</span></a>
+has a nice visualization of what <code class="xref py py-attr docutils literal notranslate"><span class="pre">dilation</span></code> does.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">groups</span></code> controls the connections between inputs and outputs.
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">in_channels</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">out_channels</span></code> must both be divisible by
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">groups</span></code>. For example,</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>At groups=1, all inputs are convolved to all outputs.</p></li>
+<li><p>At groups=2, the operation becomes equivalent to having two conv
+layers side by side, each seeing half the input channels
+and producing half the output channels, and both subsequently
+concatenated.</p></li>
+<li><p>At groups= <code class="xref py py-attr docutils literal notranslate"><span class="pre">in_channels</span></code>, each input channel is convolved with
+its own set of filters (of size
+<span class="math notranslate nohighlight">\(\frac{\text{out\_channels}}{\text{in\_channels}}\)</span>).</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When <cite>groups == in_channels</cite> and <cite>out_channels == K * in_channels</cite>,
+where <cite>K</cite> is a positive integer, this operation is also known as a “depthwise convolution”.</p>
+<p>In other words, for an input of size <span class="math notranslate nohighlight">\((N, C_{in}, L_{in})\)</span>,
+a depthwise convolution with a depthwise multiplier <cite>K</cite> can be performed with the arguments
+<span class="math notranslate nohighlight">\((C_\text{in}=C_\text{in}, C_\text{out}=C_\text{in} \times \text{K}, ..., \text{groups}=C_\text{in})\)</span>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In some circumstances when given tensors on a CUDA device and using CuDNN, this operator may select a nondeterministic algorithm to increase performance. If this is undesirable, you can try to make the operation deterministic (potentially at a performance cost) by setting <code class="docutils literal notranslate"><span class="pre">torch.backends.cudnn.deterministic</span> <span class="pre">=</span> <span class="pre">True</span></code>. See <span class="xref std std-doc">/notes/randomness</span> for more information.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">padding='valid'</span></code> is the same as no padding. <code class="docutils literal notranslate"><span class="pre">padding='same'</span></code> pads
+the input so the output has the shape as the input. However, this mode
+doesn’t support any stride values other than 1.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This module supports complex data types i.e. <code class="docutils literal notranslate"><span class="pre">complex32,</span> <span class="pre">complex64,</span> <span class="pre">complex128</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of channels in the input image</p></li>
+<li><p><strong>out_channels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of channels produced by the convolution</p></li>
+<li><p><strong>kernel_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a>) – Size of the convolving kernel</p></li>
+<li><p><strong>stride</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>tuple?</em>) – Stride of the convolution. Default: 1</p></li>
+<li><p><strong>padding</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> or </em><em>str?</em>) – Padding added to both sides of
+the input. Default: 0</p></li>
+<li><p><strong>padding_mode</strong> (<em>str?</em>) – <code class="docutils literal notranslate"><span class="pre">'zeros'</span></code>, <code class="docutils literal notranslate"><span class="pre">'reflect'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'replicate'</span></code> or <code class="docutils literal notranslate"><span class="pre">'circular'</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">'zeros'</span></code></p></li>
+<li><p><strong>dilation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>tuple?</em>) – Spacing between kernel
+elements. Default: 1</p></li>
+<li><p><strong>groups</strong> (<em>int?</em>) – Number of blocked connections from input
+channels to output channels. Default: 1</p></li>
+<li><p><strong>bias</strong> (<em>bool?</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, adds a learnable bias to the
+output. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em><em>?</em>) – The name of the constraint function to be applied to the outputs &amp; input gradient. In this case, the constraint name must be one of: [None, ‘gmean’, ‘hmean’, ‘amean’, ‘to_output_scale’, ‘to_grad_input_scale’] (see <cite>unit_scaling.constraints</cite> for details on these constraint functions). Defaults to <cite>gmean</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="unit_scaling.Conv1d.weight">
+<span class="sig-name descname"><span class="pre">weight</span></span><a class="headerlink" href="#unit_scaling.Conv1d.weight" title="Permalink to this definition"></a></dt>
+<dd><p>the learnable weights of the module of shape
+<span class="math notranslate nohighlight">\((\text{out\_channels},
+\frac{\text{in\_channels}}{\text{groups}}, \text{kernel\_size})\)</span>.
+The values of these weights are sampled from
+<span class="math notranslate nohighlight">\(\mathcal{U}(-\sqrt{k}, \sqrt{k})\)</span> where
+<span class="math notranslate nohighlight">\(k = \frac{groups}{C_\text{in} * \text{kernel\_size}}\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="unit_scaling.parameter.Tensor">Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="unit_scaling.Conv1d.bias">
+<span class="sig-name descname"><span class="pre">bias</span></span><a class="headerlink" href="#unit_scaling.Conv1d.bias" title="Permalink to this definition"></a></dt>
+<dd><p>the learnable bias of the module of shape
+(out_channels). If <a class="reference internal" href="#unit_scaling.Conv1d.bias" title="unit_scaling.Conv1d.bias"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bias</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the values of these weights are
+sampled from <span class="math notranslate nohighlight">\(\mathcal{U}(-\sqrt{k}, \sqrt{k})\)</span> where
+<span class="math notranslate nohighlight">\(k = \frac{groups}{C_\text{in} * \text{kernel\_size}}\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="unit_scaling.parameter.Tensor">Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt>Shape:</dt><dd><ul>
+<li><p>Input: <span class="math notranslate nohighlight">\((N, C_{in}, L_{in})\)</span> or <span class="math notranslate nohighlight">\((C_{in}, L_{in})\)</span></p></li>
+<li><p>Output: <span class="math notranslate nohighlight">\((N, C_{out}, L_{out})\)</span> or <span class="math notranslate nohighlight">\((C_{out}, L_{out})\)</span>, where</p>
+<div class="math notranslate nohighlight">
+\[L_{out} = \left\lfloor\frac{L_{in} + 2 \times \text{padding} - \text{dilation}
+          \times (\text{kernel\_size} - 1) - 1}{\text{stride}} + 1\right\rfloor\]</div>
+</li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unit_scaling.visualiser.html" class="btn btn-neutral float-left" title="4.1.3. unit_scaling.visualiser" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.CrossEntropyLoss.html" class="btn btn-neutral float-right" title="4.1.5. unit_scaling.CrossEntropyLoss" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright (c) 2023 Graphcore Ltd. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

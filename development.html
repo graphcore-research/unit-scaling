@@ -81,6 +81,7 @@
 <p>For users who wish to develop using this codebase, the following setup is required:</p>
 <p><strong>First-time setup</strong>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;export PYTHONPATH=\${PYTHONPATH}:\$(dirname \${VIRTUAL_ENV})&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>.venv/bin/activate
 <span class="nb">source</span><span class="w"> </span>.venv/bin/activate
 pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-dev.txt<span class="w">  </span><span class="c1"># Or requirements-dev-ipu.txt for the ipu</span>
 </pre></div>
