@@ -19,7 +19,6 @@ from .docs import (
     format_docstring,
     inherit_docstring,
     mult_docstring,
-    variadic_constraint_docstring,
 )
 from .parameter import MupType, Parameter, has_parameter_data
 
@@ -428,7 +427,6 @@ class CrossEntropyLoss(nn.CrossEntropyLoss):
         )
 
 
-@format_docstring(binary_constraint_docstring)
 class MLP(nn.Module):
     """A **unit-scaled** implementation of an MLP layer using SwiGLU.
 
@@ -436,31 +434,26 @@ class MLP(nn.Module):
         hidden_size (int): the hidden dimension size of the input.
         expansion_factor (int): the factor by which the MLP's intermediate size
             increases relative to `hidden_size`.
-        {0}
     """
 
-    def __init__(
-        self,
-        hidden_size: int,
-        expansion_factor: int = 4,
-        constraint: Optional[str] = "to_output_scale",
-    ) -> None:
+    def __init__(self, hidden_size: int, expansion_factor: int = 4) -> None:
         super().__init__()
         intermediate_size = hidden_size * expansion_factor
-        self.linear_1 = Linear(hidden_size, intermediate_size, constraint=constraint)
-        self.linear_gate = Linear(hidden_size, intermediate_size, constraint=constraint)
-        self.linear_2 = Linear(intermediate_size, hidden_size, constraint=constraint)
+        # Note: constraint=None is safe here, because we know that the forward and
+        # backward constraints are mirrored between {linear_1, linear_gate} and
+        # linear_2.
+        self.linear_1 = Linear(hidden_size, intermediate_size, constraint=None)
+        self.linear_gate = Linear(hidden_size, intermediate_size, constraint=None)
+        self.linear_2 = Linear(intermediate_size, hidden_size, constraint=None)
 
     def forward(self, input: Tensor) -> Tensor:
         z = U.silu_glu(self.linear_1(input), self.linear_gate(input))
         return self.linear_2(z)  # type:ignore[no-any-return]
 
 
-@format_docstring(mult_docstring(), variadic_constraint_docstring)
+@format_docstring(mult_docstring())
 class MHSA(nn.Module):
     """A **unit-scaled** implementation of a multi-head self-attention layer.
-
-    Warning: using `constraint=None` here will likely give incorrect gradients.
 
     Args:
         hidden_size (int): the hidden dimension size of the input.
@@ -468,7 +461,6 @@ class MHSA(nn.Module):
         is_causal (bool): causal masking (for non-padded sequences).
         dropout_p (float, optional): the probability of the post-softmax dropout.
         {0}
-        {1}
     """
 
     def __init__(
@@ -478,16 +470,14 @@ class MHSA(nn.Module):
         is_causal: bool,
         dropout_p: float = 0.0,
         mult: float = 1.0,
-        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         self.heads = heads
         self.dropout_p = dropout_p
         self.is_causal = is_causal
         self.mult = mult
-        self.linear_qkv = Linear(hidden_size, 3 * hidden_size, constraint=constraint)
-        self.linear_o = Linear(hidden_size, hidden_size, constraint=constraint)
-        self.constraint = constraint
+        self.linear_qkv = Linear(hidden_size, 3 * hidden_size)
+        self.linear_o = Linear(hidden_size, hidden_size)
 
     def forward(self, input: Tensor) -> Tensor:
         q_k_v = self.linear_qkv(input)
@@ -499,7 +489,6 @@ class MHSA(nn.Module):
         return self.linear_o(qkv)  # type: ignore
 
 
-@format_docstring(variadic_constraint_docstring)
 class TransformerLayer(nn.Module):
     """A **unit-scaled** implementation of a PreNorm
     (see https://arxiv.org/abs/2002.04745) transformer layer.
@@ -516,7 +505,6 @@ class TransformerLayer(nn.Module):
         is_causal (bool): causal masking (for non-padded sequences).
         dropout_p (float, optional): the probability of residual and post-softmax
             dropout.
-        {0}
     """
 
     def __init__(
@@ -527,22 +515,15 @@ class TransformerLayer(nn.Module):
         mlp_tau: float,
         is_causal: bool,
         dropout_p: float = 0.0,
-        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         self.dropout_p = dropout_p
         self.mhsa_tau = mhsa_tau
         self.mlp_tau = mlp_tau
         self.mhsa_norm = RMSNorm(hidden_size)
-        self.mhsa = MHSA(
-            hidden_size,
-            heads,
-            is_causal=is_causal,
-            dropout_p=dropout_p,
-            constraint=constraint,
-        )
+        self.mhsa = MHSA(hidden_size, heads, is_causal=is_causal, dropout_p=dropout_p)
         self.mlp_norm = RMSNorm(hidden_size)
-        self.mlp = MLP(hidden_size, constraint=constraint)
+        self.mlp = MLP(hidden_size)
 
     def forward(self, input: Tensor) -> Tensor:
         input, skip = U.residual_split(input, tau=self.mhsa_tau)
@@ -627,15 +608,12 @@ class TransformerStack(DepthSequential):
         )
 
 
-@format_docstring(variadic_constraint_docstring)
 class TransformerDecoder(nn.Sequential):  # pragma: no cover
     """A **unit-scaled** implementation of a decoder-type transformer.
 
     Note: this class is currently just for demonstrating scaling and lacks key
     functionality (for example masking, positional embeddings, usage for
     inference).
-
-    Warning: using `constraint=None` here will likely give incorrect gradients.
 
     Args:
         hidden_size (int): the hidden dimension size of the input.
@@ -648,7 +626,6 @@ class TransformerDecoder(nn.Sequential):  # pragma: no cover
             controlling residual weights in the transformer trunk; see
             :func:`unit_scaling.core.functional.transformer_residual_scaling_rule`
             (default).
-        {0}
     """
 
     def __init__(
@@ -659,7 +636,6 @@ class TransformerDecoder(nn.Sequential):  # pragma: no cover
         heads: int,
         dropout_p: float = 0.0,
         residual_scaling: ResidualScalingFn = transformer_residual_scaling_rule(),
-        constraint: Optional[str] = "to_output_scale",
     ) -> None:
         super().__init__()
         self.embedding = Embedding(vocab_size, hidden_size)
@@ -670,7 +646,6 @@ class TransformerDecoder(nn.Sequential):  # pragma: no cover
             is_causal=True,
             dropout_p=dropout_p,
             residual_scaling=residual_scaling,
-            constraint=constraint,
         )
         self.final_norm = RMSNorm(hidden_size)
         self.projection = LinearReadout(hidden_size, vocab_size)

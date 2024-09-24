@@ -201,6 +201,12 @@ def test_mlp() -> None:
 
     assert float(output.std()) == pytest.approx(1, abs=0.2)
 
+    assert_unit_scaled(
+        model.linear_1.weight.grad,
+        model.linear_gate.weight.grad,
+        model.linear_2.weight.grad,
+    )
+
     assert_not_unit_scaled(
         model.linear_1.weight, model.linear_gate.weight, model.linear_2.weight
     )
