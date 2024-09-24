@@ -31,7 +31,7 @@
             unit-scaling
           </a>
               <div class="version">
-                0.2
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -95,7 +95,6 @@
     <span class="n">format_docstring</span><span class="p">,</span>
     <span class="n">inherit_docstring</span><span class="p">,</span>
     <span class="n">mult_docstring</span><span class="p">,</span>
-    <span class="n">variadic_constraint_docstring</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.parameter</span> <span class="kn">import</span> <span class="n">MupType</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">has_parameter_data</span>
 
@@ -504,39 +503,33 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MLP"><a class="viewcode-back" href="../../generated/unit_scaling.MLP.html#unit_scaling.MLP">[docs]</a><span class="nd">@format_docstring</span><span class="p">(</span><span class="n">binary_constraint_docstring</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">MLP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="MLP"><a class="viewcode-back" href="../../generated/unit_scaling.MLP.html#unit_scaling.MLP">[docs]</a><span class="k">class</span> <span class="nc">MLP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of an MLP layer using SwiGLU.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        hidden_size (int): the hidden dimension size of the input.</span>
 <span class="sd">        expansion_factor (int): the factor by which the MLP&#39;s intermediate size</span>
 <span class="sd">            increases relative to `hidden_size`.</span>
-<span class="sd">        {0}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">expansion_factor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
-        <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;to_output_scale&quot;</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">expansion_factor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="n">intermediate_size</span> <span class="o">=</span> <span class="n">hidden_size</span> <span class="o">*</span> <span class="n">expansion_factor</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">linear_1</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">intermediate_size</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">linear_gate</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">intermediate_size</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">linear_2</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">intermediate_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">)</span>
+        <span class="c1"># Note: constraint=None is safe here, because we know that the forward and</span>
+        <span class="c1"># backward constraints are mirrored between {linear_1, linear_gate} and</span>
+        <span class="c1"># linear_2.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_1</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">intermediate_size</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_gate</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">intermediate_size</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_2</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">intermediate_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
         <span class="n">z</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">silu_glu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear_1</span><span class="p">(</span><span class="nb">input</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_gate</span><span class="p">(</span><span class="nb">input</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_2</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>  <span class="c1"># type:ignore[no-any-return]</span></div>
 
 
-<div class="viewcode-block" id="MHSA"><a class="viewcode-back" href="../../generated/unit_scaling.MHSA.html#unit_scaling.MHSA">[docs]</a><span class="nd">@format_docstring</span><span class="p">(</span><span class="n">mult_docstring</span><span class="p">(),</span> <span class="n">variadic_constraint_docstring</span><span class="p">)</span>
+<div class="viewcode-block" id="MHSA"><a class="viewcode-back" href="../../generated/unit_scaling.MHSA.html#unit_scaling.MHSA">[docs]</a><span class="nd">@format_docstring</span><span class="p">(</span><span class="n">mult_docstring</span><span class="p">())</span>
 <span class="k">class</span> <span class="nc">MHSA</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of a multi-head self-attention layer.</span>
-
-<span class="sd">    Warning: using `constraint=None` here will likely give incorrect gradients.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        hidden_size (int): the hidden dimension size of the input.</span>
@@ -544,7 +537,6 @@
 <span class="sd">        is_causal (bool): causal masking (for non-padded sequences).</span>
 <span class="sd">        dropout_p (float, optional): the probability of the post-softmax dropout.</span>
 <span class="sd">        {0}</span>
-<span class="sd">        {1}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -554,16 +546,14 @@
         <span class="n">is_causal</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">dropout_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">mult</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;to_output_scale&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">heads</span> <span class="o">=</span> <span class="n">heads</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dropout_p</span> <span class="o">=</span> <span class="n">dropout_p</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_causal</span> <span class="o">=</span> <span class="n">is_causal</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mult</span> <span class="o">=</span> <span class="n">mult</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">linear_qkv</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">linear_o</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="n">constraint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_qkv</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_o</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
         <span class="n">q_k_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_qkv</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -575,8 +565,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_o</span><span class="p">(</span><span class="n">qkv</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
 
 
-<div class="viewcode-block" id="TransformerLayer"><a class="viewcode-back" href="../../generated/unit_scaling.TransformerLayer.html#unit_scaling.TransformerLayer">[docs]</a><span class="nd">@format_docstring</span><span class="p">(</span><span class="n">variadic_constraint_docstring</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">TransformerLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="TransformerLayer"><a class="viewcode-back" href="../../generated/unit_scaling.TransformerLayer.html#unit_scaling.TransformerLayer">[docs]</a><span class="k">class</span> <span class="nc">TransformerLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of a PreNorm</span>
 <span class="sd">    (see https://arxiv.org/abs/2002.04745) transformer layer.</span>
 
@@ -592,7 +581,6 @@
 <span class="sd">        is_causal (bool): causal masking (for non-padded sequences).</span>
 <span class="sd">        dropout_p (float, optional): the probability of residual and post-softmax</span>
 <span class="sd">            dropout.</span>
-<span class="sd">        {0}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -603,22 +591,15 @@
         <span class="n">mlp_tau</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">is_causal</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">dropout_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;to_output_scale&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dropout_p</span> <span class="o">=</span> <span class="n">dropout_p</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mhsa_tau</span> <span class="o">=</span> <span class="n">mhsa_tau</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mlp_tau</span> <span class="o">=</span> <span class="n">mlp_tau</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mhsa_norm</span> <span class="o">=</span> <span class="n">RMSNorm</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mhsa</span> <span class="o">=</span> <span class="n">MHSA</span><span class="p">(</span>
-            <span class="n">hidden_size</span><span class="p">,</span>
-            <span class="n">heads</span><span class="p">,</span>
-            <span class="n">is_causal</span><span class="o">=</span><span class="n">is_causal</span><span class="p">,</span>
-            <span class="n">dropout_p</span><span class="o">=</span><span class="n">dropout_p</span><span class="p">,</span>
-            <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mhsa</span> <span class="o">=</span> <span class="n">MHSA</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">heads</span><span class="p">,</span> <span class="n">is_causal</span><span class="o">=</span><span class="n">is_causal</span><span class="p">,</span> <span class="n">dropout_p</span><span class="o">=</span><span class="n">dropout_p</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mlp_norm</span> <span class="o">=</span> <span class="n">RMSNorm</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
         <span class="nb">input</span><span class="p">,</span> <span class="n">skip</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">residual_split</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mhsa_tau</span><span class="p">)</span>
@@ -703,15 +684,12 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="TransformerDecoder"><a class="viewcode-back" href="../../generated/unit_scaling.TransformerDecoder.html#unit_scaling.TransformerDecoder">[docs]</a><span class="nd">@format_docstring</span><span class="p">(</span><span class="n">variadic_constraint_docstring</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">TransformerDecoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+<div class="viewcode-block" id="TransformerDecoder"><a class="viewcode-back" href="../../generated/unit_scaling.TransformerDecoder.html#unit_scaling.TransformerDecoder">[docs]</a><span class="k">class</span> <span class="nc">TransformerDecoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of a decoder-type transformer.</span>
 
 <span class="sd">    Note: this class is currently just for demonstrating scaling and lacks key</span>
 <span class="sd">    functionality (for example masking, positional embeddings, usage for</span>
 <span class="sd">    inference).</span>
-
-<span class="sd">    Warning: using `constraint=None` here will likely give incorrect gradients.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        hidden_size (int): the hidden dimension size of the input.</span>
@@ -724,7 +702,6 @@
 <span class="sd">            controlling residual weights in the transformer trunk; see</span>
 <span class="sd">            :func:`unit_scaling.core.functional.transformer_residual_scaling_rule`</span>
 <span class="sd">            (default).</span>
-<span class="sd">        {0}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -735,7 +712,6 @@
         <span class="n">heads</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">dropout_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">residual_scaling</span><span class="p">:</span> <span class="n">ResidualScalingFn</span> <span class="o">=</span> <span class="n">transformer_residual_scaling_rule</span><span class="p">(),</span>
-        <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;to_output_scale&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="n">vocab_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
@@ -746,7 +722,6 @@
             <span class="n">is_causal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">dropout_p</span><span class="o">=</span><span class="n">dropout_p</span><span class="p">,</span>
             <span class="n">residual_scaling</span><span class="o">=</span><span class="n">residual_scaling</span><span class="p">,</span>
-            <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">final_norm</span> <span class="o">=</span> <span class="n">RMSNorm</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">projection</span> <span class="o">=</span> <span class="n">LinearReadout</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">vocab_size</span><span class="p">)</span>

@@ -34,7 +34,7 @@
             unit-scaling
           </a>
               <div class="version">
-                0.2
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -124,12 +124,11 @@
 <h1><span class="section-number">4.1.19. </span>unit_scaling.TransformerDecoder<a class="headerlink" href="#unit-scaling-transformerdecoder" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="unit_scaling.TransformerDecoder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.</span></span><span class="sig-name descname"><span class="pre">TransformerDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hidden_size:</span> <span class="pre">int,</span> <span class="pre">vocab_size:</span> <span class="pre">int,</span> <span class="pre">layers:</span> <span class="pre">int,</span> <span class="pre">heads:</span> <span class="pre">int,</span> <span class="pre">dropout_p:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">residual_scaling:</span> <span class="pre">~typing.Callable[[int,</span> <span class="pre">int],</span> <span class="pre">float]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">transformer_residual_scaling_rule.&lt;locals&gt;._tau&gt;,</span> <span class="pre">constraint:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">'to_output_scale'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/_modules.html#TransformerDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.TransformerDecoder" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">unit_scaling.</span></span><span class="sig-name descname"><span class="pre">TransformerDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hidden_size:</span> <span class="pre">int,</span> <span class="pre">vocab_size:</span> <span class="pre">int,</span> <span class="pre">layers:</span> <span class="pre">int,</span> <span class="pre">heads:</span> <span class="pre">int,</span> <span class="pre">dropout_p:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">residual_scaling:</span> <span class="pre">~typing.Callable[[int,</span> <span class="pre">int],</span> <span class="pre">float]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">transformer_residual_scaling_rule.&lt;locals&gt;._tau&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/unit_scaling/_modules.html#TransformerDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.TransformerDecoder" title="Permalink to this definition"></a></dt>
 <dd><p>A <strong>unit-scaled</strong> implementation of a decoder-type transformer.</p>
 <p>Note: this class is currently just for demonstrating scaling and lacks key
 functionality (for example masking, positional embeddings, usage for
 inference).</p>
-<p>Warning: using <cite>constraint=None</cite> here will likely give incorrect gradients.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -143,7 +142,6 @@ post-softmax dropout.</p></li>
 controlling residual weights in the transformer trunk; see
 <a class="reference internal" href="unit_scaling.core.functional.transformer_residual_scaling_rule.html#unit_scaling.core.functional.transformer_residual_scaling_rule" title="unit_scaling.core.functional.transformer_residual_scaling_rule"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_scaling.core.functional.transformer_residual_scaling_rule()</span></code></a>
 (default).</p></li>
-<li><p><strong>constraint</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em><em>, </em><em>optional</em>) – The name of the constraint function to be applied to the outputs &amp; input gradients. In this case, the constraint name must be one of: [None, ‘gmean’, ‘hmean’, ‘amean’, ‘to_output_scale’] (see <cite>unit_scaling.constraints</cite> for details on these constraint functions). Defaults to <cite>gmean</cite>.</p></li>
 </ul>
 </dd>
 </dl>
