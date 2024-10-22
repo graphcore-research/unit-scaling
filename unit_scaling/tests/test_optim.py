@@ -48,7 +48,7 @@ def test_scaled_parameters(opt: str) -> None:
     base_wd = 0.001
     param_groups = scaled_parameters(
         model.parameters(),
-        dict(sgd=lr_scale_func_sgd, adam=lr_scale_func_adam)[opt],
+        dict(sgd=lr_scale_func_sgd("to_output_scale"), adam=lr_scale_func_adam)[opt],
         lr=base_lr,
         weight_decay=base_wd,
     )

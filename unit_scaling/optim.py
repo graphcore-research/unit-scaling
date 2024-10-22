@@ -12,7 +12,7 @@ function that defines the LR scaling rules.
 
 # mypy: disable-error-code="no-any-return"
 
-from typing import Any, Callable, Union
+from typing import Any, Callable, Optional, Union
 
 import torch
 from torch import Tensor
@@ -43,16 +43,27 @@ def _get_fan_in(param: ParameterData) -> int:
     )
 
 
-def lr_scale_func_sgd(param: ParameterData) -> float:
+def lr_scale_func_sgd(
+    readout_constraint: Optional[str],
+) -> Callable[[ParameterData], float]:
     """Calculate the LR scaling factor for :class:`torch.optim.SGD`."""
-    scale = lr_scale_for_depth(param)
-    if param.mup_type in ("bias", "norm"):
-        return scale * param.shape[0]
-    if param.mup_type == "weight":
-        return scale * _get_fan_in(param) ** 0.5
-    if param.mup_type == "output":
-        return scale
-    assert False, f"Unexpected mup_type {param.mup_type}"
+
+    def lr_scale_func_sgd_inner(param: ParameterData) -> float:
+        scale = lr_scale_for_depth(param)
+        if param.mup_type in ("bias", "norm"):
+            return scale * param.shape[0]
+        if param.mup_type == "weight":
+            if readout_constraint is None:
+                return scale * _get_fan_in(param) ** -0.5
+            elif readout_constraint == "to_output_scale":
+                return scale * _get_fan_in(param) ** 0.5
+            else:
+                assert False, f"Unhandled readout constraint: {readout_constraint}"
+        if param.mup_type == "output":
+            return scale
+        assert False, f"Unexpected mup_type {param.mup_type}"
+
+    return lr_scale_func_sgd_inner
 
 
 def lr_scale_func_adam(param: ParameterData) -> float:
@@ -148,8 +159,10 @@ def scaled_parameters(
 
 @inherit_docstring(
     short_description="An **lr-scaled** version of :class:`torch.optim.SGD` for u-muP."
+    "`readout_constraint` should match the `constraint` arg used in `LinearReadout`."
 )
 class SGD(torch.optim.SGD):  # type:ignore[name-defined,misc]
+
     def __init__(
         self,
         params: ParamsT,
@@ -158,11 +171,12 @@ class SGD(torch.optim.SGD):  # type:ignore[name-defined,misc]
         weight_decay: float = 0,
         independent_weight_decay: bool = True,
         allow_non_unit_scaling_params: bool = False,
+        readout_constraint: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         params = scaled_parameters(
             params,
-            lr_scale_func_sgd,
+            lr_scale_func_sgd(readout_constraint),
             lr=lr,
             weight_decay=weight_decay,
             independent_weight_decay=independent_weight_decay,
