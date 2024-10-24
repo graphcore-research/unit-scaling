@@ -48,22 +48,27 @@ def lr_scale_func_sgd(
 ) -> Callable[[ParameterData], float]:
     """Calculate the LR scaling factor for :class:`torch.optim.SGD`."""
 
-    def lr_scale_func_sgd_inner(param: ParameterData) -> float:
-        scale = lr_scale_for_depth(param)
-        if param.mup_type in ("bias", "norm"):
-            return scale * param.shape[0]
-        if param.mup_type == "weight":
-            if readout_constraint is None:
-                return scale * _get_fan_in(param) ** -0.5
-            elif readout_constraint == "to_output_scale":
-                return scale * _get_fan_in(param) ** 0.5
-            else:
-                assert False, f"Unhandled readout constraint: {readout_constraint}"
-        if param.mup_type == "output":
-            return scale
-        assert False, f"Unexpected mup_type {param.mup_type}"
+    if readout_constraint is None:
+        # If there is no readout constraint we will have unit-scaled gradients and hence
+        # unit-scaled weight updates. In this case the scaling rules are the same as
+        # for Adam, which naturally has unit-scaled weight updates.
+        return lr_scale_func_adam
+    elif readout_constraint == "to_output_scale":
 
-    return lr_scale_func_sgd_inner
+        def lr_scale_func_sgd_inner(param: ParameterData) -> float:
+            scale = lr_scale_for_depth(param)
+
+            if param.mup_type in ("bias", "norm"):
+                return scale * param.shape[0]
+            if param.mup_type == "weight":
+                return scale * _get_fan_in(param) ** 0.5
+            if param.mup_type == "output":
+                return scale
+            assert False, f"Unexpected mup_type {param.mup_type}"
+
+        return lr_scale_func_sgd_inner
+    else:
+        assert False, f"Unhandled readout constraint: {readout_constraint}"
 
 
 def lr_scale_func_adam(param: ParameterData) -> float:
