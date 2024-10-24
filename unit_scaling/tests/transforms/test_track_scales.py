@@ -133,11 +133,11 @@ def test_prune_non_float_tensors() -> None:
     graph = model.scales_graph()
     expected_targets = {
         "idxs",
-        "emb_weight",
+        "self_modules_emb_parameters_weight",
         F.embedding,
         F.linear,
-        "linear_weight",
-        "linear_bias",
+        "self_modules_linear_parameters_weight",
+        "self_modules_linear_parameters_bias",
         F.softmax,
         torch.argmax,
         torch.unsqueeze,
@@ -187,12 +187,12 @@ def test_prune_same_scale_tensors() -> None:
     var_lhs_view = "x_1"
     expected_targets = {
         "idxs",
-        "emb_weight",
+        "self_modules_emb_parameters_weight",
         F.embedding,
         var_lhs_flatten,
         var_lhs_view,
-        "linear_weight",
-        "linear_bias",
+        "self_modules_linear_parameters_weight",
+        "self_modules_linear_parameters_bias",
         F.linear,
         F.softmax,
         torch.argmax,
