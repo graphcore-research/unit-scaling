@@ -2,7 +2,6 @@
 
 from typing import Tuple
 
-import pandas as pd
 import torch.nn.functional as F
 from torch import Size, Tensor, nn, randn
 from transformers import AutoTokenizer  # type: ignore[import]
@@ -11,7 +10,6 @@ from ..analysis import (
     _create_batch,
     _example_seqs,
     example_batch,
-    graph_to_dataframe,
     plot,
     visualiser,
 )
