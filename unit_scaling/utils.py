@@ -201,7 +201,8 @@ class _DeepTracer(fx.Tracer):
         autowrap_functions: Tuple[Callable[..., Any], ...] = (),
     ) -> None:
         super().__init__(
-            autowrap_modules=autowrap_modules, autowrap_functions=autowrap_functions
+            autowrap_modules=autowrap_modules,  # type: ignore[arg-type]
+            autowrap_functions=autowrap_functions,
         )
         self.recurse_modules = recurse_modules
         self.target_to_function: Dict[str, FunctionType] = {}
@@ -227,7 +228,7 @@ class _DeepTracer(fx.Tracer):
                 self.target_to_function[target] = a
                 self.function_to_node[a] = node
             return node
-        return super().create_arg(a)  # type: ignore
+        return super().create_arg(a)
 
     def trace(
         self,
@@ -240,7 +241,7 @@ class _DeepTracer(fx.Tracer):
         if not hasattr(graph, "_tracer_extras") or graph._tracer_extras is None:
             graph._tracer_extras = {}
         graph._tracer_extras["target_to_function"] = self.target_to_function
-        return graph  # type: ignore
+        return graph
 
 
 def analyse_module(

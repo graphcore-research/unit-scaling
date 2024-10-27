@@ -357,7 +357,7 @@ def prune_non_float_tensors(graph: Graph) -> Graph:
             a = float_tensor_args[0] if len(float_tensor_args) == 1 else None
             logger.info("pruning non-float node: %s", n)
             _prune(graph, n, replacement_arg=a)
-    graph.lint()
+    graph.lint()  # type: ignore[no-untyped-call]
     return graph
 
 
@@ -428,5 +428,5 @@ def prune_selected_nodes(graph: Graph, targets: Iterable[Target]) -> Graph:
         if n.target in targets:
             logger.info("pruning node: %s", n)
             _prune(graph, n)
-    graph.lint()
+    graph.lint()  # type: ignore[no-untyped-call]
     return graph

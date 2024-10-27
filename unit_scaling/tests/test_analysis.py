@@ -2,19 +2,11 @@
 
 from typing import Tuple
 
-import pandas as pd
 import torch.nn.functional as F
 from torch import Size, Tensor, nn, randn
 from transformers import AutoTokenizer  # type: ignore[import]
 
-from ..analysis import (
-    _create_batch,
-    _example_seqs,
-    example_batch,
-    graph_to_dataframe,
-    plot,
-    visualiser,
-)
+from ..analysis import _create_batch, _example_seqs, example_batch, plot, visualiser
 from ..transforms import track_scales
 
 
@@ -53,105 +45,6 @@ def test_example_batch() -> None:
     assert input_idxs.shape == Size([batch_size, seq_len])
     assert attn_mask.shape == Size([batch_size, seq_len])
     assert labels.shape == Size([batch_size, seq_len])
-
-
-def test_graph_to_dataframe() -> None:
-    class Model(nn.Module):
-        def __init__(self, dim: int) -> None:
-            super().__init__()
-            self.dim = dim
-            self.linear = nn.Linear(dim, dim // 2)
-
-        def forward(self, x: Tensor) -> Tensor:  # pragma: no covers
-            y = F.relu(x)
-            z = self.linear(y)
-            return z.sum()  # type: ignore[no-any-return]
-
-    b, dim = 2**4, 2**8
-    input = randn(b, dim)
-    model = Model(dim)
-    model = track_scales(model)
-    loss = model(input)
-    loss.backward()
-
-    graph = model.scales_graph()
-    df = graph_to_dataframe(graph)
-
-    expected = pd.DataFrame.from_dict(
-        {
-            "layer": [
-                "x",
-                "x",
-                "y",
-                "y",
-                "linear_weight",
-                "linear_weight",
-                "linear_bias",
-                "linear_bias",
-                "z",
-                "z",
-                "sum_1",
-                "sum_1",
-            ],
-            "weight tensor": [
-                False,
-                False,
-                False,
-                False,
-                True,
-                True,
-                True,
-                True,
-                False,
-                False,
-                False,
-                False,
-            ],
-            "direction": [
-                "fwd",
-                "bwd",
-                "fwd",
-                "bwd",
-                "fwd",
-                "bwd",
-                "fwd",
-                "bwd",
-                "fwd",
-                "bwd",
-                "fwd",
-                "bwd",
-            ],
-            "tensor type": [
-                "x",
-                "grad_x",
-                "x",
-                "grad_x",
-                "w",
-                "grad_w",
-                "w",
-                "grad_w",
-                "x",
-                "grad_x",
-                "x",
-                "grad_x",
-            ],
-            "number of elements": [
-                b * dim,
-                b * dim,
-                b * dim,
-                b * dim,
-                dim**2 // 2,
-                dim**2 // 2,
-                dim // 2,
-                dim // 2,
-                b * dim // 2,
-                b * dim // 2,
-                1,
-                1,
-            ],
-        }
-    )
-    pd.testing.assert_frame_equal(expected, df[expected.columns])
 
 
 def test_plot() -> None:

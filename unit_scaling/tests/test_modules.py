@@ -80,7 +80,7 @@ def test_linear() -> None:
     assert output.shape == torch.Size([2**8, 2**12])
 
     unit_backward(output)
-    SGD(model.parameters(), lr=1).step()
+    SGD(model.parameters(), lr=1, readout_constraint="to_output_scale").step()
 
     assert float(output.std()) == pytest.approx(1, abs=0.1)
 
@@ -102,7 +102,7 @@ def test_conv1d() -> None:
     assert_zeros(model.bias)
 
     unit_backward(output)
-    SGD(model.parameters(), lr=1).step()
+    SGD(model.parameters(), lr=1, readout_constraint="to_output_scale").step()
 
     assert float(output.std()) == pytest.approx(1, abs=0.1)
 
@@ -197,7 +197,7 @@ def test_mlp() -> None:
     assert output.shape == torch.Size([2**8, 2**10])
 
     unit_backward(output)
-    SGD(model.parameters(), lr=1).step()
+    SGD(model.parameters(), lr=1, readout_constraint="to_output_scale").step()
 
     assert float(output.std()) == pytest.approx(1, abs=0.2)
 
@@ -222,7 +222,7 @@ def test_mhsa() -> None:
     assert output.shape == torch.Size([batch_sz, seq_len, hidden_dim])
 
     unit_backward(output)
-    SGD(model.parameters(), lr=1).step()
+    SGD(model.parameters(), lr=1, readout_constraint="to_output_scale").step()
 
     assert float(output.std()) == pytest.approx(1, abs=0.5)
 

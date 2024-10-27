@@ -1,6 +1,6 @@
 # Copyright (c) 2024 Graphcore Ltd. All rights reserved.
 
-from typing import Any, Dict, List, Type, cast
+from typing import Any, Dict, List, Optional, Type, cast
 
 import pytest
 import torch
@@ -21,14 +21,14 @@ from ..optim import (
 
 
 @pytest.mark.parametrize("opt_type", (Adam, AdamW, SGD))
-def test_optim_optimizers(
-    opt_type: Type[torch.optim.Optimizer],  # type:ignore[name-defined]
-) -> None:
+def test_optim_optimizers(opt_type: Type[torch.optim.Optimizer]) -> None:
     torch.manual_seed(100)
     inputs = torch.randn(10, 16)
     outputs = torch.randn(10, 25)
     model = uu.Linear(16, 25)
-    opt = opt_type(model.parameters(), lr=0.01, weight_decay=1e-6)
+    opt = opt_type(
+        model.parameters(), lr=0.01, weight_decay=1e-6  # type:ignore[call-arg]
+    )
     opt.zero_grad()
     loss = U.mse_loss(model(inputs), outputs)
     loss.backward()  # type:ignore[no-untyped-call]
@@ -37,38 +37,42 @@ def test_optim_optimizers(
 
 
 @pytest.mark.parametrize("opt", ["adam", "sgd"])
-def test_scaled_parameters(opt: str) -> None:
+@pytest.mark.parametrize("readout_constraint", [None, "to_output_scale"])
+def test_scaled_parameters(opt: str, readout_constraint: Optional[str]) -> None:
     model = nn.Sequential(
         uu.Embedding(2**8, 2**4),
-        uu.DepthSequential(*(uu.Linear(2**4, 2**4) for _ in range(3))),
-        uu.Linear(2**4, 2**10, bias=False, weight_mup_type="output"),
+        uu.DepthSequential(*(uu.Linear(2**4, 2**4, bias=True) for _ in range(3))),
+        uu.LinearReadout(
+            2**4,
+            2**10,
+            bias=False,
+            weight_mup_type="output",
+            constraint=readout_constraint,
+        ),
     )
 
     base_lr = 0.1
     base_wd = 0.001
     param_groups = scaled_parameters(
         model.parameters(),
-        dict(sgd=lr_scale_func_sgd, adam=lr_scale_func_adam)[opt],
+        dict(sgd=lr_scale_func_sgd(readout_constraint), adam=lr_scale_func_adam)[opt],
         lr=base_lr,
         weight_decay=base_wd,
     )
 
     # Match parameters based on shapes, as their names have disappeared
     sqrt_d = 3**0.5
-    shape_to_expected_lr = dict(
-        sgd={
-            (2**8, 2**4): base_lr * 2**2,  # embedding.weight
-            (2**4, 2**4): base_lr * 2**2 / sqrt_d,  # stack.linear.weight
-            (2**4,): base_lr * 2**4 / sqrt_d,  # stack.linear.bias
-            (2**10, 2**4): base_lr,  # linear.weight (output)
-        },
-        adam={
-            (2**8, 2**4): base_lr / 2**2,  # embedding.weight
-            (2**4, 2**4): base_lr / 2**2 / sqrt_d,  # stack.linear.weight
-            (2**4,): base_lr / sqrt_d,  # stack.linear.bias
-            (2**10, 2**4): base_lr,  # linear.weight (output)
-        },
-    )[opt]
+    shape_to_expected_lr = {
+        (2**8, 2**4): base_lr / 2**2,  # embedding.weight
+        (2**4, 2**4): base_lr / 2**2 / sqrt_d,  # stack.linear.weight
+        (2**4,): base_lr / sqrt_d,  # stack.linear.bias
+        (2**10, 2**4): base_lr,  # linear.weight (output)
+    }
+    if opt == "sgd" and readout_constraint == "to_output_scale":
+        shape_to_expected_lr[(2**8, 2**4)] *= 2**4
+        shape_to_expected_lr[(2**4, 2**4)] *= 2**4
+        shape_to_expected_lr[(2**4,)] *= 2**4
+
     for shape, expected_lr in shape_to_expected_lr.items():
         for g in param_groups:
             assert isinstance(g, dict)
