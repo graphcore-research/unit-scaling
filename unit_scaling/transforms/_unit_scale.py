@@ -82,7 +82,7 @@ def _unit_scale_residual(
     old_start_residuals = [
         u for u in skip.users if u is not add  # type: ignore[union-attr]
     ]
-    with graph.inserting_after(skip):
+    with graph.inserting_after(skip):  # type: ignore[arg-type]
         split = graph.call_function(
             U.residual_split,
             args=(skip, tau),
@@ -91,7 +91,7 @@ def _unit_scale_residual(
     with graph.inserting_after(split):
         new_start_residual = graph.call_function(getitem, args=(split, 0))
     for old_start_residual in old_start_residuals:
-        old_start_residual.replace_input_with(skip, new_start_residual)
+        old_start_residual.replace_input_with(skip, new_start_residual)  # type: ignore
     with graph.inserting_after(split):
         new_skip = graph.call_function(getitem, args=(split, 1))
     replace_node_with_function(
@@ -179,8 +179,8 @@ def unit_scaling_backend(
             if "has_residual_successor" not in node.meta:
                 _unconstrain_node(node)
 
-        graph.lint()
-        return GraphModule(gm, graph)  # type: ignore[no-any-return]
+        graph.lint()  # type: ignore[no-untyped-call]
+        return GraphModule(gm, graph)
 
     return inner_backend
 

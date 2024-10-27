@@ -21,14 +21,14 @@ from ..optim import (
 
 
 @pytest.mark.parametrize("opt_type", (Adam, AdamW, SGD))
-def test_optim_optimizers(
-    opt_type: Type[torch.optim.Optimizer],  # type:ignore[name-defined]
-) -> None:
+def test_optim_optimizers(opt_type: Type[torch.optim.Optimizer]) -> None:
     torch.manual_seed(100)
     inputs = torch.randn(10, 16)
     outputs = torch.randn(10, 25)
     model = uu.Linear(16, 25)
-    opt = opt_type(model.parameters(), lr=0.01, weight_decay=1e-6)
+    opt = opt_type(
+        model.parameters(), lr=0.01, weight_decay=1e-6  # type:ignore[call-arg]
+    )
     opt.zero_grad()
     loss = U.mse_loss(model(inputs), outputs)
     loss.backward()  # type:ignore[no-untyped-call]

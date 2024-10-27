@@ -166,7 +166,7 @@ def scaled_parameters(
     short_description="An **lr-scaled** version of :class:`torch.optim.SGD` for u-muP."
     "`readout_constraint` should match the `constraint` arg used in `LinearReadout`."
 )
-class SGD(torch.optim.SGD):  # type:ignore[name-defined,misc]
+class SGD(torch.optim.SGD):
 
     def __init__(
         self,
@@ -194,7 +194,7 @@ class SGD(torch.optim.SGD):  # type:ignore[name-defined,misc]
 @inherit_docstring(
     short_description="An **lr-scaled** version of :class:`torch.optim.Adam` for u-muP."
 )
-class Adam(torch.optim.Adam):  # type:ignore[name-defined,misc]
+class Adam(torch.optim.Adam):
     def __init__(
         self,
         params: ParamsT,
@@ -222,7 +222,7 @@ class Adam(torch.optim.Adam):  # type:ignore[name-defined,misc]
         "An **lr-scaled** version of :class:`torch.optim.AdamW` for u-muP."
     )
 )
-class AdamW(torch.optim.AdamW):  # type:ignore[name-defined,misc]
+class AdamW(torch.optim.AdamW):
     def __init__(
         self,
         params: ParamsT,

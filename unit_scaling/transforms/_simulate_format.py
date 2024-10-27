@@ -115,8 +115,8 @@ def _quantisation_backend(fwd_format: FPFormat, bwd_format: FPFormat) -> Backend
         for node in graph.nodes:
             if node.op == "call_function" and node.target in _replacement_map:
                 _replace_with_quantised(graph, node, fwd_format, bwd_format)
-        graph.lint()
-        return GraphModule(gm, graph)  # type: ignore[no-any-return]
+        graph.lint()  # type: ignore[no-untyped-call]
+        return GraphModule(gm, graph)
 
     return backend_fn
 

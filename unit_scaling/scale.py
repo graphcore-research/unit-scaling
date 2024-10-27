@@ -32,7 +32,7 @@ class _ScaledGrad(torch.autograd.Function):  # pragma: no cover
     ) -> Tensor:
         # Special cases required for torch.fx tracing
         if isinstance(bwd_scale, fx.proxy.Proxy):
-            ctx.save_for_backward(bwd_scale)
+            ctx.save_for_backward(bwd_scale)  # type: ignore
         elif isinstance(X, fx.proxy.Proxy):
             ctx.save_for_backward(torch.tensor(bwd_scale))
         else:
