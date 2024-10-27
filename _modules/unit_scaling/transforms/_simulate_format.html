@@ -191,8 +191,8 @@
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">op</span> <span class="o">==</span> <span class="s2">&quot;call_function&quot;</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">target</span> <span class="ow">in</span> <span class="n">_replacement_map</span><span class="p">:</span>
                 <span class="n">_replace_with_quantised</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">fwd_format</span><span class="p">,</span> <span class="n">bwd_format</span><span class="p">)</span>
-        <span class="n">graph</span><span class="o">.</span><span class="n">lint</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">GraphModule</span><span class="p">(</span><span class="n">gm</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>  <span class="c1"># type: ignore[no-any-return]</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">lint</span><span class="p">()</span>  <span class="c1"># type: ignore[no-untyped-call]</span>
+        <span class="k">return</span> <span class="n">GraphModule</span><span class="p">(</span><span class="n">gm</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">backend_fn</span>
 

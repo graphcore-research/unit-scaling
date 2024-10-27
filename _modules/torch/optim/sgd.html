@@ -75,13 +75,15 @@
              
   <h1>Source code for torch.optim.sgd</h1><div class="highlight"><pre>
 <span></span><span class="c1"># mypy: allow-untyped-defs</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implementation for Stochastic Gradient Descent optimizer.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
-<span class="kn">from</span> <span class="nn">torch.utils._foreach_utils</span> <span class="kn">import</span> <span class="n">_get_fused_kernels_supported_devices</span>
+
 <span class="kn">from</span> <span class="nn">.optimizer</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_default_to_fused_or_foreach</span><span class="p">,</span>
+    <span class="n">_device_dtype_check_for_fused</span><span class="p">,</span>
     <span class="n">_differentiable_doc</span><span class="p">,</span>
     <span class="n">_foreach_doc</span><span class="p">,</span>
     <span class="n">_fused_doc</span><span class="p">,</span>
@@ -91,14 +93,15 @@
     <span class="n">Optimizer</span><span class="p">,</span>
 <span class="p">)</span>
 
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SGD&quot;</span><span class="p">,</span> <span class="s2">&quot;sgd&quot;</span><span class="p">]</span>
 
 
-<span class="k">class</span> <span class="nc">SGD</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">SGD</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>  <span class="c1"># noqa: D101</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">params</span><span class="p">,</span>
-        <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
         <span class="n">momentum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">dampening</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">weight_decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -108,7 +111,9 @@
         <span class="n">foreach</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">differentiable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">fused</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">):</span>  <span class="c1"># noqa: D107</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lr</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lr</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Tensor lr must be 1-element&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">lr</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid learning rate: </span><span class="si">{</span><span class="n">lr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">momentum</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
@@ -133,23 +138,13 @@
 
         <span class="k">if</span> <span class="n">fused</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_step_supports_amp_scaling</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="n">fused_supported_devices</span> <span class="o">=</span> <span class="n">_get_fused_kernels_supported_devices</span><span class="p">()</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="n">fused_supported_devices</span> <span class="ow">and</span> <span class="n">torch</span><span class="o">.</span><span class="n">is_floating_point</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">pg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span>
-                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pg</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>
-            <span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="s2">&quot;`fused=True` requires all the params to be floating point Tensors of &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;supported devices: </span><span class="si">{</span><span class="n">fused_supported_devices</span><span class="si">}</span><span class="s2">.&quot;</span>
-                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_need_device_dtype_check_for_fused</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="n">differentiable</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;`fused` does not support `differentiable`&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">foreach</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;`fused` and `foreach` cannot be `True` together.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>  <span class="c1"># noqa: D105</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__setstate__</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">:</span>
             <span class="n">group</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;nesterov&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -163,6 +158,11 @@
 
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">group</span><span class="p">[</span><span class="s2">&quot;fused&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_need_device_dtype_check_for_fused&quot;</span><span class="p">,</span> <span class="kc">True</span>
+                <span class="p">):</span>
+                    <span class="n">_device_dtype_check_for_fused</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_need_device_dtype_check_for_fused</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
                 <span class="n">grads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">:</span>
@@ -176,7 +176,7 @@
 
 <div class="viewcode-block" id="SGD.step"><a class="viewcode-back" href="../../../generated/unit_scaling.optim.SGD.html#unit_scaling.optim.SGD.step">[docs]</a>    <span class="nd">@_use_grad_for_differentiable</span>
     <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">closure</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs a single optimization step.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform a single optimization step.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            closure (Callable, optional): A closure that reevaluates the model</span>
@@ -262,7 +262,7 @@
 <span class="s2">    Args:</span>
 <span class="s2">        params (iterable): iterable of parameters to optimize or dicts defining</span>
 <span class="s2">            parameter groups</span>
-<span class="s2">        lr (float, optional): learning rate (default: 1e-3)</span>
+<span class="s2">        lr (float, Tensor, optional): learning rate (default: 1e-3)</span>
 <span class="s2">        momentum (float, optional): momentum factor (default: 0)</span>
 <span class="s2">        weight_decay (float, optional): weight decay (L2 penalty) (default: 0)</span>
 <span class="s2">        dampening (float, optional): dampening for momentum (default: 0)</span>
@@ -340,7 +340,6 @@
 
 <span class="sd">    See :class:`~torch.optim.SGD` for details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="c1"># Respect when the user inputs False/True for foreach or fused. We only want to change</span>
     <span class="c1"># the default when neither have been user-specified. Note that we default to foreach</span>
     <span class="c1"># and pass False to use_fused. This is not a mistake--we want to give the fused impl</span>
@@ -451,11 +450,15 @@
     <span class="n">grouped_tensors</span> <span class="o">=</span> <span class="n">Optimizer</span><span class="o">.</span><span class="n">_group_tensors_by_device_and_dtype</span><span class="p">(</span>
         <span class="p">[</span><span class="n">params</span><span class="p">,</span> <span class="n">grads</span><span class="p">,</span> <span class="n">momentum_buffer_list</span><span class="p">],</span> <span class="n">with_indices</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># type: ignore[list-item]</span>
     <span class="p">)</span>
+
     <span class="k">for</span> <span class="p">(</span>
-        <span class="n">device_params</span><span class="p">,</span>
-        <span class="n">device_grads</span><span class="p">,</span>
+        <span class="n">device_params_</span><span class="p">,</span>
+        <span class="n">device_grads_</span><span class="p">,</span>
         <span class="n">device_momentum_buffer_list</span><span class="p">,</span>
     <span class="p">),</span> <span class="n">indices</span> <span class="ow">in</span> <span class="n">grouped_tensors</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">device_params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">device_params_</span><span class="p">)</span>
+        <span class="n">device_grads</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">device_grads_</span><span class="p">)</span>
+
         <span class="n">device_has_sparse_grad</span> <span class="o">=</span> <span class="n">has_sparse_grad</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
             <span class="n">grad</span><span class="o">.</span><span class="n">is_sparse</span> <span class="k">for</span> <span class="n">grad</span> <span class="ow">in</span> <span class="n">device_grads</span>
         <span class="p">)</span>
@@ -473,7 +476,7 @@
                 <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">momentum</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">bufs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">bufs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="n">all_states_with_momentum_buffer</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">device_momentum_buffer_list</span><span class="p">)):</span>
@@ -481,7 +484,7 @@
                     <span class="n">all_states_with_momentum_buffer</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="k">break</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">bufs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device_momentum_buffer_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">bufs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">device_momentum_buffer_list</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
 
             <span class="k">if</span> <span class="n">all_states_with_momentum_buffer</span><span class="p">:</span>
                 <span class="n">torch</span><span class="o">.</span><span class="n">_foreach_mul_</span><span class="p">(</span><span class="n">bufs</span><span class="p">,</span> <span class="n">momentum</span><span class="p">)</span>
@@ -494,7 +497,7 @@
                             <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                         <span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">device_grads</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">buf</span> <span class="o">=</span> <span class="n">device_momentum_buffer_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="n">buf</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">device_momentum_buffer_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
                         <span class="n">buf</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">momentum</span><span class="p">)</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">device_grads</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">dampening</span><span class="p">)</span>
 
                     <span class="n">bufs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
@@ -554,9 +557,11 @@
         <span class="p">[</span><span class="n">params</span><span class="p">,</span> <span class="n">grads</span><span class="p">,</span> <span class="n">momentum_buffer_list</span><span class="p">],</span> <span class="n">with_indices</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># type: ignore[list-item]</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">device_params</span><span class="p">,</span> <span class="n">device_grads</span><span class="p">,</span> <span class="n">device_momentum_buffer_list</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">device_params_</span><span class="p">,</span> <span class="n">device_grads_</span><span class="p">,</span> <span class="n">device_momentum_buffer_list</span><span class="p">),</span>
         <span class="n">_</span><span class="p">,</span>
     <span class="p">)</span> <span class="ow">in</span> <span class="n">grouped_tensors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">device_params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">device_params_</span><span class="p">)</span>
+        <span class="n">device_grads</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">device_grads_</span><span class="p">)</span>
         <span class="n">device_grad_scale</span><span class="p">,</span> <span class="n">device_found_inf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">grad_scale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">device_grad_scale</span> <span class="o">=</span> <span class="n">grad_scale_dict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span>
@@ -567,7 +572,9 @@
         <span class="n">torch</span><span class="o">.</span><span class="n">_fused_sgd_</span><span class="p">(</span>
             <span class="n">device_params</span><span class="p">,</span>
             <span class="n">device_grads</span><span class="p">,</span>
-            <span class="p">[]</span> <span class="k">if</span> <span class="n">no_momentum_buffer</span> <span class="k">else</span> <span class="n">device_momentum_buffer_list</span><span class="p">,</span>
+            <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">no_momentum_buffer</span>
+            <span class="k">else</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">device_momentum_buffer_list</span><span class="p">),</span>
             <span class="n">weight_decay</span><span class="o">=</span><span class="n">weight_decay</span><span class="p">,</span>
             <span class="n">momentum</span><span class="o">=</span><span class="n">momentum</span><span class="p">,</span>
             <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>

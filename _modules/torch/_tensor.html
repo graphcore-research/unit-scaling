@@ -86,7 +86,6 @@
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch._C</span> <span class="k">as</span> <span class="nn">_C</span>
-<span class="kn">import</span> <span class="nn">torch.utils.hooks</span> <span class="k">as</span> <span class="nn">hooks</span>
 <span class="kn">from</span> <span class="nn">torch._namedtensor_internals</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">check_serializing_named_tensor</span><span class="p">,</span>
     <span class="n">is_ellipsis</span><span class="p">,</span>
@@ -102,7 +101,6 @@
     <span class="n">has_torch_function_unary</span><span class="p">,</span>
     <span class="n">has_torch_function_variadic</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torch.utils.dlpack</span> <span class="kn">import</span> <span class="n">DLDeviceType</span>
 
 
 <span class="k">def</span> <span class="nf">_handle_torch_function_and_wrap_type_error_to_not_implemented</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
@@ -287,8 +285,19 @@
             <span class="k">return</span> <span class="n">new_tensor</span>
 
     <span class="k">def</span> <span class="nf">__reduce_ex__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proto</span><span class="p">):</span>
+        <span class="n">materialize_fake_tensors</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">_serialization_tls</span><span class="o">.</span><span class="n">materialize_fake_tensors</span>
+        <span class="p">)</span>
         <span class="n">state</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">_utils</span><span class="o">.</span><span class="n">_get_obj_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Tensor</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">state</span><span class="p">:</span>
+        <span class="c1"># Ignore all state when using FakeTensor with skip_data(materialize_fake_tensors) because FakeTensor has</span>
+        <span class="c1"># some state that cannot be pickled</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="c1"># TODO: remove hasattr, it&#39;s a hack to support versions of torch that</span>
+            <span class="c1"># don&#39;t have _subclasses</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="n">torch</span><span class="p">,</span> <span class="s2">&quot;_subclasses&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="n">torch</span><span class="o">.</span><span class="n">_subclasses</span><span class="o">.</span><span class="n">fake_tensor</span><span class="o">.</span><span class="n">FakeTensor</span>
+            <span class="ow">and</span> <span class="n">materialize_fake_tensors</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Tensor</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">state</span><span class="p">):</span>
             <span class="c1"># Fast path for regular tensor without Python state.</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduce_ex_internal</span><span class="p">(</span><span class="n">proto</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">has_torch_function_unary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -323,9 +332,18 @@
 
     <span class="k">def</span> <span class="nf">_reduce_ex_internal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proto</span><span class="p">):</span>
         <span class="n">check_serializing_named_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">torch.utils.hooks</span> <span class="kn">import</span> <span class="n">warn_if_has_hooks</span>
+
         <span class="c1"># See Note [Don&#39;t serialize hooks]</span>
-        <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">warn_if_has_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">warn_if_has_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">backward_hooks</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="n">skip_data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">_serialization_tls</span><span class="o">.</span><span class="n">skip_data</span>
+        <span class="n">materialize_fake_tensors</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">_serialization_tls</span><span class="o">.</span><span class="n">materialize_fake_tensors</span>
+        <span class="p">)</span>
+
         <span class="c1"># Note: Numpy array is chosen to be the rebuild component for XLA, MTIA, MAIA Tensors.</span>
         <span class="c1"># We considered a few options:</span>
         <span class="c1"># 1. CPU tensor can&#39;t be used here.</span>
@@ -343,6 +361,10 @@
             <span class="c1"># Convert BFloat16 tesors to Float32 before conversion to numpy, as numpy doesn&#39;t</span>
             <span class="c1"># support BFloat16. The rebuild tensor from numpy takes in the original self.dtype,</span>
             <span class="c1"># this would reconstruct the BFloat16 tensor from numpy.</span>
+            <span class="k">if</span> <span class="n">skip_data</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Cannot serialize tensors on backends with no storage under skip_data context manager&quot;</span>
+                <span class="p">)</span>
             <span class="n">numpy_tensor</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bfloat16</span>
@@ -355,6 +377,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;meta&quot;</span><span class="p">:</span>
             <span class="c1"># NB: This implementation BREAKS storage sharing.  Current</span>
             <span class="c1"># hypothesis is that no one cares for meta tensors.</span>
+            <span class="k">if</span> <span class="n">skip_data</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;Serializing tensors on the meta device under skip_data context manager is a no-op&quot;</span>
+                <span class="p">)</span>
             <span class="n">arg_meta</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
                 <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()),</span>
@@ -363,6 +389,10 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">_utils</span><span class="o">.</span><span class="n">_rebuild_meta_tensor_no_storage</span><span class="p">,</span> <span class="n">arg_meta</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_quantized</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">skip_data</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Cannot serialize qtensor under skip_data context manager, file an issue if you need this feature&quot;</span>
+                <span class="p">)</span>
             <span class="c1"># quantizer_params can be different type based on torch attribute</span>
             <span class="n">quantizer_params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
                 <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">qscheme</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
@@ -444,6 +474,10 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">_utils</span><span class="o">.</span><span class="n">_rebuild_sparse_tensor</span><span class="p">,</span> <span class="n">args_sparse_compressed</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_nested</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">skip_data</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Cannot serialize nested tensor under skip_data context manager, file an issue if you need this feature&quot;</span>
+                <span class="p">)</span>
             <span class="n">args_nested</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="c1"># NB: values() currently returns the storage as a buffer in an unsafe way.</span>
                 <span class="c1"># Ideally, we&#39;d use a private API for this instead. TODO: Switch to this if</span>
@@ -458,14 +492,30 @@
             <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
             <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__torch_dispatch__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="o">.</span><span class="n">__torch_dispatch__</span>
             <span class="ow">and</span> <span class="p">(</span>
-                <span class="nb">isinstance</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="p">,</span>
-                    <span class="p">(</span>
-                        <span class="n">torch</span><span class="o">.</span><span class="n">_subclasses</span><span class="o">.</span><span class="n">fake_tensor</span><span class="o">.</span><span class="n">FakeTensor</span><span class="p">,</span>
-                        <span class="n">torch</span><span class="o">.</span><span class="n">_subclasses</span><span class="o">.</span><span class="n">functional_tensor</span><span class="o">.</span><span class="n">FunctionalTensor</span><span class="p">,</span>
-                    <span class="p">),</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">_subclasses</span><span class="o">.</span><span class="n">functional_tensor</span><span class="o">.</span><span class="n">FunctionalTensor</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span>
+                    <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">_subclasses</span><span class="o">.</span><span class="n">fake_tensor</span><span class="o">.</span><span class="n">FakeTensor</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_ptr</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
                 <span class="p">)</span>
-                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_ptr</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">arg_wrapper_subclass</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stride</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">storage_offset</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">_utils</span><span class="o">.</span><span class="n">_rebuild_wrapper_subclass</span><span class="p">,</span> <span class="n">arg_wrapper_subclass</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+            <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__torch_dispatch__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="o">.</span><span class="n">__torch_dispatch__</span>
+            <span class="ow">and</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">_subclasses</span><span class="o">.</span><span class="n">fake_tensor</span><span class="o">.</span><span class="n">FakeTensor</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">skip_data</span> <span class="ow">and</span> <span class="n">materialize_fake_tensors</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">):</span>
             <span class="n">arg_wrapper_subclass</span> <span class="o">=</span> <span class="p">(</span>
@@ -493,6 +543,16 @@
                     <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
                     <span class="n">_internal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>  <span class="c1"># type: ignore[assignment]</span>
+
+            <span class="c1"># TODO: remove hasattr, it&#39;s a hack to support versions of torch that</span>
+            <span class="c1"># don&#39;t have _subclasses</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">hasattr</span><span class="p">(</span><span class="n">torch</span><span class="p">,</span> <span class="s2">&quot;_subclasses&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">_subclasses</span><span class="o">.</span><span class="n">fake_tensor</span><span class="o">.</span><span class="n">FakeTensor</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">skip_data</span>
+            <span class="p">):</span>
+                <span class="n">storage</span><span class="o">.</span><span class="n">_fake_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+
             <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">storage</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">storage_offset</span><span class="p">(),</span>
@@ -641,7 +701,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_backward_hooks</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">grad_fn</span><span class="o">.</span><span class="n">_register_hook_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">handle</span> <span class="o">=</span> <span class="n">hooks</span><span class="o">.</span><span class="n">RemovableHandle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_backward_hooks</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">torch.utils.hooks</span> <span class="kn">import</span> <span class="n">RemovableHandle</span>
+
+        <span class="n">handle</span> <span class="o">=</span> <span class="n">RemovableHandle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_backward_hooks</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_backward_hooks</span><span class="p">[</span><span class="n">handle</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">hook</span>
         <span class="k">return</span> <span class="n">handle</span></div>
 
@@ -697,7 +760,10 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_post_accumulate_grad_hooks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_post_accumulate_grad_hooks</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="n">handle</span> <span class="o">=</span> <span class="n">hooks</span><span class="o">.</span><span class="n">RemovableHandle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_post_accumulate_grad_hooks</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">torch.utils.hooks</span> <span class="kn">import</span> <span class="n">RemovableHandle</span>
+
+        <span class="n">handle</span> <span class="o">=</span> <span class="n">RemovableHandle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_post_accumulate_grad_hooks</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_accumulate_grad_hooks</span><span class="p">[</span><span class="n">handle</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">hook</span>
         <span class="k">return</span> <span class="n">handle</span></div>
 
@@ -791,7 +857,7 @@
 <span class="sd">        It is expected that ``self`` is a parameter or buffer in an ``nn.Module`` and ``other`` is the</span>
 <span class="sd">        value in the state dictionary with the corresponding key, this method defines</span>
 <span class="sd">        how ``other`` is remapped before being swapped with ``self`` via</span>
-<span class="sd">        :func:`~torch.utils.swap_tensors`` in ``module.load_state_dict()``.</span>
+<span class="sd">        :func:`~torch.utils.swap_tensors` in :meth:`~nn.Module.load_state_dict`.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            This method should always return a new object that is not ``self`` or ``other``.</span>
@@ -837,22 +903,22 @@
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">keepdim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">._linalg_utils</span> <span class="kn">import</span> <span class="n">solve</span>
+        <span class="kn">from</span> <span class="nn">torch._linalg_utils</span> <span class="kn">import</span> <span class="n">solve</span>
 
         <span class="k">return</span> <span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">lstsq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">._linalg_utils</span> <span class="kn">import</span> <span class="n">lstsq</span>
+        <span class="kn">from</span> <span class="nn">torch._linalg_utils</span> <span class="kn">import</span> <span class="n">lstsq</span>
 
         <span class="k">return</span> <span class="n">lstsq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">eig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eigenvectors</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">._linalg_utils</span> <span class="kn">import</span> <span class="n">eig</span>
+        <span class="kn">from</span> <span class="nn">torch._linalg_utils</span> <span class="kn">import</span> <span class="n">eig</span>
 
         <span class="k">return</span> <span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eigenvectors</span><span class="o">=</span><span class="n">eigenvectors</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">symeig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eigenvectors</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">._linalg_utils</span> <span class="kn">import</span> <span class="n">_symeig</span>
+        <span class="kn">from</span> <span class="nn">torch._linalg_utils</span> <span class="kn">import</span> <span class="n">_symeig</span>
 
         <span class="k">return</span> <span class="n">_symeig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eigenvectors</span><span class="o">=</span><span class="n">eigenvectors</span><span class="p">)</span>
 
@@ -1172,7 +1238,7 @@
             <span class="n">array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check if `element` is present in tensor</span>
 
 <span class="sd">        Args:</span>
@@ -1185,7 +1251,7 @@
             <span class="n">element</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Number</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">SymInt</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">SymFloat</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">SymBool</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="c1"># type hint doesn&#39;t understand the __contains__ result array</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">element</span> <span class="o">==</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>  <span class="c1"># type: ignore[union-attr]</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">((</span><span class="n">element</span> <span class="o">==</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>  <span class="c1"># type: ignore[union-attr]</span>
 
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Tensor.__contains__ only supports Tensor or scalar, but you passed in a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
@@ -1200,7 +1266,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">has_torch_function_unary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="c1"># TODO mypy doesn&#39;t support @property, see: https://github.com/python/mypy/issues/6185</span>
-            <span class="k">return</span> <span class="n">handle_torch_function</span><span class="p">(</span><span class="n">Tensor</span><span class="o">.</span><span class="n">__cuda_array_interface__</span><span class="o">.</span><span class="fm">__get__</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="bp">self</span><span class="p">)</span>  <span class="c1"># type: ignore[attr-defined]</span>
+            <span class="k">return</span> <span class="n">handle_torch_function</span><span class="p">(</span>
+                <span class="n">Tensor</span><span class="o">.</span><span class="n">__cuda_array_interface__</span><span class="o">.</span><span class="fm">__get__</span><span class="p">,</span>  <span class="c1"># type: ignore[attr-defined]</span>
+                <span class="p">(</span><span class="bp">self</span><span class="p">,),</span>
+                <span class="bp">self</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="c1"># raise AttributeError for unsupported tensors, so that</span>
         <span class="c1"># hasattr(cpu_tensor, &quot;__cuda_array_interface__&quot;) is False.</span>
@@ -1228,14 +1298,19 @@
         <span class="n">typestr</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">complex64</span><span class="p">:</span> <span class="s2">&quot;&lt;c8&quot;</span><span class="p">,</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">complex128</span><span class="p">:</span> <span class="s2">&quot;&lt;c16&quot;</span><span class="p">,</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">bfloat16</span><span class="p">:</span> <span class="s2">&quot;&lt;f2&quot;</span><span class="p">,</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">:</span> <span class="s2">&quot;&lt;f2&quot;</span><span class="p">,</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span> <span class="s2">&quot;&lt;f4&quot;</span><span class="p">,</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span> <span class="s2">&quot;&lt;f8&quot;</span><span class="p">,</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">uint8</span><span class="p">:</span> <span class="s2">&quot;|u1&quot;</span><span class="p">,</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">int8</span><span class="p">:</span> <span class="s2">&quot;|i1&quot;</span><span class="p">,</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">uint16</span><span class="p">:</span> <span class="s2">&quot;&lt;u2&quot;</span><span class="p">,</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">int16</span><span class="p">:</span> <span class="s2">&quot;&lt;i2&quot;</span><span class="p">,</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">uint32</span><span class="p">:</span> <span class="s2">&quot;&lt;u4&quot;</span><span class="p">,</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">:</span> <span class="s2">&quot;&lt;i4&quot;</span><span class="p">,</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">uint64</span><span class="p">:</span> <span class="s2">&quot;&lt;u8&quot;</span><span class="p">,</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span> <span class="s2">&quot;&lt;i8&quot;</span><span class="p">,</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span> <span class="s2">&quot;|b1&quot;</span><span class="p">,</span>
         <span class="p">}[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span>
 
         <span class="n">itemsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_size</span><span class="p">()</span>
@@ -1579,6 +1654,9 @@
     <span class="k">def</span> <span class="nf">__dlpack_device__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">has_torch_function_unary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">handle_torch_function</span><span class="p">(</span><span class="n">Tensor</span><span class="o">.</span><span class="n">__dlpack_device__</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">torch.utils.dlpack</span> <span class="kn">import</span> <span class="n">DLDeviceType</span>
+
         <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">index</span> <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="n">torch_device_type</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">type</span>

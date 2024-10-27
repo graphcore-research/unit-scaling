@@ -277,7 +277,8 @@
         <span class="n">autowrap_functions</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">autowrap_modules</span><span class="o">=</span><span class="n">autowrap_modules</span><span class="p">,</span> <span class="n">autowrap_functions</span><span class="o">=</span><span class="n">autowrap_functions</span>
+            <span class="n">autowrap_modules</span><span class="o">=</span><span class="n">autowrap_modules</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
+            <span class="n">autowrap_functions</span><span class="o">=</span><span class="n">autowrap_functions</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recurse_modules</span> <span class="o">=</span> <span class="n">recurse_modules</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_to_function</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -303,7 +304,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">target_to_function</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">function_to_node</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
             <span class="k">return</span> <span class="n">node</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">create_arg</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">create_arg</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">trace</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -316,7 +317,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s2">&quot;_tracer_extras&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">graph</span><span class="o">.</span><span class="n">_tracer_extras</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">graph</span><span class="o">.</span><span class="n">_tracer_extras</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">graph</span><span class="o">.</span><span class="n">_tracer_extras</span><span class="p">[</span><span class="s2">&quot;target_to_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_to_function</span>
-        <span class="k">return</span> <span class="n">graph</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="n">graph</span>
 
 
 <div class="viewcode-block" id="analyse_module"><a class="viewcode-back" href="../../generated/unit_scaling.utils.analyse_module.html#unit_scaling.utils.analyse_module">[docs]</a><span class="k">def</span> <span class="nf">analyse_module</span><span class="p">(</span>

@@ -108,7 +108,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
         <span class="c1"># Special cases required for torch.fx tracing</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bwd_scale</span><span class="p">,</span> <span class="n">fx</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">Proxy</span><span class="p">):</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="n">save_for_backward</span><span class="p">(</span><span class="n">bwd_scale</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">save_for_backward</span><span class="p">(</span><span class="n">bwd_scale</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">fx</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">Proxy</span><span class="p">):</span>
             <span class="n">ctx</span><span class="o">.</span><span class="n">save_for_backward</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">bwd_scale</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>

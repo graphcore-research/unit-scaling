@@ -88,7 +88,7 @@
 
 <span class="c1"># mypy: disable-error-code=&quot;no-any-return&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
@@ -119,16 +119,32 @@
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="lr_scale_func_sgd"><a class="viewcode-back" href="../../generated/unit_scaling.optim.lr_scale_func_sgd.html#unit_scaling.optim.lr_scale_func_sgd">[docs]</a><span class="k">def</span> <span class="nf">lr_scale_func_sgd</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="lr_scale_func_sgd"><a class="viewcode-back" href="../../generated/unit_scaling.optim.lr_scale_func_sgd.html#unit_scaling.optim.lr_scale_func_sgd">[docs]</a><span class="k">def</span> <span class="nf">lr_scale_func_sgd</span><span class="p">(</span>
+    <span class="n">readout_constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ParameterData</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the LR scaling factor for :class:`torch.optim.SGD`.&quot;&quot;&quot;</span>
-    <span class="n">scale</span> <span class="o">=</span> <span class="n">lr_scale_for_depth</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="s2">&quot;norm&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="o">==</span> <span class="s2">&quot;weight&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">_get_fan_in</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
-    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="o">==</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">scale</span>
-    <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Unexpected mup_type </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">mup_type</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+    <span class="k">if</span> <span class="n">readout_constraint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># If there is no readout constraint we will have unit-scaled gradients and hence</span>
+        <span class="c1"># unit-scaled weight updates. In this case the scaling rules are the same as</span>
+        <span class="c1"># for Adam, which naturally has unit-scaled weight updates.</span>
+        <span class="k">return</span> <span class="n">lr_scale_func_adam</span>
+    <span class="k">elif</span> <span class="n">readout_constraint</span> <span class="o">==</span> <span class="s2">&quot;to_output_scale&quot;</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">lr_scale_func_sgd_inner</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="n">lr_scale_for_depth</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="s2">&quot;norm&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="o">==</span> <span class="s2">&quot;weight&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">_get_fan_in</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="o">==</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">scale</span>
+            <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Unexpected mup_type </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">mup_type</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">lr_scale_func_sgd_inner</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Unhandled readout constraint: </span><span class="si">{</span><span class="n">readout_constraint</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
 <div class="viewcode-block" id="lr_scale_func_adam"><a class="viewcode-back" href="../../generated/unit_scaling.optim.lr_scale_func_adam.html#unit_scaling.optim.lr_scale_func_adam">[docs]</a><span class="k">def</span> <span class="nf">lr_scale_func_adam</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -224,8 +240,10 @@
 
 <div class="viewcode-block" id="SGD"><a class="viewcode-back" href="../../generated/unit_scaling.optim.SGD.html#unit_scaling.optim.SGD">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;An **lr-scaled** version of :class:`torch.optim.SGD` for u-muP.&quot;</span>
+    <span class="s2">&quot;`readout_constraint` should match the `constraint` arg used in `LinearReadout`.&quot;</span>
 <span class="p">)</span>
-<span class="k">class</span> <span class="nc">SGD</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">):</span>  <span class="c1"># type:ignore[name-defined,misc]</span>
+<span class="k">class</span> <span class="nc">SGD</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">):</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
@@ -234,11 +252,12 @@
         <span class="n">weight_decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">independent_weight_decay</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">allow_non_unit_scaling_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">readout_constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">scaled_parameters</span><span class="p">(</span>
             <span class="n">params</span><span class="p">,</span>
-            <span class="n">lr_scale_func_sgd</span><span class="p">,</span>
+            <span class="n">lr_scale_func_sgd</span><span class="p">(</span><span class="n">readout_constraint</span><span class="p">),</span>
             <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
             <span class="n">weight_decay</span><span class="o">=</span><span class="n">weight_decay</span><span class="p">,</span>
             <span class="n">independent_weight_decay</span><span class="o">=</span><span class="n">independent_weight_decay</span><span class="p">,</span>
@@ -251,7 +270,7 @@
 <div class="viewcode-block" id="Adam"><a class="viewcode-back" href="../../generated/unit_scaling.optim.Adam.html#unit_scaling.optim.Adam">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;An **lr-scaled** version of :class:`torch.optim.Adam` for u-muP.&quot;</span>
 <span class="p">)</span>
-<span class="k">class</span> <span class="nc">Adam</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">):</span>  <span class="c1"># type:ignore[name-defined,misc]</span>
+<span class="k">class</span> <span class="nc">Adam</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
@@ -279,7 +298,7 @@
         <span class="s2">&quot;An **lr-scaled** version of :class:`torch.optim.AdamW` for u-muP.&quot;</span>
     <span class="p">)</span>
 <span class="p">)</span>
-<span class="k">class</span> <span class="nc">AdamW</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">):</span>  <span class="c1"># type:ignore[name-defined,misc]</span>
+<span class="k">class</span> <span class="nc">AdamW</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
