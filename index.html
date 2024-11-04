@@ -78,9 +78,12 @@
   <section id="unit-scaling">
 <h1>Unit Scaling<a class="headerlink" href="#unit-scaling" title="Permalink to this heading"></a></h1>
 <p>Welcome to the <code class="code docutils literal notranslate"><span class="pre">unit-scaling</span></code> library. This library is designed to facilitate
-the use of the <em>unit scaling</em> method, as outlined in the paper
-<a class="reference external" href="https://arxiv.org/abs/2303.11257">Unit Scaling: Out-of-the-Box Low-Precision Training (ICML, 2023)</a>.</p>
-<p>For a demonstration of the library, see <a class="reference external" href="https://github.com/graphcore-research/out-of-the-box-fp8-training/blob/main/out_of_the_box_fp8_training.ipynb">Out-of-the-Box FP8 Training</a> — a notebook showing how to unit-scale the nanoGPT model.</p>
+the use of the <em>unit scaling</em> and <em>u-µP</em> methods, as outlined in the papers
+<a class="reference external" href="https://arxiv.org/abs/2303.11257">Unit Scaling: Out-of-the-Box Low-Precision Training (ICML, 2023)</a> and <a href="#id1"><span class="problematic" id="id2">`</span></a>u-μP: The Unit-Scaled Maximal Update Parametrization</p>
+<blockquote>
+<div><p>&lt;<a class="reference external" href="https://arxiv.org/abs/2407.17465">https://arxiv.org/abs/2407.17465</a>&gt;`_.</p>
+</div></blockquote>
+<p>For a demonstration of the library, see <a class="reference external" href="https://github.com/graphcore-research/unit-scaling/blob/main/examples/demo.ipynb">u-μP using the unit_scaling library</a> — a notebook showing the definition and training of a u-µP language model, comparing against Standard Parametrization (SP).</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
 <p>To install <code class="code docutils literal notranslate"><span class="pre">unit-scaling</span></code>, run:</p>
@@ -104,6 +107,7 @@ the use of the <em>unit scaling</em> method, as outlined in the paper
 Some features have yet to be implemented and occasional bugs may be present.
 We’re keen to help users with any problems they encounter.</p>
 </div>
+<p><a class="reference external" href="https://github.com/graphcore-research/unit-scaling/blob/main/docs/u-muP_slides.pdf">The following slides</a> also give an overview of u-µP.</p>
 </section>
 <section id="development">
 <h2>Development<a class="headerlink" href="#development" title="Permalink to this heading"></a></h2>
