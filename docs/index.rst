@@ -4,8 +4,9 @@ Unit Scaling
 Welcome to the :code:`unit-scaling` library. This library is designed to facilitate
 the use of the *unit scaling* and *u-µP* methods, as outlined in the papers
 `Unit Scaling: Out-of-the-Box Low-Precision Training (ICML, 2023)
-<https://arxiv.org/abs/2303.11257>`_ and `u-μP: The Unit-Scaled Maximal Update Parametrization
- <https://arxiv.org/abs/2407.17465>`_.
+<https://arxiv.org/abs/2303.11257>`_ and
+`u-μP: The Unit-Scaled Maximal Update Parametrization
+<https://arxiv.org/abs/2407.17465>`_
 
 For a demonstration of the library, see `u-μP using the unit_scaling library
 <https://github.com/graphcore-research/unit-scaling/blob/main/examples/demo.ipynb>`_ — a notebook showing the definition and training of a u-µP language model, comparing against Standard Parametrization (SP).
