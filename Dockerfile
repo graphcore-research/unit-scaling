@@ -21,7 +21,7 @@ RUN pip install -r requirements-dev.txt
 
 # Puts pip install libs on $PATH & sets correct locale
 ENV PATH="$PATH:/home/$USERNAME/.local/bin" \
-    LC_ALL=en_US.UTF-8
+    LC_ALL=C.UTF-8
 
 # Configure a non-root user with sudo privileges
 ARG USERNAME=developer  # Change this to preferred username
