@@ -25,9 +25,9 @@ This image can be built and entered interactively using:
 ```sh
 docker build -t unit-scaling-dev:latest .
 docker run -it --rm \
-    -v ~/.ssh:/.ssh:ro \
-    -v ~/.gitconfig:/.gitconfig:ro \
-    -v $(pwd):/home/developer/unit-scaling \
+    -v ~/.ssh:/home/developer/.ssh:ro \
+    -v ~/.gitconfig:/home/developer/.gitconfig:ro \
+    --user developer:developer -v $(pwd):/home/developer/unit-scaling \
     unit-scaling-dev:latest
 ```
 
