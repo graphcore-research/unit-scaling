@@ -17,7 +17,21 @@ To install the `unit-scaling` library, run:
 pip install git+https://github.com/graphcore-research/unit-scaling.git
 ```
 
-For development on this repository, see [docs/development.md](docs/development.md).
+## Development
+
+For development in this repository, we recommend using the provided docker container.
+This image can be built and entered interactively using:
+
+```sh
+docker build -t unit-scaling-dev:latest .
+docker run -it --rm -v $(pwd):/workspace unit-scaling-dev:latest
+```
+
+For vscode users, this repo also contains a `devcontainer.json` file, which enables the container to be used as a full-featured IDE (see the [Dev Container docs](https://code.visualstudio.com/docs/devcontainers/containers) for details on how to use this feature).
+
+Key development functionality is contained within the `./dev` script. This includes running unit tests, linting, formatting, documentation generation and more. Run `./dev --help` for the available options. Running `./dev` without arguments is equivalent to using the `--ci` option, which runs all of the available dev checks. This is the test used for GitHub CI.
+
+We encourage pull requests from the community. Please reach out to us with any questions about contributing.
 
 ## What is u-μP?
 

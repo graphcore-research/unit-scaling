@@ -30,4 +30,4 @@ jobs:
         uses: Cecilapp/GitHub-Pages-deploy@v3
         env: { GITHUB_TOKEN: "${{ github.token }}" }
         with:
-          build_dir: docker run --rm -v $(pwd):/workspace unit-scaling-dev:latest docs/_build/html
+          build_dir: docs/_build/html
