@@ -1,19 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>unit_scaling.utils &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-    <link rel="shortcut icon" href="../../_static/scales.png"/>
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="shortcut icon" href="../../_static/scales.png"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -30,9 +32,6 @@
           <a href="../../index.html" class="icon icon-home">
             unit-scaling
           </a>
-              <div class="version">
-                0.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -44,9 +43,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">1. User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../development.html">2. Developer guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">3. Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">4. API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">2. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">3. API reference</a></li>
 </ul>
 
         </div>
@@ -98,7 +96,9 @@
 <span class="kn">from</span> <span class="nn">._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
 
 
-<div class="viewcode-block" id="ScalePair"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScalePair.html#unit_scaling.utils.ScalePair">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="ScalePair">
+<a class="viewcode-back" href="../../generated/unit_scaling.utils.ScalePair.html#unit_scaling.utils.ScalePair">[docs]</a>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ScalePair</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass containing a pair of scalars, intended to represent the standard</span>
 <span class="sd">    deviation of an arbitrary tensor in the forward and backward passes.&quot;&quot;&quot;</span>
@@ -112,10 +112,13 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(-&gt; </span><span class="si">{</span><span class="n">fwd</span><span class="si">}</span><span class="s2">, &lt;- </span><span class="si">{</span><span class="n">bwd</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
 
+
 <span class="n">ScaleDict</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScalePair</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="ScaleTracker"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker">[docs]</a><span class="k">class</span> <span class="nc">ScaleTracker</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
+<div class="viewcode-block" id="ScaleTracker">
+<a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker">[docs]</a>
+<span class="k">class</span> <span class="nc">ScaleTracker</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Given a `nn.Tensor`, records its standard deviation in the forward and</span>
 <span class="sd">    backward pass in the supplied `ScalePair`.&quot;&quot;&quot;</span>
 
@@ -129,12 +132,15 @@
         <span class="n">ctx</span><span class="o">.</span><span class="n">scale_tracker</span> <span class="o">=</span> <span class="n">scale_tracker</span>  <span class="c1"># type: ignore</span>
         <span class="k">return</span> <span class="n">t</span>
 
-<div class="viewcode-block" id="ScaleTracker.backward"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker.backward">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ScaleTracker.backward">
+<a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTracker.html#unit_scaling.utils.ScaleTracker.backward">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
         <span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Tensor</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">scale_tracker</span><span class="o">.</span><span class="n">backward</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
         <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">track</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">scale_tracker</span><span class="p">:</span> <span class="n">ScalePair</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
@@ -143,7 +149,10 @@
         <span class="k">return</span> <span class="n">apply</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">scale_tracker</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ScaleTrackingInterpreter"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter">[docs]</a><span class="k">class</span> <span class="nc">ScaleTrackingInterpreter</span><span class="p">(</span><span class="n">fx</span><span class="o">.</span><span class="n">Interpreter</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ScaleTrackingInterpreter">
+<a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter">[docs]</a>
+<span class="k">class</span> <span class="nc">ScaleTrackingInterpreter</span><span class="p">(</span><span class="n">fx</span><span class="o">.</span><span class="n">Interpreter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Wraps an `fx.GraphModule` such than when executed it records the standard</span>
 <span class="sd">    deviation of every intermediate `nn.Tensor` in the forward and backward pass.</span>
 
@@ -155,7 +164,9 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScalePair</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ScaleTrackingInterpreter.run_node"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.run_node">[docs]</a>    <span class="k">def</span> <span class="nf">run_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<div class="viewcode-block" id="ScaleTrackingInterpreter.run_node">
+<a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.run_node">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">run_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">)</span> <span class="ow">and</span> <span class="n">out</span><span class="o">.</span><span class="n">is_floating_point</span><span class="p">():</span>
             <span class="n">scale_pair</span> <span class="o">=</span> <span class="n">ScalePair</span><span class="p">()</span>
@@ -163,12 +174,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">scale_pair</span>
         <span class="k">return</span> <span class="n">out</span></div>
 
-<div class="viewcode-block" id="ScaleTrackingInterpreter.call_function"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.call_function">[docs]</a>    <span class="k">def</span> <span class="nf">call_function</span><span class="p">(</span>
+
+<div class="viewcode-block" id="ScaleTrackingInterpreter.call_function">
+<a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.call_function">[docs]</a>
+    <span class="k">def</span> <span class="nf">call_function</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">Target</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">call_function</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ScaleTrackingInterpreter.placeholder"><a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.placeholder">[docs]</a>    <span class="k">def</span> <span class="nf">placeholder</span><span class="p">(</span>
+
+<div class="viewcode-block" id="ScaleTrackingInterpreter.placeholder">
+<a class="viewcode-back" href="../../generated/unit_scaling.utils.ScaleTrackingInterpreter.html#unit_scaling.utils.ScaleTrackingInterpreter.placeholder">[docs]</a>
+    <span class="k">def</span> <span class="nf">placeholder</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">target</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">Target</span><span class="p">,</span>
         <span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">fx</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">Argument</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
@@ -181,7 +198,9 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">_tracer_extras</span><span class="p">[</span><span class="s2">&quot;target_to_function&quot;</span><span class="p">][</span>
                 <span class="n">target</span>
             <span class="p">]</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">def</span> <span class="nf">_record_scales</span><span class="p">(</span>
@@ -320,7 +339,9 @@
         <span class="k">return</span> <span class="n">graph</span>
 
 
-<div class="viewcode-block" id="analyse_module"><a class="viewcode-back" href="../../generated/unit_scaling.utils.analyse_module.html#unit_scaling.utils.analyse_module">[docs]</a><span class="k">def</span> <span class="nf">analyse_module</span><span class="p">(</span>
+<div class="viewcode-block" id="analyse_module">
+<a class="viewcode-back" href="../../generated/unit_scaling.utils.analyse_module.html#unit_scaling.utils.analyse_module">[docs]</a>
+<span class="k">def</span> <span class="nf">analyse_module</span><span class="p">(</span>
     <span class="n">module</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
     <span class="n">inputs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]],</span>
     <span class="n">backward</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -395,6 +416,7 @@
         <span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,)</span>
     <span class="n">scales</span> <span class="o">=</span> <span class="n">_record_scales</span><span class="p">(</span><span class="n">fx_graph_module</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">backward</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_annotate</span><span class="p">(</span><span class="n">fx_graph_module</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">scales</span><span class="p">,</span> <span class="n">syntax_highlight</span><span class="o">=</span><span class="n">syntax_highlight</span><span class="p">)</span></div>
+
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="n">generate__all__</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>

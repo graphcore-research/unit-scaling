@@ -68,15 +68,15 @@ unit\_scaling
    :recursive:
 
    
-      unit_scaling.core
+      core
    
    
-      unit_scaling.functional
+      functional
    
    
-      unit_scaling.optim
+      optim
    
    
-      unit_scaling.parameter
+      parameter
    
 

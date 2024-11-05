@@ -1,24 +1,26 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>1. User guide &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="shortcut icon" href="_static/scales.png"/>
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+    <link rel="shortcut icon" href="_static/scales.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="2. Development" href="development.html" />
+    <link rel="next" title="2. Limitations" href="limitations.html" />
     <link rel="prev" title="Unit Scaling" href="index.html" /> 
 </head>
 
@@ -33,9 +35,6 @@
           <a href="index.html" class="icon icon-home">
             unit-scaling
           </a>
-              <div class="version">
-                0.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -54,9 +53,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#optimising-unit-scaled-models">1.5. Optimising unit-scaled models</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">2. Developer guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="limitations.html">3. Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">4. API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="limitations.html">2. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">3. API reference</a></li>
 </ul>
 
         </div>
@@ -84,7 +82,7 @@
            <div itemprop="articleBody">
              
   <section id="user-guide">
-<h1><span class="section-number">1. </span>User guide<a class="headerlink" href="#user-guide" title="Permalink to this heading"></a></h1>
+<h1><span class="section-number">1. </span>User guide<a class="headerlink" href="#user-guide" title="Link to this heading"></a></h1>
 <p>We recommend that new users read this guide before attempting to implement a unit-scaled
 model.</p>
 <p>It covers a brief overview of the technique, a practical guide to using the
@@ -97,17 +95,17 @@ Some features have yet to be implemented and occasional bugs may be present.
 We’re keen to help users with any problems they encounter.</p>
 </div>
 <section id="installation">
-<h2><span class="section-number">1.1. </span>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">1.1. </span>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
 <p>To install the <code class="code docutils literal notranslate"><span class="pre">unit-scaling</span></code> library, run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">graphcore</span><span class="o">-</span><span class="n">research</span><span class="o">/</span><span class="n">unit</span><span class="o">-</span><span class="n">scaling</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 <p>For those who wish to develop on the <code class="code docutils literal notranslate"><span class="pre">unit-scaling</span></code> codebase, clone or fork our
 <a class="reference external" href="https://github.com/graphcore-research/unit-scaling.git">GitHub repo</a> and follow the
-instructions in our <a class="reference internal" href="development.html"><span class="doc">developer guide</span></a>.</p>
+instructions in our <span class="xref std std-doc">developer guide</span>.</p>
 </section>
 <section id="what-is-unit-scaling">
-<h2><span class="section-number">1.2. </span>What is unit scaling?<a class="headerlink" href="#what-is-unit-scaling" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">1.2. </span>What is unit scaling?<a class="headerlink" href="#what-is-unit-scaling" title="Link to this heading"></a></h2>
 <p>Unit scaling is a paradigm for designing deep learning models that aims to scale all
 tensors (weights, activations and gradients) so that their standard deviation is
 approximately 1 for the first pass of model training, before any weight updates have
@@ -132,15 +130,10 @@ Although scales will drift from their unit starting-point during training,
 scales have stayed within range for all unit-scaled models tested thus far.</p></li>
 <li><p>This can enable the use of smaller, more efficient number formats out-of-the-box,
 such as FP16 and even FP8.</p></li>
-<li><p>As the behaviour of some ops depends on scale, unit-scaling a model can change its
-training dynamics slightly. In some experiments this has been shown to lead to
-loss decreasing faster, though further work is needed to validate this.</p></li>
 </ol>
-<p>For a more in-depth treatment of unit scaling, see our paper
-<a class="reference external" href="https://arxiv.org/abs/2303.11257">Unit Scaling: Out-of-the-Box Low-Precision Training (ICML, 2023)</a>.</p>
 </section>
 <section id="how-to-unit-scale-a-model">
-<h2><span class="section-number">1.3. </span>How to unit-scale a model<a class="headerlink" href="#how-to-unit-scale-a-model" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">1.3. </span>How to unit-scale a model<a class="headerlink" href="#how-to-unit-scale-a-model" title="Link to this heading"></a></h2>
 <p>We recommend the following approach to applying unit scaling to a model. We assume here
 that you have an existing PyTorch model which you wish to adapt to be unit-scaled,
 though a similar approach can be used to design a unit-scaled model from scratch.</p>
@@ -251,7 +244,7 @@ these scaling factors. <code class="code docutils literal notranslate"><span cla
 <p>Note that not all modules and functions are implemented in <code class="code docutils literal notranslate"><span class="pre">unit-scaling</span></code>.
 Implementations of the basic operations required for a transformer are available, but
 many other operations are not yet provided.</p>
-<p>For the set of modules and functions currently implemented, see <a class="reference internal" href="api_reference.html#api-reference"><span class="std std-numref">Section 4. API reference</span></a>.</p>
+<p>For the set of modules and functions currently implemented, see <a class="reference internal" href="api_reference.html#api-reference"><span class="std std-numref">Section 3. API reference</span></a>.</p>
 <p><strong>4. Repeat steps 2 &amp; 3 until scales look good</strong></p>
 <p>It’s important to check that swapping in unit-scaled ops has the desired effect on
 the scales in a model. There may be cases in which this is not the case, and additional
@@ -291,7 +284,7 @@ to fuse scaling factors with operations
 (see <a class="reference internal" href="#optimising-unit-scaled-models"><span class="std std-numref">Section 1.5. Optimising unit-scaled models</span></a> for more detail).</p>
 </section>
 <section id="key-considerations-for-unit-scaling">
-<h2><span class="section-number">1.4. </span>Key considerations for unit scaling<a class="headerlink" href="#key-considerations-for-unit-scaling" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">1.4. </span>Key considerations for unit scaling<a class="headerlink" href="#key-considerations-for-unit-scaling" title="Link to this heading"></a></h2>
 <p><strong>Loss functions</strong></p>
 <p>The most important operation in the model to unit-scale is the loss function.
 The division term and log-softmax used in the standard cross-entropy loss tend to
@@ -382,7 +375,7 @@ differ from the output/input-grad scales.</p>
 constraints are required.</p>
 </section>
 <section id="optimising-unit-scaled-models">
-<h2><span class="section-number">1.5. </span>Optimising unit-scaled models<a class="headerlink" href="#optimising-unit-scaled-models" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">1.5. </span>Optimising unit-scaled models<a class="headerlink" href="#optimising-unit-scaled-models" title="Link to this heading"></a></h2>
 <p>Unit scaling adds extra scalar multiplications to each operation.
 By default, PyTorch’s eager evaluation causes each of these multiplications to make an
 additional trip to-and-from memory.</p>
@@ -432,7 +425,7 @@ PyTorch 2.0.2 is released) to get the fix.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Unit Scaling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="development.html" class="btn btn-neutral float-right" title="2. Development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="limitations.html" class="btn btn-neutral float-right" title="2. Limitations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

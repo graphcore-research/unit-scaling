@@ -1,19 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>unit_scaling._modules &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-    <link rel="shortcut icon" href="../../_static/scales.png"/>
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="shortcut icon" href="../../_static/scales.png"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -30,9 +32,6 @@
           <a href="../../index.html" class="icon icon-home">
             unit-scaling
           </a>
-              <div class="version">
-                0.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -44,9 +43,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">1. User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../development.html">2. Developer guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">3. Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">4. API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">2. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">3. API reference</a></li>
 </ul>
 
         </div>
@@ -99,7 +97,9 @@
 <span class="kn">from</span> <span class="nn">.parameter</span> <span class="kn">import</span> <span class="n">MupType</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">has_parameter_data</span>
 
 
-<div class="viewcode-block" id="GELU"><a class="viewcode-back" href="../../generated/unit_scaling.GELU.html#unit_scaling.GELU">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+<div class="viewcode-block" id="GELU">
+<a class="viewcode-back" href="../../generated/unit_scaling.GELU.html#unit_scaling.GELU">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** Gaussian Error Linear Units function:&quot;</span><span class="p">,</span>
     <span class="n">add_args</span><span class="o">=</span><span class="p">[</span><span class="n">mult_docstring</span><span class="p">(),</span> <span class="n">binary_constraint_docstring</span><span class="p">],</span>
 <span class="p">)</span>
@@ -123,7 +123,10 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SiLU"><a class="viewcode-back" href="../../generated/unit_scaling.SiLU.html#unit_scaling.SiLU">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+
+<div class="viewcode-block" id="SiLU">
+<a class="viewcode-back" href="../../generated/unit_scaling.SiLU.html#unit_scaling.SiLU">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** Sigmoid Linear Unit function:&quot;</span><span class="p">,</span>
     <span class="n">add_args</span><span class="o">=</span><span class="p">[</span><span class="n">mult_docstring</span><span class="p">(),</span> <span class="n">binary_constraint_docstring</span><span class="p">],</span>
     <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;inplace&quot;</span><span class="p">],</span>
@@ -148,7 +151,10 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Softmax"><a class="viewcode-back" href="../../generated/unit_scaling.Softmax.html#unit_scaling.Softmax">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Softmax">
+<a class="viewcode-back" href="../../generated/unit_scaling.Softmax.html#unit_scaling.Softmax">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;Applies a **unit-scaled** Softmax function to an n-dimensional input Tensor.&quot;</span>
         <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
@@ -179,7 +185,10 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Dropout"><a class="viewcode-back" href="../../generated/unit_scaling.Dropout.html#unit_scaling.Dropout">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Dropout">
+<a class="viewcode-back" href="../../generated/unit_scaling.Dropout.html#unit_scaling.Dropout">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;A **unit-scaled** implementation of Dropout.&quot;</span><span class="p">,</span>
     <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;inplace&quot;</span><span class="p">],</span>
 <span class="p">)</span>
@@ -191,7 +200,10 @@
         <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Linear"><a class="viewcode-back" href="../../generated/unit_scaling.Linear.html#unit_scaling.Linear">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Linear">
+<a class="viewcode-back" href="../../generated/unit_scaling.Linear.html#unit_scaling.Linear">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;Applies a **unit-scaled** linear transformation to the incoming data.&quot;</span>
         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Note that this layer sets :code:`bias=False` by default.&quot;</span>
@@ -224,7 +236,10 @@
         <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="LinearReadout"><a class="viewcode-back" href="../../generated/unit_scaling.LinearReadout.html#unit_scaling.LinearReadout">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+
+<div class="viewcode-block" id="LinearReadout">
+<a class="viewcode-back" href="../../generated/unit_scaling.LinearReadout.html#unit_scaling.LinearReadout">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;Applies a **unit-scaled** linear transformation to the incoming data,&quot;</span>
         <span class="s2">&quot; scaled appropriately for the final network output.&quot;</span>
@@ -257,7 +272,10 @@
         <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">linear_readout</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Conv1d"><a class="viewcode-back" href="../../generated/unit_scaling.Conv1d.html#unit_scaling.Conv1d">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Conv1d">
+<a class="viewcode-back" href="../../generated/unit_scaling.Conv1d.html#unit_scaling.Conv1d">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;Applies a **unit-scaled** 1D convolution to the incoming data.&quot;</span>
         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Note that this layer sets :code:`bias=False` by default.&quot;</span>
@@ -326,7 +344,10 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="LayerNorm"><a class="viewcode-back" href="../../generated/unit_scaling.LayerNorm.html#unit_scaling.LayerNorm">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+
+<div class="viewcode-block" id="LayerNorm">
+<a class="viewcode-back" href="../../generated/unit_scaling.LayerNorm.html#unit_scaling.LayerNorm">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;Applies a **unit-scaled** Layer Normalization over a mini-batch of inputs.&quot;</span>
         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Note that this layer sets :code:`elementwise_affine=False` by default.&quot;</span>
@@ -361,7 +382,10 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="RMSNorm"><a class="viewcode-back" href="../../generated/unit_scaling.RMSNorm.html#unit_scaling.RMSNorm">[docs]</a><span class="k">class</span> <span class="nc">RMSNorm</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+<div class="viewcode-block" id="RMSNorm">
+<a class="viewcode-back" href="../../generated/unit_scaling.RMSNorm.html#unit_scaling.RMSNorm">[docs]</a>
+<span class="k">class</span> <span class="nc">RMSNorm</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies a **unit-scaled** RMS normalisation over trailing dimensions.</span>
 
 <span class="sd">    This layer implements the operation as described in the paper</span>
@@ -414,7 +438,10 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Embedding"><a class="viewcode-back" href="../../generated/unit_scaling.Embedding.html#unit_scaling.Embedding">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Embedding">
+<a class="viewcode-back" href="../../generated/unit_scaling.Embedding.html#unit_scaling.Embedding">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;A **unit-scaled** lookup table that looks up embeddings in a fixed dictionary&quot;</span>
         <span class="s2">&quot; and size.&quot;</span>
@@ -463,7 +490,10 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CrossEntropyLoss"><a class="viewcode-back" href="../../generated/unit_scaling.CrossEntropyLoss.html#unit_scaling.CrossEntropyLoss">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+
+<div class="viewcode-block" id="CrossEntropyLoss">
+<a class="viewcode-back" href="../../generated/unit_scaling.CrossEntropyLoss.html#unit_scaling.CrossEntropyLoss">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;Computes a **unit-scaled** cross entropy loss between input logits and target.&quot;</span>
     <span class="p">),</span>
@@ -503,7 +533,10 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MLP"><a class="viewcode-back" href="../../generated/unit_scaling.MLP.html#unit_scaling.MLP">[docs]</a><span class="k">class</span> <span class="nc">MLP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MLP">
+<a class="viewcode-back" href="../../generated/unit_scaling.MLP.html#unit_scaling.MLP">[docs]</a>
+<span class="k">class</span> <span class="nc">MLP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of an MLP layer using SwiGLU.</span>
 
 <span class="sd">    Args:</span>
@@ -527,7 +560,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_2</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>  <span class="c1"># type:ignore[no-any-return]</span></div>
 
 
-<div class="viewcode-block" id="MHSA"><a class="viewcode-back" href="../../generated/unit_scaling.MHSA.html#unit_scaling.MHSA">[docs]</a><span class="nd">@format_docstring</span><span class="p">(</span><span class="n">mult_docstring</span><span class="p">())</span>
+
+<div class="viewcode-block" id="MHSA">
+<a class="viewcode-back" href="../../generated/unit_scaling.MHSA.html#unit_scaling.MHSA">[docs]</a>
+<span class="nd">@format_docstring</span><span class="p">(</span><span class="n">mult_docstring</span><span class="p">())</span>
 <span class="k">class</span> <span class="nc">MHSA</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of a multi-head self-attention layer.</span>
 
@@ -565,7 +601,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_o</span><span class="p">(</span><span class="n">qkv</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
 
 
-<div class="viewcode-block" id="TransformerLayer"><a class="viewcode-back" href="../../generated/unit_scaling.TransformerLayer.html#unit_scaling.TransformerLayer">[docs]</a><span class="k">class</span> <span class="nc">TransformerLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TransformerLayer">
+<a class="viewcode-back" href="../../generated/unit_scaling.TransformerLayer.html#unit_scaling.TransformerLayer">[docs]</a>
+<span class="k">class</span> <span class="nc">TransformerLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of a PreNorm</span>
 <span class="sd">    (see https://arxiv.org/abs/2002.04745) transformer layer.</span>
 
@@ -615,7 +654,10 @@
         <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">residual_add</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">skip</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mlp_tau</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DepthModuleList"><a class="viewcode-back" href="../../generated/unit_scaling.DepthModuleList.html#unit_scaling.DepthModuleList">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+
+<div class="viewcode-block" id="DepthModuleList">
+<a class="viewcode-back" href="../../generated/unit_scaling.DepthModuleList.html#unit_scaling.DepthModuleList">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="s2">&quot;A :class:`torch.nn.ModuleList` that automatically configures the depth&quot;</span>
     <span class="s2">&quot; for sake of scaling.&quot;</span>
     <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Note that this does not track depth changes caused by modifications&quot;</span>
@@ -634,7 +676,10 @@
             <span class="n">parameter</span><span class="o">.</span><span class="n">mup_scaling_depth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DepthSequential"><a class="viewcode-back" href="../../generated/unit_scaling.DepthSequential.html#unit_scaling.DepthSequential">[docs]</a><span class="nd">@inherit_docstring</span><span class="p">(</span>
+
+<div class="viewcode-block" id="DepthSequential">
+<a class="viewcode-back" href="../../generated/unit_scaling.DepthSequential.html#unit_scaling.DepthSequential">[docs]</a>
+<span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="s2">&quot;A :class:`torch.nn.Sequential` that automatically configures the depth&quot;</span>
     <span class="s2">&quot; for sake of scaling.&quot;</span>
     <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Note that this does not track depth changes caused by modifications&quot;</span>
@@ -651,6 +696,7 @@
                 <span class="p">)</span>
             <span class="k">assert</span> <span class="n">parameter</span><span class="o">.</span><span class="n">mup_scaling_depth</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="n">parameter</span><span class="o">.</span><span class="n">mup_scaling_depth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
 
 
 <span class="k">class</span> <span class="nc">TransformerStack</span><span class="p">(</span><span class="n">DepthSequential</span><span class="p">):</span>
@@ -684,7 +730,9 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="TransformerDecoder"><a class="viewcode-back" href="../../generated/unit_scaling.TransformerDecoder.html#unit_scaling.TransformerDecoder">[docs]</a><span class="k">class</span> <span class="nc">TransformerDecoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+<div class="viewcode-block" id="TransformerDecoder">
+<a class="viewcode-back" href="../../generated/unit_scaling.TransformerDecoder.html#unit_scaling.TransformerDecoder">[docs]</a>
+<span class="k">class</span> <span class="nc">TransformerDecoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A **unit-scaled** implementation of a decoder-type transformer.</span>
 
 <span class="sd">    Note: this class is currently just for demonstrating scaling and lacks key</span>
@@ -731,6 +779,7 @@
         <span class="k">return</span> <span class="n">U</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span>
             <span class="n">logits</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">end_dim</span><span class="o">=-</span><span class="mi">2</span><span class="p">),</span> <span class="n">input_ids</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="p">)</span></div>
+
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="n">generate__all__</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>

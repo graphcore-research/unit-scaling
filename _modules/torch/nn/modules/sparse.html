@@ -1,19 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>torch.nn.modules.sparse &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
-    <link rel="shortcut icon" href="../../../../_static/scales.png"/>
-  <!--[if lt IE 9]>
-    <script src="../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/scales.png"/>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -30,9 +32,6 @@
           <a href="../../../../index.html" class="icon icon-home">
             unit-scaling
           </a>
-              <div class="version">
-                0.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -44,9 +43,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../user_guide.html">1. User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../development.html">2. Developer guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../limitations.html">3. Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">4. API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../limitations.html">2. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">3. API reference</a></li>
 </ul>
 
         </div>
@@ -287,7 +285,9 @@
             <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;, sparse=True&quot;</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Embedding.from_pretrained"><a class="viewcode-back" href="../../../../generated/unit_scaling.Embedding.html#unit_scaling.Embedding.from_pretrained">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Embedding.from_pretrained">
+<a class="viewcode-back" href="../../../../generated/unit_scaling.Embedding.html#unit_scaling.Embedding.from_pretrained">[docs]</a>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_pretrained</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">embeddings</span><span class="p">,</span>
@@ -340,6 +340,7 @@
             <span class="n">sparse</span><span class="o">=</span><span class="n">sparse</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">embedding</span></div>
+
 
 
 <span class="k">class</span> <span class="nc">EmbeddingBag</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>

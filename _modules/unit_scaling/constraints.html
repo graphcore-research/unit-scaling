@@ -1,19 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>unit_scaling.constraints &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-    <link rel="shortcut icon" href="../../_static/scales.png"/>
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="shortcut icon" href="../../_static/scales.png"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -30,9 +32,6 @@
           <a href="../../index.html" class="icon icon-home">
             unit-scaling
           </a>
-              <div class="version">
-                0.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -44,9 +43,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">1. User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../development.html">2. Developer guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">3. Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">4. API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">2. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">3. API reference</a></li>
 </ul>
 
         </div>
@@ -87,7 +85,9 @@
 <span class="kn">from</span> <span class="nn">._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
 
 
-<div class="viewcode-block" id="gmean"><a class="viewcode-back" href="../../generated/unit_scaling.constraints.gmean.html#unit_scaling.constraints.gmean">[docs]</a><span class="k">def</span> <span class="nf">gmean</span><span class="p">(</span><span class="o">*</span><span class="n">scales</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="gmean">
+<a class="viewcode-back" href="../../generated/unit_scaling.constraints.gmean.html#unit_scaling.constraints.gmean">[docs]</a>
+<span class="k">def</span> <span class="nf">gmean</span><span class="p">(</span><span class="o">*</span><span class="n">scales</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the geometric mean of the provided scales. Recommended for unit scaling.</span>
 
 <span class="sd">    Args:</span>
@@ -99,7 +99,10 @@
     <span class="k">return</span> <span class="nb">pow</span><span class="p">(</span><span class="n">prod</span><span class="p">(</span><span class="n">scales</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">scales</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="hmean"><a class="viewcode-back" href="../../generated/unit_scaling.constraints.hmean.html#unit_scaling.constraints.hmean">[docs]</a><span class="k">def</span> <span class="nf">hmean</span><span class="p">(</span><span class="o">*</span><span class="n">scales</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="hmean">
+<a class="viewcode-back" href="../../generated/unit_scaling.constraints.hmean.html#unit_scaling.constraints.hmean">[docs]</a>
+<span class="k">def</span> <span class="nf">hmean</span><span class="p">(</span><span class="o">*</span><span class="n">scales</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the harmonic mean of the provided scales. Used in Xavier/Glorot scaling.</span>
 
 <span class="sd">    Args:</span>
@@ -111,7 +114,10 @@
     <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">scales</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">scales</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="amean"><a class="viewcode-back" href="../../generated/unit_scaling.constraints.amean.html#unit_scaling.constraints.amean">[docs]</a><span class="k">def</span> <span class="nf">amean</span><span class="p">(</span><span class="o">*</span><span class="n">scales</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="amean">
+<a class="viewcode-back" href="../../generated/unit_scaling.constraints.amean.html#unit_scaling.constraints.amean">[docs]</a>
+<span class="k">def</span> <span class="nf">amean</span><span class="p">(</span><span class="o">*</span><span class="n">scales</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the arithmetic mean of the provided scales.</span>
 
 <span class="sd">    Args:</span>
@@ -123,7 +129,10 @@
     <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">scales</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">scales</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="to_output_scale"><a class="viewcode-back" href="../../generated/unit_scaling.constraints.to_output_scale.html#unit_scaling.constraints.to_output_scale">[docs]</a><span class="k">def</span> <span class="nf">to_output_scale</span><span class="p">(</span><span class="n">output_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">*</span><span class="n">grad_input_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="to_output_scale">
+<a class="viewcode-back" href="../../generated/unit_scaling.constraints.to_output_scale.html#unit_scaling.constraints.to_output_scale">[docs]</a>
+<span class="k">def</span> <span class="nf">to_output_scale</span><span class="p">(</span><span class="n">output_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">*</span><span class="n">grad_input_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Assumes an output scale is provided and any number of grad input scales:</span>
 <span class="sd">    `(output_scale, *grad_input_scales)`. Selects only `output_scale` as the chosen</span>
 <span class="sd">    scaling factor.</span>
@@ -138,7 +147,10 @@
     <span class="k">return</span> <span class="n">output_scale</span></div>
 
 
-<div class="viewcode-block" id="to_grad_input_scale"><a class="viewcode-back" href="../../generated/unit_scaling.constraints.to_grad_input_scale.html#unit_scaling.constraints.to_grad_input_scale">[docs]</a><span class="k">def</span> <span class="nf">to_grad_input_scale</span><span class="p">(</span><span class="n">output_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">grad_input_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="to_grad_input_scale">
+<a class="viewcode-back" href="../../generated/unit_scaling.constraints.to_grad_input_scale.html#unit_scaling.constraints.to_grad_input_scale">[docs]</a>
+<span class="k">def</span> <span class="nf">to_grad_input_scale</span><span class="p">(</span><span class="n">output_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">grad_input_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Assumes two provided scales: `(output_scale, grad_input_scale)`. Selects only</span>
 <span class="sd">    `grad_input_scale` as the chosen scaling factor.</span>
 
@@ -152,7 +164,10 @@
     <span class="k">return</span> <span class="n">grad_input_scale</span></div>
 
 
-<div class="viewcode-block" id="to_left_grad_scale"><a class="viewcode-back" href="../../generated/unit_scaling.constraints.to_left_grad_scale.html#unit_scaling.constraints.to_left_grad_scale">[docs]</a><span class="k">def</span> <span class="nf">to_left_grad_scale</span><span class="p">(</span>
+
+<div class="viewcode-block" id="to_left_grad_scale">
+<a class="viewcode-back" href="../../generated/unit_scaling.constraints.to_left_grad_scale.html#unit_scaling.constraints.to_left_grad_scale">[docs]</a>
+<span class="k">def</span> <span class="nf">to_left_grad_scale</span><span class="p">(</span>
     <span class="n">output_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">left_grad_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">right_grad_scale</span><span class="p">:</span> <span class="nb">float</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Assumes three provided scales:</span>
@@ -170,7 +185,10 @@
     <span class="k">return</span> <span class="n">left_grad_scale</span></div>
 
 
-<div class="viewcode-block" id="to_right_grad_scale"><a class="viewcode-back" href="../../generated/unit_scaling.constraints.to_right_grad_scale.html#unit_scaling.constraints.to_right_grad_scale">[docs]</a><span class="k">def</span> <span class="nf">to_right_grad_scale</span><span class="p">(</span>
+
+<div class="viewcode-block" id="to_right_grad_scale">
+<a class="viewcode-back" href="../../generated/unit_scaling.constraints.to_right_grad_scale.html#unit_scaling.constraints.to_right_grad_scale">[docs]</a>
+<span class="k">def</span> <span class="nf">to_right_grad_scale</span><span class="p">(</span>
     <span class="n">output_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">left_grad_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">right_grad_scale</span><span class="p">:</span> <span class="nb">float</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Assumes three provided scales:</span>
@@ -188,7 +206,10 @@
     <span class="k">return</span> <span class="n">right_grad_scale</span></div>
 
 
-<div class="viewcode-block" id="apply_constraint"><a class="viewcode-back" href="../../generated/unit_scaling.constraints.apply_constraint.html#unit_scaling.constraints.apply_constraint">[docs]</a><span class="k">def</span> <span class="nf">apply_constraint</span><span class="p">(</span>
+
+<div class="viewcode-block" id="apply_constraint">
+<a class="viewcode-back" href="../../generated/unit_scaling.constraints.apply_constraint.html#unit_scaling.constraints.apply_constraint">[docs]</a>
+<span class="k">def</span> <span class="nf">apply_constraint</span><span class="p">(</span>
     <span class="n">constraint_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="n">scales</span><span class="p">:</span> <span class="nb">float</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieves the constraint function corresponding to `constraint_name` and applies</span>
@@ -214,6 +235,7 @@
         <span class="p">)</span>
     <span class="n">scale</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">(</span><span class="o">*</span><span class="n">scales</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">scale</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">scales</span><span class="p">)</span></div>
+
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="n">generate__all__</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>

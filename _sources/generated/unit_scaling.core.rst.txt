@@ -41,6 +41,6 @@ unit\_scaling.core
    :recursive:
 
    
-      unit_scaling.core.functional
+      functional
    
 

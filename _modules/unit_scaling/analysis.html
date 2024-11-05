@@ -1,19 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>unit_scaling.analysis &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-    <link rel="shortcut icon" href="../../_static/scales.png"/>
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="shortcut icon" href="../../_static/scales.png"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -30,9 +32,6 @@
           <a href="../../index.html" class="icon icon-home">
             unit-scaling
           </a>
-              <div class="version">
-                0.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -44,9 +43,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">1. User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../development.html">2. Developer guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">3. Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">4. API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">2. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">3. API reference</a></li>
 </ul>
 
         </div>
@@ -88,8 +86,8 @@
 <span class="kn">import</span> <span class="nn">matplotlib.colors</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>  <span class="c1"># type: ignore[import]</span>
-<span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_dataset</span>  <span class="c1"># type: ignore[import]</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>  <span class="c1"># type: ignore[import-untyped]</span>
+<span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_dataset</span>  <span class="c1"># type: ignore[import-untyped]</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">torch.fx.graph</span> <span class="kn">import</span> <span class="n">Graph</span>
 <span class="kn">from</span> <span class="nn">torch.fx.node</span> <span class="kn">import</span> <span class="n">Node</span>
@@ -141,7 +139,9 @@
     <span class="k">return</span> <span class="n">input_idxs</span><span class="p">,</span> <span class="n">attn_mask</span><span class="p">,</span> <span class="n">labels</span>
 
 
-<div class="viewcode-block" id="example_batch"><a class="viewcode-back" href="../../generated/unit_scaling.analysis.example_batch.html#unit_scaling.analysis.example_batch">[docs]</a><span class="k">def</span> <span class="nf">example_batch</span><span class="p">(</span>
+<div class="viewcode-block" id="example_batch">
+<a class="viewcode-back" href="../../generated/unit_scaling.analysis.example_batch.html#unit_scaling.analysis.example_batch">[docs]</a>
+<span class="k">def</span> <span class="nf">example_batch</span><span class="p">(</span>
     <span class="n">tokenizer</span><span class="p">:</span> <span class="s2">&quot;PreTrainedTokenizerBase&quot;</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">seq_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -179,7 +179,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="graph_to_dataframe"><a class="viewcode-back" href="../../generated/unit_scaling.analysis.graph_to_dataframe.html#unit_scaling.analysis.graph_to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">graph_to_dataframe</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+
+<div class="viewcode-block" id="graph_to_dataframe">
+<a class="viewcode-back" href="../../generated/unit_scaling.analysis.graph_to_dataframe.html#unit_scaling.analysis.graph_to_dataframe">[docs]</a>
+<span class="k">def</span> <span class="nf">graph_to_dataframe</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a :class:`torch.fx.Graph` with annotated</span>
 <span class="sd">    :class:`unit_scaling.transforms.Metrics` into a :class:`pandas.DataFrame`.</span>
 
@@ -233,7 +236,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="plot"><a class="viewcode-back" href="../../generated/unit_scaling.analysis.plot.html#unit_scaling.analysis.plot">[docs]</a><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
+
+<div class="viewcode-block" id="plot">
+<a class="viewcode-back" href="../../generated/unit_scaling.analysis.plot.html#unit_scaling.analysis.plot">[docs]</a>
+<span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
     <span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span>
     <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mean_abs&quot;</span><span class="p">,</span>
@@ -518,7 +524,10 @@
     <span class="k">return</span> <span class="n">p</span>  <span class="c1"># type: ignore[no-any-return]</span></div>
 
 
-<div class="viewcode-block" id="visualiser"><a class="viewcode-back" href="../../generated/unit_scaling.visualiser.html#unit_scaling.analysis.visualiser">[docs]</a><span class="k">def</span> <span class="nf">visualiser</span><span class="p">(</span>
+
+<div class="viewcode-block" id="visualiser">
+<a class="viewcode-back" href="../../generated/unit_scaling.visualiser.html#unit_scaling.analysis.visualiser">[docs]</a>
+<span class="k">def</span> <span class="nf">visualiser</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
     <span class="n">tokenizer</span><span class="p">:</span> <span class="s2">&quot;PreTrainedTokenizerBase&quot;</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -591,6 +600,7 @@
         <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
     <span class="n">graph</span> <span class="o">=</span> <span class="n">tracked_model</span><span class="o">.</span><span class="n">scales_graph</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">plot</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span></div>
+
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="n">generate__all__</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>

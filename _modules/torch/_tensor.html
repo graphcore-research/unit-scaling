@@ -1,19 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>torch._tensor &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-    <link rel="shortcut icon" href="../../_static/scales.png"/>
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="shortcut icon" href="../../_static/scales.png"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -30,9 +32,6 @@
           <a href="../../index.html" class="icon icon-home">
             unit-scaling
           </a>
-              <div class="version">
-                0.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -44,9 +43,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">1. User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../development.html">2. Developer guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">3. Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">4. API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">2. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">3. API reference</a></li>
 </ul>
 
         </div>
@@ -305,7 +303,9 @@
         <span class="n">func</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduce_ex_internal</span><span class="p">(</span><span class="n">proto</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">_rebuild_from_type_v2</span><span class="p">,</span> <span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">args</span><span class="p">,</span> <span class="n">state</span><span class="p">))</span>
 
-<div class="viewcode-block" id="Tensor.storage"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.storage">[docs]</a>    <span class="k">def</span> <span class="nf">storage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Tensor.storage">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.storage">[docs]</a>
+    <span class="k">def</span> <span class="nf">storage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        storage() -&gt; torch.TypedStorage</span>
 
@@ -322,6 +322,7 @@
 
         <span class="n">torch</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">_warn_typed_storage_removal</span><span class="p">(</span><span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_typed_storage</span><span class="p">()</span></div>
+
 
     <span class="c1"># For internal use only, to avoid raising deprecation warning</span>
     <span class="k">def</span> <span class="nf">_typed_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -598,7 +599,9 @@
         <span class="c1"># All strings are unicode in Python 3.</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">_tensor_str</span><span class="o">.</span><span class="n">_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor_contents</span><span class="o">=</span><span class="n">tensor_contents</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Tensor.backward"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span>
+<div class="viewcode-block" id="Tensor.backward">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.backward">[docs]</a>
+    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes the gradient of current tensor wrt graph leaves.</span>
@@ -658,7 +661,10 @@
             <span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="n">retain_graph</span><span class="p">,</span> <span class="n">create_graph</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tensor.register_hook"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.register_hook">[docs]</a>    <span class="k">def</span> <span class="nf">register_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hook</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.register_hook">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.register_hook">[docs]</a>
+    <span class="k">def</span> <span class="nf">register_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hook</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Registers a backward hook.</span>
 
 <span class="sd">        The hook will be called every time a gradient with respect to the</span>
@@ -708,7 +714,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_backward_hooks</span><span class="p">[</span><span class="n">handle</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">hook</span>
         <span class="k">return</span> <span class="n">handle</span></div>
 
-<div class="viewcode-block" id="Tensor.register_post_accumulate_grad_hook"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.register_post_accumulate_grad_hook">[docs]</a>    <span class="k">def</span> <span class="nf">register_post_accumulate_grad_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hook</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.register_post_accumulate_grad_hook">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.register_post_accumulate_grad_hook">[docs]</a>
+    <span class="k">def</span> <span class="nf">register_post_accumulate_grad_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hook</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Registers a backward hook that runs after grad accumulation.</span>
 
 <span class="sd">        The hook will be called after all gradients for a tensor have been accumulated,</span>
@@ -766,6 +775,7 @@
         <span class="n">handle</span> <span class="o">=</span> <span class="n">RemovableHandle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_post_accumulate_grad_hooks</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_accumulate_grad_hooks</span><span class="p">[</span><span class="n">handle</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">hook</span>
         <span class="k">return</span> <span class="n">handle</span></div>
+
 
     <span class="k">def</span> <span class="nf">reinforce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reward</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
@@ -827,7 +837,9 @@
 <span class="sd">    &quot;&quot;&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="Tensor.is_shared"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.is_shared">[docs]</a>    <span class="k">def</span> <span class="nf">is_shared</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Tensor.is_shared">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.is_shared">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_shared</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Checks if tensor is in shared memory.</span>
 
 <span class="sd">        This is always ``True`` for CUDA tensors.</span>
@@ -836,7 +848,10 @@
             <span class="k">return</span> <span class="n">handle_torch_function</span><span class="p">(</span><span class="n">Tensor</span><span class="o">.</span><span class="n">is_shared</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_typed_storage</span><span class="p">()</span><span class="o">.</span><span class="n">_is_shared</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Tensor.share_memory_"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.share_memory_">[docs]</a>    <span class="k">def</span> <span class="nf">share_memory_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.share_memory_">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.share_memory_">[docs]</a>
+    <span class="k">def</span> <span class="nf">share_memory_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Moves the underlying storage to shared memory.</span>
 
 <span class="sd">        This is a no-op if the underlying storage is already in shared memory</span>
@@ -849,7 +864,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_typed_storage</span><span class="p">()</span><span class="o">.</span><span class="n">_share_memory_</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Tensor.module_load"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.module_load">[docs]</a>    <span class="k">def</span> <span class="nf">module_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">assign</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.module_load">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.module_load">[docs]</a>
+    <span class="k">def</span> <span class="nf">module_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">assign</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Defines how to transform ``other`` when loading it into ``self`` in :meth:`~nn.Module.load_state_dict`.</span>
 
 <span class="sd">        Used when :func:`~torch.__future__.get_swap_module_params_on_conversion` is ``True``.</span>
@@ -879,6 +897,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span></div>
 
+
     <span class="k">def</span> <span class="fm">__reversed__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Reverses the tensor along dimension 0.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">has_torch_function_unary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -888,7 +907,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Tensor.norm"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.norm">[docs]</a>    <span class="k">def</span> <span class="nf">norm</span><span class="p">(</span>
+<div class="viewcode-block" id="Tensor.norm">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.norm">[docs]</a>
+    <span class="k">def</span> <span class="nf">norm</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;fro&quot;</span><span class="p">,</span>
         <span class="n">dim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -901,6 +922,7 @@
                 <span class="n">Tensor</span><span class="o">.</span><span class="n">norm</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="n">keepdim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">keepdim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">torch._linalg_utils</span> <span class="kn">import</span> <span class="n">solve</span>
@@ -922,7 +944,9 @@
 
         <span class="k">return</span> <span class="n">_symeig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eigenvectors</span><span class="o">=</span><span class="n">eigenvectors</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Tensor.lu"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.lu">[docs]</a>    <span class="k">def</span> <span class="nf">lu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pivot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">get_infos</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Tensor.lu">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.lu">[docs]</a>
+    <span class="k">def</span> <span class="nf">lu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pivot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">get_infos</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;See :func:`torch.lu`&quot;&quot;&quot;</span>
         <span class="c1"># If get_infos is True, then we don&#39;t need to check for errors and vice versa</span>
         <span class="k">if</span> <span class="n">has_torch_function_unary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -938,7 +962,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">LU</span><span class="p">,</span> <span class="n">pivots</span></div>
 
-<div class="viewcode-block" id="Tensor.stft"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.stft">[docs]</a>    <span class="k">def</span> <span class="nf">stft</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Tensor.stft">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.stft">[docs]</a>
+    <span class="k">def</span> <span class="nf">stft</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_fft</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">hop_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -984,7 +1011,10 @@
             <span class="n">return_complex</span><span class="o">=</span><span class="n">return_complex</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tensor.istft"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.istft">[docs]</a>    <span class="k">def</span> <span class="nf">istft</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Tensor.istft">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.istft">[docs]</a>
+    <span class="k">def</span> <span class="nf">istft</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_fft</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">hop_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1025,6 +1055,7 @@
             <span class="n">return_complex</span><span class="o">=</span><span class="n">return_complex</span><span class="p">,</span>
         <span class="p">)</span></div>
 
+
     <span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">sizes</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">has_torch_function_unary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">handle_torch_function</span><span class="p">(</span><span class="n">Tensor</span><span class="o">.</span><span class="n">resize</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">sizes</span><span class="p">)</span>
@@ -1041,7 +1072,9 @@
 
         <span class="k">return</span> <span class="n">Resize</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
 
-<div class="viewcode-block" id="Tensor.split"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split_size</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="Tensor.split">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.split">[docs]</a>
+    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split_size</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;See :func:`torch.split`&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">has_torch_function_unary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">handle_torch_function</span><span class="p">(</span>
@@ -1058,7 +1091,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">_VF</span><span class="o">.</span><span class="n">split_with_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split_size</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tensor.unique"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.unique">[docs]</a>    <span class="k">def</span> <span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.unique">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.unique">[docs]</a>
+    <span class="k">def</span> <span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the unique elements of the input tensor.</span>
 
 <span class="sd">        See :func:`torch.unique`</span>
@@ -1081,7 +1117,10 @@
             <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tensor.unique_consecutive"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.unique_consecutive">[docs]</a>    <span class="k">def</span> <span class="nf">unique_consecutive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.unique_consecutive">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.unique_consecutive">[docs]</a>
+    <span class="k">def</span> <span class="nf">unique_consecutive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Eliminates all but the first element from every consecutive group of equivalent elements.</span>
 
 <span class="sd">        See :func:`torch.unique_consecutive`</span>
@@ -1098,6 +1137,7 @@
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">unique_consecutive</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="n">return_inverse</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="n">return_counts</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span>
         <span class="p">)</span></div>
+
 
     <span class="nd">@_handle_torch_function_and_wrap_type_error_to_not_implemented</span>
     <span class="k">def</span> <span class="fm">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -1327,7 +1367,9 @@
 
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">typestr</span><span class="o">=</span><span class="n">typestr</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">strides</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Tensor.storage_type"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.storage_type">[docs]</a>    <span class="k">def</span> <span class="nf">storage_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Tensor.storage_type">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.storage_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">storage_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;storage_type() -&gt; type</span>
 
 <span class="sd">        Returns the type of the underlying storage.</span>
@@ -1340,7 +1382,10 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_typed_storage</span><span class="p">()</span><span class="o">.</span><span class="n">_get_legacy_storage_class</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Tensor.refine_names"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.refine_names">[docs]</a>    <span class="k">def</span> <span class="nf">refine_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">names</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.refine_names">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.refine_names">[docs]</a>
+    <span class="k">def</span> <span class="nf">refine_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">names</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Refines the dimension names of :attr:`self` according to :attr:`names`.</span>
 
 <span class="sd">        Refining is a special case of renaming that &quot;lifts&quot; unnamed dimensions.</span>
@@ -1384,7 +1429,10 @@
         <span class="n">names</span> <span class="o">=</span> <span class="n">resolve_ellipsis</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="s2">&quot;refine_names&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">refine_names</span><span class="p">(</span><span class="n">names</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tensor.align_to"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.align_to">[docs]</a>    <span class="k">def</span> <span class="nf">align_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">names</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.align_to">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.align_to">[docs]</a>
+    <span class="k">def</span> <span class="nf">align_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">names</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Permutes the dimensions of the :attr:`self` tensor to match the order</span>
 <span class="sd">        specified in :attr:`names`, adding size-one dims for any new names.</span>
 
@@ -1429,7 +1477,10 @@
             <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_ellipsis</span><span class="p">(</span><span class="n">name</span><span class="p">)],</span> <span class="n">ellipsis_idx</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tensor.unflatten"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.unflatten">[docs]</a>    <span class="k">def</span> <span class="nf">unflatten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">sizes</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.unflatten">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.unflatten">[docs]</a>
+    <span class="k">def</span> <span class="nf">unflatten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">sizes</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        unflatten(dim, sizes) -&gt; Tensor</span>
 
@@ -1451,7 +1502,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">unflatten</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">sizes</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tensor.rename_"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.rename_">[docs]</a>    <span class="k">def</span> <span class="nf">rename_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">names</span><span class="p">,</span> <span class="o">**</span><span class="n">rename_map</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.rename_">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.rename_">[docs]</a>
+    <span class="k">def</span> <span class="nf">rename_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">names</span><span class="p">,</span> <span class="o">**</span><span class="n">rename_map</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;In-place version of :meth:`~Tensor.rename`.&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">has_torch_function_unary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1466,7 +1520,10 @@
         <span class="c1"># C++ is static, making it difficult to implement similar behavior.</span>
         <span class="k">return</span> <span class="n">update_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">rename_map</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tensor.rename"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.rename">[docs]</a>    <span class="k">def</span> <span class="nf">rename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">names</span><span class="p">,</span> <span class="o">**</span><span class="n">rename_map</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.rename">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.rename">[docs]</a>
+    <span class="k">def</span> <span class="nf">rename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">names</span><span class="p">,</span> <span class="o">**</span><span class="n">rename_map</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Renames dimension names of :attr:`self`.</span>
 
 <span class="sd">        There are two main usages:</span>
@@ -1508,7 +1565,10 @@
         <span class="c1"># See Note [rename_ / rename API]</span>
         <span class="k">return</span> <span class="n">update_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">rename_map</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tensor.to_sparse_coo"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.to_sparse_coo">[docs]</a>    <span class="k">def</span> <span class="nf">to_sparse_coo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.to_sparse_coo">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.to_sparse_coo">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_sparse_coo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a tensor to :ref:`coordinate format &lt;sparse-coo-docs&gt;`.</span>
 
 <span class="sd">        Examples::</span>
@@ -1521,7 +1581,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_sparse</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Tensor.dim_order"><a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.dim_order">[docs]</a>    <span class="k">def</span> <span class="nf">dim_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Tensor.dim_order">
+<a class="viewcode-back" href="../../generated/unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor.dim_order">[docs]</a>
+    <span class="k">def</span> <span class="nf">dim_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        dim_order() -&gt; tuple</span>
@@ -1550,6 +1613,7 @@
         <span class="kn">import</span> <span class="nn">torch._prims_common</span> <span class="k">as</span> <span class="nn">utils</span>
 
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">compute_elementwise_output_logical_to_physical_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
+
 
     <span class="k">def</span> <span class="nf">_update_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">inplace</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">has_torch_function_unary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

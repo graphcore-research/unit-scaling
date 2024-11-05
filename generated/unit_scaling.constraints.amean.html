@@ -1,25 +1,27 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.3.1. unit_scaling.constraints.amean &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-    <link rel="shortcut icon" href="../_static/scales.png"/>
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <title>3.3.1. unit_scaling.constraints.amean &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="shortcut icon" href="../_static/scales.png"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4.3.2. unit_scaling.constraints.apply_constraint" href="unit_scaling.constraints.apply_constraint.html" />
-    <link rel="prev" title="4.3. unit_scaling.constraints" href="unit_scaling.constraints.html" /> 
+    <link rel="next" title="3.3.2. unit_scaling.constraints.apply_constraint" href="unit_scaling.constraints.apply_constraint.html" />
+    <link rel="prev" title="3.3. unit_scaling.constraints" href="unit_scaling.constraints.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -33,9 +35,6 @@
           <a href="../index.html" class="icon icon-home">
             unit-scaling
           </a>
-              <div class="version">
-                0.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -47,33 +46,32 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../user_guide.html">1. User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../development.html">2. Developer guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../limitations.html">3. Limitations</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">4. API reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">4.1. unit_scaling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">4.2. unit_scaling.analysis</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.constraints.html">4.3. unit_scaling.constraints</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">4.3.1. unit_scaling.constraints.amean</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../limitations.html">2. Limitations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">3. API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.html">3.1. unit_scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">3.2. unit_scaling.analysis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.constraints.html">3.3. unit_scaling.constraints</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3.3.1. unit_scaling.constraints.amean</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#unit_scaling.constraints.amean"><code class="docutils literal notranslate"><span class="pre">amean()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.apply_constraint.html">4.3.2. unit_scaling.constraints.apply_constraint</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.gmean.html">4.3.3. unit_scaling.constraints.gmean</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.hmean.html">4.3.4. unit_scaling.constraints.hmean</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_grad_input_scale.html">4.3.5. unit_scaling.constraints.to_grad_input_scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_left_grad_scale.html">4.3.6. unit_scaling.constraints.to_left_grad_scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_output_scale.html">4.3.7. unit_scaling.constraints.to_output_scale</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_right_grad_scale.html">4.3.8. unit_scaling.constraints.to_right_grad_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.apply_constraint.html">3.3.2. unit_scaling.constraints.apply_constraint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.gmean.html">3.3.3. unit_scaling.constraints.gmean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.hmean.html">3.3.4. unit_scaling.constraints.hmean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_grad_input_scale.html">3.3.5. unit_scaling.constraints.to_grad_input_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_left_grad_scale.html">3.3.6. unit_scaling.constraints.to_left_grad_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_output_scale.html">3.3.7. unit_scaling.constraints.to_output_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.constraints.to_right_grad_scale.html">3.3.8. unit_scaling.constraints.to_right_grad_scale</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">4.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">4.1.22. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">4.1.23. unit_scaling.optim</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">4.5. unit_scaling.scale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">4.6. unit_scaling.transforms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">4.7. unit_scaling.transforms.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">4.8. unit_scaling.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">4.1.21.1. unit_scaling.core.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">3.4. unit_scaling.formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">3.1.22. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.23. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">3.5. unit_scaling.scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">3.6. unit_scaling.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">3.7. unit_scaling.transforms.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">3.8. unit_scaling.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.21.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -92,9 +90,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">4. </span>API reference</a></li>
-          <li class="breadcrumb-item"><a href="unit_scaling.constraints.html"><span class="section-number">4.3. </span>unit_scaling.constraints</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4.3.1. </span>unit_scaling.constraints.amean</li>
+          <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">3. </span>API reference</a></li>
+          <li class="breadcrumb-item"><a href="unit_scaling.constraints.html"><span class="section-number">3.3. </span>unit_scaling.constraints</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.3.1. </span>unit_scaling.constraints.amean</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/generated/unit_scaling.constraints.amean.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -105,10 +103,10 @@
            <div itemprop="articleBody">
              
   <section id="unit-scaling-constraints-amean">
-<h1><span class="section-number">4.3.1. </span>unit_scaling.constraints.amean<a class="headerlink" href="#unit-scaling-constraints-amean" title="Permalink to this heading"></a></h1>
+<h1><span class="section-number">3.3.1. </span>unit_scaling.constraints.amean<a class="headerlink" href="#unit-scaling-constraints-amean" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="unit_scaling.constraints.amean">
-<span class="sig-prename descclassname"><span class="pre">unit_scaling.constraints.</span></span><span class="sig-name descname"><span class="pre">amean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">scales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/constraints.html#amean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.constraints.amean" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">unit_scaling.constraints.</span></span><span class="sig-name descname"><span class="pre">amean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">scales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/constraints.html#amean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.constraints.amean" title="Link to this definition"></a></dt>
 <dd><p>Computes the arithmetic mean of the provided scales.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -129,8 +127,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.constraints.html" class="btn btn-neutral float-left" title="4.3. unit_scaling.constraints" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.constraints.apply_constraint.html" class="btn btn-neutral float-right" title="4.3.2. unit_scaling.constraints.apply_constraint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.constraints.html" class="btn btn-neutral float-left" title="3.3. unit_scaling.constraints" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.constraints.apply_constraint.html" class="btn btn-neutral float-right" title="3.3.2. unit_scaling.constraints.apply_constraint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

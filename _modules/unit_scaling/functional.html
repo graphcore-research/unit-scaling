@@ -1,19 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>unit_scaling.functional &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-    <link rel="shortcut icon" href="../../_static/scales.png"/>
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="shortcut icon" href="../../_static/scales.png"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -30,9 +32,6 @@
           <a href="../../index.html" class="icon icon-home">
             unit-scaling
           </a>
-              <div class="version">
-                0.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -44,9 +43,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../user_guide.html">1. User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../development.html">2. Developer guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">3. Limitations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">4. API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../limitations.html">2. Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">3. API reference</a></li>
 </ul>
 
         </div>
@@ -117,7 +115,9 @@
     <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">gelu</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">mult</span><span class="p">,</span> <span class="n">approximate</span><span class="o">=</span><span class="n">approximate</span><span class="p">)</span> <span class="o">/</span> <span class="n">mult</span>
 
 
-<div class="viewcode-block" id="gelu"><a class="viewcode-back" href="../../generated/unit_scaling.functional.gelu.html#unit_scaling.functional.gelu">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+<div class="viewcode-block" id="gelu">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.gelu.html#unit_scaling.functional.gelu">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">gelu</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** GELU function.&quot;</span><span class="p">,</span>
     <span class="n">add_args</span><span class="o">=</span><span class="p">[</span><span class="n">mult_docstring</span><span class="p">(),</span> <span class="n">binary_constraint_docstring</span><span class="p">],</span>
@@ -145,13 +145,16 @@
     <span class="k">return</span> <span class="n">scaled_gelu</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="n">mult</span><span class="p">,</span> <span class="n">approximate</span><span class="o">=</span><span class="n">approximate</span><span class="p">)</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">_unscaled_silu</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">mult</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">mult</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">silu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">F</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">mult</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="silu"><a class="viewcode-back" href="../../generated/unit_scaling.functional.silu.html#unit_scaling.functional.silu">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+<div class="viewcode-block" id="silu">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.silu.html#unit_scaling.functional.silu">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">silu</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** SiLU function.&quot;</span><span class="p">,</span>
     <span class="n">add_args</span><span class="o">=</span><span class="p">[</span><span class="n">mult_docstring</span><span class="p">(),</span> <span class="n">binary_constraint_docstring</span><span class="p">],</span>
@@ -180,7 +183,10 @@
     <span class="k">return</span> <span class="n">scaled_silu</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="n">mult</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="silu_glu"><a class="viewcode-back" href="../../generated/unit_scaling.functional.silu_glu.html#unit_scaling.functional.silu_glu">[docs]</a><span class="nd">@format_docstring</span><span class="p">(</span><span class="n">mult_docstring</span><span class="p">())</span>
+
+<div class="viewcode-block" id="silu_glu">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.silu_glu.html#unit_scaling.functional.silu_glu">[docs]</a>
+<span class="nd">@format_docstring</span><span class="p">(</span><span class="n">mult_docstring</span><span class="p">())</span>
 <span class="k">def</span> <span class="nf">silu_glu</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">gate</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">mult</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies a **unit-scaled** gated linear unit for `input * silu(gate)`.</span>
 
@@ -208,13 +214,16 @@
     <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">_unscaled_softmax</span><span class="p">(</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">],</span> <span class="n">mult</span><span class="p">:</span> <span class="nb">float</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">mult</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="softmax"><a class="viewcode-back" href="../../generated/unit_scaling.functional.softmax.html#unit_scaling.functional.softmax">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+<div class="viewcode-block" id="softmax">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.softmax.html#unit_scaling.functional.softmax">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** softmax function.&quot;</span><span class="p">,</span>
     <span class="n">add_args</span><span class="o">=</span><span class="p">[</span><span class="n">mult_docstring</span><span class="p">(),</span> <span class="n">binary_constraint_docstring</span><span class="p">],</span>
@@ -244,7 +253,10 @@
     <span class="k">return</span> <span class="n">scaled_softmax</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="n">mult</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dropout"><a class="viewcode-back" href="../../generated/unit_scaling.functional.dropout.html#unit_scaling.functional.dropout">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+
+<div class="viewcode-block" id="dropout">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.dropout.html#unit_scaling.functional.dropout">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** dropout function.&quot;</span><span class="p">,</span>
     <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;inplace&quot;</span><span class="p">],</span>
@@ -259,7 +271,10 @@
     <span class="k">return</span> <span class="n">scaled_dropout</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">training</span><span class="p">,</span> <span class="n">inplace</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="matmul"><a class="viewcode-back" href="../../generated/unit_scaling.functional.matmul.html#unit_scaling.functional.matmul">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+
+<div class="viewcode-block" id="matmul">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.matmul.html#unit_scaling.functional.matmul">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;A **unit-scaled** matrix product of two tensors.&quot;</span><span class="p">,</span>
     <span class="n">add_args</span><span class="o">=</span><span class="p">[</span><span class="n">ternary_constraint_docstring</span><span class="p">],</span>
@@ -287,7 +302,10 @@
     <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">output_scale</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="linear"><a class="viewcode-back" href="../../generated/unit_scaling.functional.linear.html#unit_scaling.functional.linear">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+
+<div class="viewcode-block" id="linear">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.linear.html#unit_scaling.functional.linear">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">linear</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** linear transformation.&quot;</span><span class="p">,</span>
     <span class="n">add_args</span><span class="o">=</span><span class="p">[</span>
@@ -321,7 +339,10 @@
     <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">output_scale</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="linear_readout"><a class="viewcode-back" href="../../generated/unit_scaling.functional.linear_readout.html#unit_scaling.functional.linear_readout">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+
+<div class="viewcode-block" id="linear_readout">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.linear_readout.html#unit_scaling.functional.linear_readout">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">linear</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** linear transformation,&quot;</span>
     <span class="s2">&quot; for the final network output.&quot;</span><span class="p">,</span>
@@ -338,7 +359,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="conv1d"><a class="viewcode-back" href="../../generated/unit_scaling.functional.conv1d.html#unit_scaling.functional.conv1d">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+
+<div class="viewcode-block" id="conv1d">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.conv1d.html#unit_scaling.functional.conv1d">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">conv1d</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** 1D convolution.&quot;</span><span class="p">,</span>
     <span class="n">add_args</span><span class="o">=</span><span class="p">[</span>
@@ -381,7 +405,10 @@
     <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">output_scale</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="layer_norm"><a class="viewcode-back" href="../../generated/unit_scaling.functional.layer_norm.html#unit_scaling.functional.layer_norm">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+
+<div class="viewcode-block" id="layer_norm">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.layer_norm.html#unit_scaling.functional.layer_norm">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">layer_norm</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;Applies a **unit-scaled** Layer Normalization for last certain number&quot;</span>
@@ -405,6 +432,7 @@
     <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">layer_norm</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">normalized_shape</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">_unscaled_rms_norm</span><span class="p">(</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">normalized_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
@@ -419,7 +447,9 @@
     <span class="k">return</span> <span class="n">output</span>
 
 
-<div class="viewcode-block" id="rms_norm"><a class="viewcode-back" href="../../generated/unit_scaling.functional.rms_norm.html#unit_scaling.functional.rms_norm">[docs]</a><span class="k">def</span> <span class="nf">rms_norm</span><span class="p">(</span>
+<div class="viewcode-block" id="rms_norm">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.rms_norm.html#unit_scaling.functional.rms_norm">[docs]</a>
+<span class="k">def</span> <span class="nf">rms_norm</span><span class="p">(</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
     <span class="n">normalized_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
     <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -435,7 +465,10 @@
     <span class="k">return</span> <span class="n">_unscaled_rms_norm</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">normalized_shape</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="add"><a class="viewcode-back" href="../../generated/unit_scaling.functional.add.html#unit_scaling.functional.add">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+
+<div class="viewcode-block" id="add">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.add.html#unit_scaling.functional.add">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">torch</span><span class="o">.</span><span class="n">add</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Applies a **unit-scaled** addition.&quot;</span><span class="p">,</span>
     <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
@@ -469,7 +502,10 @@
     <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">output_scale</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="residual_split"><a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split">[docs]</a><span class="k">def</span> <span class="nf">residual_split</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]:</span>
+
+<div class="viewcode-block" id="residual_split">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_split.html#unit_scaling.functional.residual_split">[docs]</a>
+<span class="k">def</span> <span class="nf">residual_split</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Splits a tensor into an `residual` and `skip` tensor, prior to being used</span>
 <span class="sd">    in a residual layer, with a relative weighting tau applied to the residual branch.</span>
 <span class="sd">    Should be used in conjunction with :py:func:`unit_scaling.functional.residual_add`.</span>
@@ -498,7 +534,10 @@
     <span class="k">return</span> <span class="n">residual</span><span class="p">,</span> <span class="n">skip</span></div>
 
 
-<div class="viewcode-block" id="residual_add"><a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add">[docs]</a><span class="k">def</span> <span class="nf">residual_add</span><span class="p">(</span><span class="n">residual</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+
+<div class="viewcode-block" id="residual_add">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_add.html#unit_scaling.functional.residual_add">[docs]</a>
+<span class="k">def</span> <span class="nf">residual_add</span><span class="p">(</span><span class="n">residual</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds a residual connection and skip connection together, with a relative</span>
 <span class="sd">    weighting tau applied to the residual branch. Should be used in conjunction with</span>
 <span class="sd">    :py:func:`unit_scaling.functional.residual_split`.</span>
@@ -519,7 +558,10 @@
     <span class="k">return</span> <span class="n">residual</span> <span class="o">+</span> <span class="n">skip</span></div>
 
 
-<div class="viewcode-block" id="residual_apply"><a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_apply.html#unit_scaling.functional.residual_apply">[docs]</a><span class="k">def</span> <span class="nf">residual_apply</span><span class="p">(</span>
+
+<div class="viewcode-block" id="residual_apply">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.residual_apply.html#unit_scaling.functional.residual_apply">[docs]</a>
+<span class="k">def</span> <span class="nf">residual_apply</span><span class="p">(</span>
     <span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">Tensor</span><span class="p">],</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply a weighted residual branch, maintaining unit scale.</span>
@@ -538,7 +580,10 @@
     <span class="k">return</span> <span class="n">residual_add</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">skip</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="n">tau</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="embedding"><a class="viewcode-back" href="../../generated/unit_scaling.functional.embedding.html#unit_scaling.functional.embedding">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+
+<div class="viewcode-block" id="embedding">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.embedding.html#unit_scaling.functional.embedding">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">embedding</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;A **unit-scaled** lookup table that looks up embeddings in a fixed dictionary&quot;</span>
@@ -562,7 +607,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="scaled_dot_product_attention"><a class="viewcode-back" href="../../generated/unit_scaling.functional.scaled_dot_product_attention.html#unit_scaling.functional.scaled_dot_product_attention">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+
+<div class="viewcode-block" id="scaled_dot_product_attention">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.scaled_dot_product_attention.html#unit_scaling.functional.scaled_dot_product_attention">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">scaled_dot_product_attention</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;A **unit-scaled** dot-product attention function. Note that this will use&quot;</span>
@@ -608,7 +656,10 @@
     <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cross_entropy"><a class="viewcode-back" href="../../generated/unit_scaling.functional.cross_entropy.html#unit_scaling.functional.cross_entropy">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+
+<div class="viewcode-block" id="cross_entropy">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.cross_entropy.html#unit_scaling.functional.cross_entropy">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;Computes the **unit-scaled** cross entropy loss between input logits and&quot;</span>
@@ -655,7 +706,10 @@
     <span class="k">return</span> <span class="n">loss</span></div>
 
 
-<div class="viewcode-block" id="mse_loss"><a class="viewcode-back" href="../../generated/unit_scaling.functional.mse_loss.html#unit_scaling.functional.mse_loss">[docs]</a><span class="nd">@docstring_from</span><span class="p">(</span>
+
+<div class="viewcode-block" id="mse_loss">
+<a class="viewcode-back" href="../../generated/unit_scaling.functional.mse_loss.html#unit_scaling.functional.mse_loss">[docs]</a>
+<span class="nd">@docstring_from</span><span class="p">(</span>
     <span class="n">F</span><span class="o">.</span><span class="n">mse_loss</span><span class="p">,</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;Computes the **unit-scaled** element-wise mean squared error.&quot;</span><span class="p">,</span>
     <span class="n">unsupported_args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;size_average&quot;</span><span class="p">,</span> <span class="s2">&quot;reduce&quot;</span><span class="p">],</span>
@@ -681,6 +735,7 @@
         <span class="k">return</span> <span class="n">scale_fwd</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">input</span><span class="o">.</span><span class="n">nelement</span><span class="p">())</span>
     <span class="k">assert</span> <span class="n">reduction</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span>
     <span class="k">return</span> <span class="n">loss</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_gen_torch_function_map</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">FunctionType</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">]:</span>
