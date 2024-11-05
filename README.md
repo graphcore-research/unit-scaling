@@ -25,10 +25,9 @@ This image can be built and entered interactively using:
 ```sh
 docker build -t unit-scaling-dev:latest .
 docker run -it --rm \
-    -v ~/.ssh:/home/developer/.ssh:ro \
-    -v ~/.gitconfig:/home/developer/.gitconfig:ro \
-    --user developer:developer -v $(pwd):/home/developer/unit-scaling \
-    unit-scaling-dev:latest
+    -v ~/.ssh:/home/developer/.ssh:ro -v ~/.gitconfig:/home/developer/.gitconfig:ro \
+    --user developer:developer -v $(pwd):/home/developer/unit-scaling unit-scaling-dev:latest
+# The second line in `docker run` here is optional. It enables git within the container.
 ```
 
 For vscode users, this repo also contains a `devcontainer.json` file, which enables the container to be used as a full-featured IDE (see the [Dev Container docs](https://code.visualstudio.com/docs/devcontainers/containers) for details on how to use this feature).
