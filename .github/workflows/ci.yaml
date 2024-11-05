@@ -15,17 +15,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Checkout code
       - uses: actions/checkout@v3
-      - name: Install dependencies
+
+      - name: Build Docker Image
         run: |
-          sudo apt-get update
-          sudo apt-get install -y git
-          pip install -r requirements-dev.txt
+          docker build -t unit-scaling-dev:latest . 
+
       - name: Run CI
-        run: ./dev ci
+        run: docker run --rm -v $(pwd):/workspace unit-scaling-dev:latest ./dev ci
+
       - name: Publish documentation
         if: ${{github.ref == 'refs/heads/main'}}
         uses: Cecilapp/GitHub-Pages-deploy@v3
         env: { GITHUB_TOKEN: "${{ github.token }}" }
         with:
-          build_dir: docs/_build/html
+          build_dir: docker run --rm -v $(pwd):/workspace unit-scaling-dev:latest docs/_build/html

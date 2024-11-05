@@ -123,8 +123,8 @@ def scaled_parameters(
     result = []
     for entry in params:
         group = dict(params=[entry]) if isinstance(entry, Tensor) else entry.copy()
-        group.setdefault("lr", lr)
-        group.setdefault("weight_decay", weight_decay)
+        group.setdefault("lr", lr)  # type: ignore[arg-type]
+        group.setdefault("weight_decay", weight_decay)  # type: ignore[arg-type]
         if group["lr"] is None:
             raise ValueError(
                 "scaled_params() requires lr to be provided,"
@@ -133,10 +133,10 @@ def scaled_parameters(
         for param in group["params"]:
             # Careful not to overwrite `lr` or `weight_decay`
             param_lr = group["lr"]
-            if has_parameter_data(param):
+            if has_parameter_data(param):  # type: ignore[arg-type]
                 if isinstance(param_lr, Tensor):
                     param_lr = param_lr.clone()
-                param_lr *= lr_scale_func(param)
+                param_lr *= lr_scale_func(param)  # type: ignore[operator]
             elif not allow_non_unit_scaling_params:
                 raise ValueError(
                     "Non-unit-scaling parameter (no mup_type),"
@@ -145,7 +145,7 @@ def scaled_parameters(
             param_weight_decay = group["weight_decay"]
             if independent_weight_decay:
                 # Note: only independent of peak LR, not of schedule
-                param_weight_decay /= float(param_lr)
+                param_weight_decay /= float(param_lr)  # type: ignore
 
             result.append(
                 dict(
