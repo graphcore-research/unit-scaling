@@ -25,7 +25,7 @@ ENV PATH="$PATH:/home/$USERNAME/.local/bin" \
 
 # Configure a non-root user with sudo privileges
 ARG USERNAME=developer  # Change this to preferred username
-ARG USER_UID=1000
+ARG USER_UID=1001
 ARG USER_GID=$USER_UID
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
