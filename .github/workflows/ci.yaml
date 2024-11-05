@@ -23,7 +23,7 @@ jobs:
           docker build -t unit-scaling-dev:latest . 
 
       - name: Run CI
-        run: docker run --rm -v $(pwd):/workspace unit-scaling-dev:latest ./dev ci
+        run: docker run --rm -v $(pwd):/home/developer/unit-scaling unit-scaling-dev:latest ./dev ci
 
       - name: Publish documentation
         if: ${{github.ref == 'refs/heads/main'}}
