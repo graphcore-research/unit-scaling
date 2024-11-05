@@ -2,7 +2,7 @@
     "build": {
         "dockerfile": "Dockerfile"
     },
-    "workspaceFolder": "/workspace",
+    "workspaceFolder": "/home/developer/unit-scaling",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -16,6 +16,9 @@
         }
     },
     "mounts": [
-        "source=${localWorkspaceFolder},target=/workspace,type=bind"
-    ]
+        "source=${localEnv:HOME}/.ssh,target=/home/developer/.ssh,type=bind,readonly=true",
+        "source=${localEnv:HOME}/.gitconfig,target=/home/developer/.gitconfig,type=bind,readonly=true",
+        "source=${localWorkspaceFolder},target=/home/developer/unit-scaling,type=bind"
+    ],
+    "remoteUser": "developer"
 }
