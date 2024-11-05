@@ -11,14 +11,6 @@ from torch import Tensor, fx
 
 from ._internal_utils import generate__all__
 
-try:  # pragma: no cover
-    import poptorch
-    import poptorch_experimental_addons as pea
-
-    _poptorch_available = True
-except ImportError:  # pragma: no cover
-    _poptorch_available = False
-
 
 class _ScaledGrad(torch.autograd.Function):  # pragma: no cover
     """Enables a custom backward method which has a different scale to forward."""
@@ -51,9 +43,6 @@ def _scale(
     t: Tensor, fwd_scale: float = 1.0, bwd_scale: float = 1.0
 ) -> Tensor:  # pragma: no cover
     """Given a tensor, applies a separate scale in the forward and backward pass."""
-
-    if _poptorch_available and poptorch.isRunningOnIpu():
-        return pea.autograd_proxy(t * fwd_scale, t * bwd_scale)  # type: ignore
     return _ScaledGrad.apply(t, fwd_scale, bwd_scale)  # type: ignore
 
 

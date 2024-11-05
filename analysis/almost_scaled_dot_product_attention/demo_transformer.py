@@ -10,13 +10,6 @@ import torch
 from torch import nn, Tensor
 import tqdm
 
-try:
-    import poptorch
-
-    poptorch_available = True
-except ModuleNotFoundError:
-    poptorch_available = False
-
 
 class Config(dict):
     def __init__(self, *args: Any, **kwargs: Any):
@@ -132,7 +125,7 @@ class Model(nn.Module):
         )
 
 
-def train_cpu() -> Tensor:
+def train() -> Tensor:
     model = Model()
     opt = torch.optim.Adam(model.parameters(), lr=CONFIG.lr)
     losses = []
@@ -143,26 +136,3 @@ def train_cpu() -> Tensor:
         opt.step()
         losses.append(float(loss))
     return torch.tensor(losses)
-
-
-def train_ipu() -> Tensor:
-    model = Model()
-    options = poptorch.Options()
-    options.showCompilationProgressBar(False)
-    opt = torch.optim.Adam(model.parameters(), lr=CONFIG.lr)
-    session = poptorch.trainingModel(model, options, opt)
-    try:
-        return torch.tensor(
-            [
-                float(session(batch.int()))
-                for batch in tqdm.tqdm(
-                    islice(batches(), CONFIG.steps), total=CONFIG.steps
-                )
-            ]
-        )
-    finally:
-        session.destroy()
-
-
-def train() -> Tensor:
-    return train_ipu() if poptorch_available else train_cpu()

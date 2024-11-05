@@ -10,14 +10,6 @@ from torch import Tensor
 
 from ._internal_utils import generate__all__
 
-try:  # pragma: no cover
-    import poptorch
-    import poptorch_experimental_addons as pea
-
-    _poptorch_available = True
-except ImportError:  # pragma: no cover
-    _poptorch_available = False
-
 Shape = Tuple[int, ...]
 
 
@@ -68,14 +60,6 @@ class FPFormat:
 
     def quantise(self, x: Tensor) -> Tensor:
         """Non-differentiably quantise the given tensor in this format."""
-        if _poptorch_available and poptorch.isRunningOnIpu():
-            return pea.quantise_fpx(  # type: ignore[no-any-return]
-                x,
-                exponent_bits=self.exponent_bits,
-                mantissa_bits=self.mantissa_bits,
-                rounding=self.rounding,
-            )  # pragma: no cover
-
         absmax = self.max_absolute_value
         downscale = 2.0 ** (127 - 2 ** (self.exponent_bits - 1))
         mask = torch.tensor(2 ** (23 - self.mantissa_bits) - 1, device=x.device)
@@ -108,13 +92,6 @@ class FPFormat:
 
     def quantise_fwd(self, x: Tensor) -> Tensor:
         """Quantise the given tensor in the forward pass only."""
-        if _poptorch_available and poptorch.isRunningOnIpu():
-            return pea.quantise_fpx_ste(  # type: ignore[no-any-return]
-                x,
-                exponent_bits=self.exponent_bits,
-                mantissa_bits=self.mantissa_bits,
-                rounding=self.rounding,
-            )  # pragma: no cover
 
         class QuantiseForward(torch.autograd.Function):
             @staticmethod
@@ -131,13 +108,6 @@ class FPFormat:
 
     def quantise_bwd(self, x: Tensor) -> Tensor:
         """Quantise the given tensor in the backward pass only."""
-        if _poptorch_available and poptorch.isRunningOnIpu():
-            return pea.quantise_fpx_grad(  # type: ignore[no-any-return]
-                x,
-                exponent_bits=self.exponent_bits,
-                mantissa_bits=self.mantissa_bits,
-                rounding=self.rounding,
-            )  # pragma: no cover
 
         class QuantiseBackward(torch.autograd.Function):
             @staticmethod

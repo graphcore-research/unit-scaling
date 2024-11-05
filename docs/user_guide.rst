@@ -55,13 +55,6 @@ The advantage of using a unit-scaled model is as follows:
    scales have stayed within range for all unit-scaled models tested thus far.
 3. This can enable the use of smaller, more efficient number formats out-of-the-box,
    such as FP16 and even FP8.
-4. As the behaviour of some ops depends on scale, unit-scaling a model can change its
-   training dynamics slightly. In some experiments this has been shown to lead to
-   loss decreasing faster, though further work is needed to validate this.
-
-For a more in-depth treatment of unit scaling, see our paper
-`Unit Scaling: Out-of-the-Box Low-Precision Training (ICML, 2023)
-<https://arxiv.org/abs/2303.11257>`_.
 
 
 How to unit-scale a model

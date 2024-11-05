@@ -12,8 +12,8 @@ import matplotlib
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns  # type: ignore[import]
-from datasets import load_dataset  # type: ignore[import]
+import seaborn as sns  # type: ignore[import-untyped]
+from datasets import load_dataset  # type: ignore[import-untyped]
 from torch import Tensor, nn
 from torch.fx.graph import Graph
 from torch.fx.node import Node
