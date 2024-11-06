@@ -31,7 +31,7 @@ dependencies = [
   "datasets",
   "docstring-parser",
   "einops",
-  "numpy",
+  "numpy<2.0.0",
   "seaborn",
   "tabulate",
   "torch>=2.2",
