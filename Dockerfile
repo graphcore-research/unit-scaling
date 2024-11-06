@@ -31,7 +31,7 @@ ENV PATH="$PATH:/home/$USERNAME/.local/bin" \
 
 # Install Python dependencies
 COPY requirements-dev.txt .
-RUN pip install -r requirements-dev.txt
+RUN pip install --user -r requirements-dev.txt
 
 # Creates basic .zshrc
 RUN sudo cp /etc/zsh/newuser.zshrc.recommended /home/$USERNAME/.zshrc
