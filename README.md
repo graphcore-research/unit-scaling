@@ -19,7 +19,12 @@ We're keen to help users with any problems they encounter.
 To install the `unit-scaling` library, run:
 
 ```sh
-pip install git+https://github.com/graphcore-research/unit-scaling.git
+pip install unit-scaling
+```
+or for a local editable install (i.e. one which uses the files in this repo), run:
+
+```sh
+pip install -e .
 ```
 
 ## Development
