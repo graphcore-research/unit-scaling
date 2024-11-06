@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "unit-scaling"
-description="A library for unit scaling in PyTorch, based on the paper u-μP: The Unit-Scaled Maximal Update Parametrization."
+description = "A library for unit scaling in PyTorch, based on the u-mup paper."
 readme = "README.md"
 authors = [
   { name = "Charlie Blake", email = "charlieb@graphcore.ai" },
