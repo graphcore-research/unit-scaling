@@ -22,7 +22,7 @@ jobs:
         run: docker build -t unit-scaling-dev:latest .
 
       - name: Local unit_scaling install
-        run: pip install --user -e .
+        run: docker run --rm -v $(pwd):/home/developer/unit-scaling unit-scaling-dev:latest pip install --user -e .
 
       - name: Run CI
         run: docker run --rm -v $(pwd):/home/developer/unit-scaling unit-scaling-dev:latest ./dev ci
