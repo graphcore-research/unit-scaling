@@ -1,5 +1,7 @@
 # Unit-Scaled Maximal Update Parameterization (u-μP)
 
+[![tests](https://github.com/graphcore-research/unit-scaling/actions/workflows/ci.yaml/badge.svg)](https://github.com/graphcore-research/unit-scaling/actions/workflows/ci-public.yaml)
+
 A library for unit scaling in PyTorch, based on the paper [u-μP: The Unit-Scaled Maximal Update Parametrization](https://arxiv.org/abs/2407.17465) and previous work [Unit Scaling: Out-of-the-Box Low-Precision Training](https://arxiv.org/abs/2303.11257).
 
 Documentation can be found at
