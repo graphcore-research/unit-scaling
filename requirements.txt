@@ -1,7 +1,0 @@
-datasets
-docstring-parser
-einops
-numpy
-seaborn
-tabulate
-torch>=2.2

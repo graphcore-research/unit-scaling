@@ -19,8 +19,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build Docker Image
-        run: |
-          docker build -t unit-scaling-dev:latest . 
+        run: docker build -t unit-scaling-dev:latest .
 
       - name: Run CI
         run: docker run --rm -v $(pwd):/home/developer/unit-scaling unit-scaling-dev:latest ./dev ci

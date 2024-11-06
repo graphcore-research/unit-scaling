@@ -2,7 +2,7 @@ Copyright (c) 2023 Graphcore Ltd. Licensed under the Apache 2.0 License.
 
 The included code is released under an Apache 2.0 license, (see [LICENSE](LICENSE)).
 
-Our dependencies are (see [requirements.txt](requirements.txt)):
+Our dependencies are (see [pyproject.toml](pyproject.toml)):
 
 | Component | About | License |
 | --- | --- | --- |

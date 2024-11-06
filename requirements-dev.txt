@@ -2,7 +2,7 @@
 --index-url https://download.pytorch.org/whl/cpu
 --extra-index-url=https://pypi.org/simple
 
-# Same as requirements.txt, but with versions locked-in
+# Same as pyproject.toml, but with versions locked-in
 datasets==3.1.0
 docstring-parser==0.16
 einops==0.8.0
