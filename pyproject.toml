@@ -1,0 +1,57 @@
+# Configuration inspired by official pypa example:
+# https://github.com/pypa/sampleproject/blob/main/pyproject.toml
+
+[build-system]
+requires = ["setuptools>=68.2.2", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "unit-scaling"
+description = "A library for unit scaling in PyTorch, based on the paper 'u-muP: The Unit-Scaled Maximal Update Parametrization.'"
+readme = "README.md"
+authors = [
+  { name = "Charlie Blake", email = "charlieb@graphcore.ai" },
+  { name = "Douglas Orr", email = "douglaso@graphcore.ai" },
+]
+requires-python = ">=3.9"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "datasets",
+  "docstring-parser",
+  "einops",
+  "numpy<2.0.0",
+  "seaborn",
+  "tabulate",
+  "torch>=2.2",
+]
+dynamic = ["version"]
+
+[project.urls]
+"Homepage" = "https://github.com/graphcore-research/unit-scaling/#readme"
+"Bug Reports" = "https://github.com/graphcore-research/unit-scaling/issues"
+"Source" = "https://github.com/graphcore-research/unit-scaling/"
+
+[project.optional-dependencies]
+dev = ["check-manifest"]
+test = ["pytest"]
+
+[tool.setuptools]
+packages = ["unit_scaling", "unit_scaling.core", "unit_scaling.transforms"]
+
+[tool.setuptools.dynamic]
+version = {attr = "unit_scaling._version.__version__"}
+
+[tool.setuptools_scm]
+version_file = "unit_scaling/_version.py"

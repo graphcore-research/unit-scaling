@@ -1,5 +1,10 @@
 # Unit-Scaled Maximal Update Parameterization (u-μP)
 
+[![tests](https://github.com/graphcore-research/unit-scaling/actions/workflows/ci.yaml/badge.svg)](https://github.com/graphcore-research/unit-scaling/actions/workflows/ci-public.yaml)
+![PyPI version](https://img.shields.io/pypi/v/unit-scaling)
+[![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/graphcore-research/unit-scaling/blob/main/LICENSE)
+[![GitHub Repo stars](https://img.shields.io/github/stars/graphcore-research/unit-scaling)](https://github.com/graphcore-research/unit-scaling/stargazers)
+
 A library for unit scaling in PyTorch, based on the paper [u-μP: The Unit-Scaled Maximal Update Parametrization](https://arxiv.org/abs/2407.17465) and previous work [Unit Scaling: Out-of-the-Box Low-Precision Training](https://arxiv.org/abs/2303.11257).
 
 Documentation can be found at
@@ -14,7 +19,12 @@ We're keen to help users with any problems they encounter.
 To install the `unit-scaling` library, run:
 
 ```sh
-pip install git+https://github.com/graphcore-research/unit-scaling.git
+pip install unit-scaling
+```
+or for a local editable install (i.e. one which uses the files in this repo), run:
+
+```sh
+pip install -e .
 ```
 
 ## Development

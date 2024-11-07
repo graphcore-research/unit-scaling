@@ -18,12 +18,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build Docker Image
-        run: |
-          docker build -t unit-scaling-dev:latest . 
+      - name: Build Docker image
+        run: docker build -t unit-scaling-dev:latest .
+
+      - name: Local unit_scaling install
+        run: docker run -v $(pwd):/home/developer/unit-scaling unit-scaling-dev:latest pip install --user -e .
 
       - name: Run CI
-        run: docker run --rm -v $(pwd):/home/developer/unit-scaling unit-scaling-dev:latest ./dev ci
+        run: docker run -v $(pwd):/home/developer/unit-scaling unit-scaling-dev:latest ./dev ci
 
       - name: Publish documentation
         if: ${{github.ref == 'refs/heads/main'}}
