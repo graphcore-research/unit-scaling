@@ -18,7 +18,7 @@ To install :code:`unit-scaling`, run:
 
 .. code-block::
 
-    pip install git+https://github.com/graphcore-research/unit-scaling.git
+    pip install unit-scaling
 
 Getting Started
 ---------------
