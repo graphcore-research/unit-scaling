@@ -28,11 +28,9 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-  "datasets",
   "docstring-parser",
   "einops",
   "numpy<2.0.0",
-  "seaborn",
   "tabulate",
   "torch>=2.2",
 ]
@@ -46,6 +44,12 @@ dynamic = ["version"]
 [project.optional-dependencies]
 dev = ["check-manifest"]
 test = ["pytest"]
+analysis = [
+  "datasets",
+  "matplotlib",
+  "pandas",
+  "seaborn",
+]
 
 [tool.setuptools]
 packages = ["unit_scaling", "unit_scaling.core", "unit_scaling.transforms"]

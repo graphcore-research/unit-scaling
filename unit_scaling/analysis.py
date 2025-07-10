@@ -8,15 +8,21 @@ import re
 from math import isnan
 from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 
-import matplotlib
-import matplotlib.colors
-import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sns  # type: ignore[import-untyped]
-from datasets import load_dataset  # type: ignore[import-untyped]
-from torch import Tensor, nn
-from torch.fx.graph import Graph
-from torch.fx.node import Node
+try:
+    import matplotlib
+    import matplotlib.colors
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    import seaborn as sns  # type: ignore[import-untyped]
+    from datasets import load_dataset  # type: ignore[import-untyped]
+    from torch import Tensor, nn
+    from torch.fx.graph import Graph
+    from torch.fx.node import Node
+except ImportError as e:
+    raise ImportError(
+        "Optional dependencies for `unit_scaling.analysis` are missing."
+        " Please install `unit-scaling[analysis]`"
+    ) from e
 
 from ._internal_utils import generate__all__
 from .transforms import (
