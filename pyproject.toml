@@ -55,3 +55,7 @@ version = {attr = "unit_scaling._version.__version__"}
 
 [tool.setuptools_scm]
 version_file = "unit_scaling/_version.py"
+
+[tool.isort]
+profile = "black"
+extend_skip = ["unit_scaling/_version.py"]
