@@ -30,7 +30,6 @@ classifiers = [
 dependencies = [
   "docstring-parser",
   "einops",
-  "numpy<2.0.0",
   "tabulate",
   "torch>=2.2",
 ]
