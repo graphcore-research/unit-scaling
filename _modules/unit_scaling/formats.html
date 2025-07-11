@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>unit_scaling.formats &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -76,13 +76,13 @@
 
 <span class="sd">&quot;&quot;&quot;Classes for simulating (non-standard) number formats.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
 
-<span class="kn">from</span> <span class="nn">._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._internal_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate__all__</span>
 
 <span class="n">Shape</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 
@@ -90,7 +90,7 @@
 <div class="viewcode-block" id="FPFormat">
 <a class="viewcode-back" href="../../generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">FPFormat</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FPFormat</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generic representation of a floating-point number format.&quot;&quot;&quot;</span>
 
     <span class="n">exponent_bits</span><span class="p">:</span> <span class="nb">int</span>
@@ -98,7 +98,7 @@
     <span class="n">rounding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stochastic&quot;</span>  <span class="c1"># &quot;stochastic|nearest&quot;</span>
     <span class="n">srbits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Number of bits for stochastic rounding, zero =&gt; use all bits</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;FPFormat requires at least 2 exponent bits&quot;</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">srbits</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">rounding</span> <span class="o">==</span> <span class="s2">&quot;stochastic&quot;</span>
@@ -107,36 +107,36 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">srbits</span> <span class="o">=</span> <span class="mi">23</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mantissa_bits</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">bits</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bits</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The number of bits used by the format.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mantissa_bits</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;E</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span><span class="si">}</span><span class="s2">M</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mantissa_bits</span><span class="si">}</span><span class="s2">-&quot;</span>
             <span class="o">+</span> <span class="nb">dict</span><span class="p">(</span><span class="n">stochastic</span><span class="o">=</span><span class="s2">&quot;SR&quot;</span><span class="p">,</span> <span class="n">nearest</span><span class="o">=</span><span class="s2">&quot;RN&quot;</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">rounding</span><span class="p">]</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">max_absolute_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_absolute_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The maximum absolute value representable by the format.&quot;&quot;&quot;</span>
         <span class="n">max_exponent</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="n">max_exponent</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span class="o">**-</span><span class="bp">self</span><span class="o">.</span><span class="n">mantissa_bits</span><span class="p">))</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">min_absolute_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min_absolute_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The minimum absolute normal value representable by the format.&quot;&quot;&quot;</span>
         <span class="n">min_exponent</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="n">min_exponent</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">min_absolute_subnormal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min_absolute_subnormal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The minimum absolute subnormal value representable by the format.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_absolute_normal</span> <span class="o">*</span> <span class="mf">2.0</span><span class="o">**-</span><span class="bp">self</span><span class="o">.</span><span class="n">mantissa_bits</span>
 
 <div class="viewcode-block" id="FPFormat.quantise">
 <a class="viewcode-back" href="../../generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat.quantise">[docs]</a>
-    <span class="k">def</span> <span class="nf">quantise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quantise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Non-differentiably quantise the given tensor in this format.&quot;&quot;&quot;</span>
         <span class="n">absmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_absolute_value</span>
         <span class="n">downscale</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">**</span> <span class="p">(</span><span class="mi">127</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exponent_bits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
@@ -171,16 +171,16 @@
 
 <div class="viewcode-block" id="FPFormat.quantise_fwd">
 <a class="viewcode-back" href="../../generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat.quantise_fwd">[docs]</a>
-    <span class="k">def</span> <span class="nf">quantise_fwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quantise_fwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Quantise the given tensor in the forward pass only.&quot;&quot;&quot;</span>
 
-        <span class="k">class</span> <span class="nc">QuantiseForward</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">QuantiseForward</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
             <span class="nd">@staticmethod</span>
-            <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantise</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
             <span class="nd">@staticmethod</span>
-            <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
                 <span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">grad_y</span><span class="p">:</span> <span class="n">Tensor</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">grad_y</span>
@@ -190,16 +190,16 @@
 
 <div class="viewcode-block" id="FPFormat.quantise_bwd">
 <a class="viewcode-back" href="../../generated/unit_scaling.formats.FPFormat.html#unit_scaling.formats.FPFormat.quantise_bwd">[docs]</a>
-    <span class="k">def</span> <span class="nf">quantise_bwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quantise_bwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Quantise the given tensor in the backward pass only.&quot;&quot;&quot;</span>
 
-        <span class="k">class</span> <span class="nc">QuantiseBackward</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">QuantiseBackward</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
             <span class="nd">@staticmethod</span>
-            <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">x</span>
 
             <span class="nd">@staticmethod</span>
-            <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
                 <span class="n">ctx</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">FunctionCtx</span><span class="p">,</span> <span class="n">grad_y</span><span class="p">:</span> <span class="n">Tensor</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantise</span><span class="p">(</span><span class="n">grad_y</span><span class="p">)</span>
@@ -211,7 +211,7 @@
 
 <div class="viewcode-block" id="format_to_tuple">
 <a class="viewcode-back" href="../../generated/unit_scaling.formats.format_to_tuple.html#unit_scaling.formats.format_to_tuple">[docs]</a>
-<span class="k">def</span> <span class="nf">format_to_tuple</span><span class="p">(</span><span class="nb">format</span><span class="p">:</span> <span class="n">FPFormat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">format_to_tuple</span><span class="p">(</span><span class="nb">format</span><span class="p">:</span> <span class="n">FPFormat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the format into a tuple of `(exponent_bits, mantissa_bits)`&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="nb">format</span><span class="o">.</span><span class="n">exponent_bits</span><span class="p">,</span> <span class="nb">format</span><span class="o">.</span><span class="n">mantissa_bits</span><span class="p">)</span></div>
 
@@ -219,7 +219,7 @@
 
 <div class="viewcode-block" id="tuple_to_format">
 <a class="viewcode-back" href="../../generated/unit_scaling.formats.tuple_to_format.html#unit_scaling.formats.tuple_to_format">[docs]</a>
-<span class="k">def</span> <span class="nf">tuple_to_format</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FPFormat</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tuple_to_format</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FPFormat</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Given a tuple of `(exponent_bits, mantissa_bits)` returns the corresponding</span>
 <span class="sd">    :class:`FPFormat`&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">FPFormat</span><span class="p">(</span><span class="o">*</span><span class="n">t</span><span class="p">)</span></div>

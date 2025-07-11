@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3.6.7. unit_scaling.transforms.track_scales &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
@@ -52,8 +52,8 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">3.2. unit_scaling.analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">3.3. unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">3.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">3.1.22. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.23. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">3.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.22. unit_scaling.optim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">3.5. unit_scaling.scale</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.transforms.html">3.6. unit_scaling.transforms</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.compile.html">3.6.1. unit_scaling.transforms.compile</a></li>
@@ -72,7 +72,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">3.7. unit_scaling.transforms.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">3.8. unit_scaling.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.21.1. unit_scaling.core.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -113,7 +113,7 @@
 are called, internally various metrics (such as scale) are recorded for each
 intermediate tensor used. These can be accessed using an additional method
 <code class="code docutils literal notranslate"><span class="pre">module.scales_graph()</span></code> which is added to the module. The returned object
-is an instance of <a class="reference external" href="https://pytorch.org/docs/stable/fx.html#torch.fx.Graph" title="(in PyTorch v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.fx.Graph</span></code></a>, where each node
+is an instance of <a class="reference external" href="https://docs.pytorch.org/docs/stable/fx.html#torch.fx.Graph" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.fx.Graph</span></code></a>, where each node
 representing a floating-point tensor now has a <code class="code docutils literal notranslate"><span class="pre">node.meta[&quot;metrics&quot;]</span></code> object
 of type <a class="reference internal" href="unit_scaling.transforms.Metrics.html#unit_scaling.transforms.Metrics" title="unit_scaling.transforms.Metrics"><code class="xref py py-class docutils literal notranslate"><span class="pre">unit_scaling.transforms.Metrics</span></code></a> associated with it. Note that if
 <code class="code docutils literal notranslate"><span class="pre">forward()</span></code> or <code class="code docutils literal notranslate"><span class="pre">backward()</span></code> are not called, tensor metrics will not
@@ -121,8 +121,8 @@ be available.</p>
 <p>The unit scaling library also provides a method to visualise FX Graphs,
 via the <a class="reference internal" href="unit_scaling.analysis.plot.html#unit_scaling.analysis.plot" title="unit_scaling.analysis.plot"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_scaling.analysis.plot()</span></code></a> function. This is intended to be used
 as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">unit_scaling.transforms</span> <span class="kn">import</span> <span class="n">track_scales</span>
-<span class="kn">from</span> <span class="nn">unit_scaling.analysis</span> <span class="kn">import</span> <span class="n">plot</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">unit_scaling.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">track_scales</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unit_scaling.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot</span>
 
 <span class="n">inpt</span> <span class="o">=</span> <span class="o">...</span>
 <span class="n">model</span> <span class="o">=</span> <span class="o">...</span>
@@ -141,7 +141,7 @@ as follows:</p>
 not specify this.</p>
 <p><code class="code docutils literal notranslate"><span class="pre">track_scales()</span></code> can be used in conjunction with other graph transforms
 provided, but should always be the final transform in a chain. E.g.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">unit_scaling.transforms</span> <span class="kn">import</span> <span class="n">simulate_fp8</span><span class="p">,</span> <span class="n">track_scales</span><span class="p">,</span> <span class="n">unit_scale</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">unit_scaling.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">simulate_fp8</span><span class="p">,</span> <span class="n">track_scales</span><span class="p">,</span> <span class="n">unit_scale</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">track_scales</span><span class="p">(</span><span class="n">unit_scale</span><span class="p">(</span><span class="n">simulate_fp8</span><span class="p">(</span><span class="n">model</span><span class="p">)))</span>
 </pre></div>

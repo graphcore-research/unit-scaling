@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3.6.1. unit_scaling.transforms.compile &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
@@ -52,8 +52,8 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">3.2. unit_scaling.analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">3.3. unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">3.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">3.1.22. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.23. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">3.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.22. unit_scaling.optim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">3.5. unit_scaling.scale</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.transforms.html">3.6. unit_scaling.transforms</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">3.6.1. unit_scaling.transforms.compile</a><ul>
@@ -72,7 +72,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">3.7. unit_scaling.transforms.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">3.8. unit_scaling.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.21.1. unit_scaling.core.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -110,11 +110,11 @@
 <span class="sig-prename descclassname"><span class="pre">unit_scaling.transforms.</span></span><span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">M</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">M</span></span></span><a class="reference internal" href="../_modules/unit_scaling/transforms/_compile.html#compile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.transforms.compile" title="Link to this definition"></a></dt>
 <dd><p>A transform that applies torch.compile to a module.</p>
 <p>Note that this is slightly different to calling <code class="code docutils literal notranslate"><span class="pre">torch.compile(module)</span></code>.</p>
-<p>The current version of <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> doesn’t allow for nested transforms, so
+<p>The current version of <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> doesn’t allow for nested transforms, so
 the following is not supported:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="kn">from</span> <span class="nn">unit_scaling.transforms</span> <span class="kn">import</span> <span class="n">unit_scale</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unit_scaling.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">unit_scale</span>
 
 <span class="n">module</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">unit_scale</span><span class="p">(</span><span class="n">module</span><span class="p">))</span>
 </pre></div>
@@ -126,19 +126,19 @@ and only executing it on the first call to the module, or if a new transform
 is applied, the optimised call being cached thereafter.</p>
 <p>The <a class="reference internal" href="#unit_scaling.transforms.compile" title="unit_scaling.transforms.compile"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_scaling.transforms.compile()</span></code></a> function is one such composable
 transform. This means that the following can be written:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">unit_scaling.transforms</span> <span class="kn">import</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">unit_scale</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">unit_scaling.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">unit_scale</span>
 
 <span class="n">module</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">unit_scale</span><span class="p">(</span><span class="n">module</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>This will successfully combine the two transforms in a single module. Note that
 the call to compile must still come last, as its underlying backend returns a
-standard <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> rather than a <a class="reference external" href="https://pytorch.org/docs/stable/fx.html#torch.fx.GraphModule" title="(in PyTorch v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.fx.GraphModule</span></code></a>.</p>
+standard <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> rather than a <a class="reference external" href="https://docs.pytorch.org/docs/stable/fx.html#torch.fx.GraphModule" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.fx.GraphModule</span></code></a>.</p>
 <p>Currently <a class="reference internal" href="#unit_scaling.transforms.compile" title="unit_scaling.transforms.compile"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_scaling.transforms.compile()</span></code></a> does not support the ops needed
 for the <a class="reference internal" href="unit_scaling.transforms.simulate_fp8.html#unit_scaling.transforms.simulate_fp8" title="unit_scaling.transforms.simulate_fp8"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_scaling.transforms.simulate_fp8()</span></code></a> transform, though this may
 change in future PyTorch releases.</p>
 <p>Modules implemented manually with unit-scaled layers (i.e. without the global
-<code class="code docutils literal notranslate"><span class="pre">unit_scale(module)</span></code> transform) can still use <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> in the
+<code class="code docutils literal notranslate"><span class="pre">unit_scale(module)</span></code> transform) can still use <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code></a> in the
 standard way.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

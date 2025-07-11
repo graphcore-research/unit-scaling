@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>unit_scaling.parameter &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -78,18 +78,18 @@
 
 <span class="c1"># mypy: disable-error-code=&quot;attr-defined, method-assign, no-untyped-call&quot;</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">TypeGuard</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">TypeGuard</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
 
 <span class="n">MupType</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="s2">&quot;norm&quot;</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="ParameterData">
 <a class="viewcode-back" href="../../generated/unit_scaling.parameter.ParameterData.html#unit_scaling.ParameterData">[docs]</a>
-<span class="k">class</span> <span class="nc">ParameterData</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ParameterData</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extra fields for :class:`torch.nn.Parameter`, tagging u-μP metadata.</span>
 
 <span class="sd">    Objects supporting this protocol should implicitly also support</span>
@@ -104,7 +104,7 @@
 
 <div class="viewcode-block" id="has_parameter_data">
 <a class="viewcode-back" href="../../generated/unit_scaling.parameter.has_parameter_data.html#unit_scaling.has_parameter_data">[docs]</a>
-<span class="k">def</span> <span class="nf">has_parameter_data</span><span class="p">(</span><span class="n">parameter</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">ParameterData</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">has_parameter_data</span><span class="p">(</span><span class="n">parameter</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">ParameterData</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that the parameter supports the :class:`ParameterData` protocol.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="nb">getattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s2">&quot;mup_type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">in</span> <span class="n">MupType</span><span class="o">.</span><span class="n">__args__</span>
@@ -114,21 +114,21 @@
 
 
 
-<span class="k">def</span> <span class="nf">_parameter_deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">memo</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_parameter_deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">memo</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">:</span>
     <span class="n">result</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">)</span>
     <span class="n">result</span><span class="o">.</span><span class="n">mup_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mup_type</span>
     <span class="n">result</span><span class="o">.</span><span class="n">mup_scaling_depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mup_scaling_depth</span>
     <span class="k">return</span> <span class="n">result</span>
 
 
-<span class="k">def</span> <span class="nf">_rebuild_parameter_with_state</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_rebuild_parameter_with_state</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">:</span>
     <span class="n">p</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">_utils</span><span class="o">.</span><span class="n">_rebuild_parameter_with_state</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">p</span><span class="o">.</span><span class="n">__deepcopy__</span> <span class="o">=</span> <span class="n">_parameter_deepcopy</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
     <span class="n">p</span><span class="o">.</span><span class="n">__reduce_ex__</span> <span class="o">=</span> <span class="n">_parameter_reduce_ex</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">p</span>
 
 
-<span class="k">def</span> <span class="nf">_parameter_reduce_ex</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_parameter_reduce_ex</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
     <span class="c1"># Based on `torch.nn.Parameter.__reduce_ex__`, filtering out the</span>
     <span class="c1"># dynamic methods __deepcopy__ and __reduce_ex__, as these</span>
     <span class="c1"># don&#39;t unpickle</span>
@@ -145,7 +145,7 @@
 
 <div class="viewcode-block" id="Parameter">
 <a class="viewcode-back" href="../../generated/unit_scaling.parameter.Parameter.html#unit_scaling.Parameter">[docs]</a>
-<span class="k">def</span> <span class="nf">Parameter</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">Parameter</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">mup_type</span><span class="p">:</span> <span class="n">MupType</span><span class="p">,</span> <span class="n">mup_scaling_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Construct a u-μP parameter object, an annotated :class:`torch.nn.Parameter`.</span>

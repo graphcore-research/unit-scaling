@@ -23,7 +23,6 @@ unit\_scaling
    
       Parameter
       transformer_residual_scaling_rule
-      visualiser
    
 
    

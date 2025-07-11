@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>unit_scaling.transforms._simulate_format &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -73,26 +73,26 @@
              
   <h1>Source code for unit_scaling.transforms._simulate_format</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Copyright (c) 2023 Graphcore Ltd. All rights reserved.</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span>
 
-<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
-<span class="kn">from</span> <span class="nn">torch.fx.graph</span> <span class="kn">import</span> <span class="n">Graph</span>
-<span class="kn">from</span> <span class="nn">torch.fx.graph_module</span> <span class="kn">import</span> <span class="n">GraphModule</span>
-<span class="kn">from</span> <span class="nn">torch.fx.node</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.fx.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.fx.graph_module</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphModule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.fx.node</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">U</span>
-<span class="kn">from</span> <span class="nn">.._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
-<span class="kn">from</span> <span class="nn">..formats</span> <span class="kn">import</span> <span class="n">FPFormat</span><span class="p">,</span> <span class="n">format_to_tuple</span><span class="p">,</span> <span class="n">tuple_to_format</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">Backend</span><span class="p">,</span> <span class="n">apply_transform</span><span class="p">,</span> <span class="n">replace_node_with_function</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">U</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internal_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate__all__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">FPFormat</span><span class="p">,</span> <span class="n">format_to_tuple</span><span class="p">,</span> <span class="n">tuple_to_format</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Backend</span><span class="p">,</span> <span class="n">apply_transform</span><span class="p">,</span> <span class="n">replace_node_with_function</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <span class="c1"># These functions currently have to be defined explicitly to make PyTorch happy</span>
 <span class="c1"># Creating temporary wrapped functions doesn&#39;t work...</span>
-<span class="k">def</span> <span class="nf">_quantised_linear</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_quantised_linear</span><span class="p">(</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
     <span class="n">weight</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
     <span class="n">bias</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span>
@@ -107,7 +107,7 @@
     <span class="k">return</span> <span class="n">bwd_format</span><span class="o">.</span><span class="n">quantise_bwd</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_quantised_u_linear</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_quantised_u_linear</span><span class="p">(</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
     <span class="n">weight</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
     <span class="n">bias</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span>
@@ -122,7 +122,7 @@
     <span class="k">return</span> <span class="n">bwd_format</span><span class="o">.</span><span class="n">quantise_bwd</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_quantised_scaled_dot_product_attention</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_quantised_scaled_dot_product_attention</span><span class="p">(</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
     <span class="n">key</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
@@ -137,7 +137,7 @@
     <span class="k">return</span> <span class="n">bwd_format</span><span class="o">.</span><span class="n">quantise_bwd</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_quantised_u_scaled_dot_product_attention</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_quantised_u_scaled_dot_product_attention</span><span class="p">(</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
     <span class="n">key</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
@@ -160,7 +160,7 @@
 <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_replace_with_quantised</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_replace_with_quantised</span><span class="p">(</span>
     <span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span>
     <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span>
     <span class="n">fwd_format</span><span class="p">:</span> <span class="n">FPFormat</span><span class="p">,</span>
@@ -182,8 +182,8 @@
     <span class="n">replace_node_with_function</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">quantised_fn</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_quantisation_backend</span><span class="p">(</span><span class="n">fwd_format</span><span class="p">:</span> <span class="n">FPFormat</span><span class="p">,</span> <span class="n">bwd_format</span><span class="p">:</span> <span class="n">FPFormat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Backend</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">backend_fn</span><span class="p">(</span><span class="n">gm</span><span class="p">:</span> <span class="n">GraphModule</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">GraphModule</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_quantisation_backend</span><span class="p">(</span><span class="n">fwd_format</span><span class="p">:</span> <span class="n">FPFormat</span><span class="p">,</span> <span class="n">bwd_format</span><span class="p">:</span> <span class="n">FPFormat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Backend</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backend_fn</span><span class="p">(</span><span class="n">gm</span><span class="p">:</span> <span class="n">GraphModule</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">GraphModule</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;running quantisation backend&quot;</span><span class="p">)</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">graph</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
@@ -200,7 +200,7 @@
 
 <div class="viewcode-block" id="simulate_format">
 <a class="viewcode-back" href="../../../generated/unit_scaling.transforms.simulate_format.html#unit_scaling.transforms.simulate_format">[docs]</a>
-<span class="k">def</span> <span class="nf">simulate_format</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="n">M</span><span class="p">,</span> <span class="n">fwd_format</span><span class="p">:</span> <span class="n">FPFormat</span><span class="p">,</span> <span class="n">bwd_format</span><span class="p">:</span> <span class="n">FPFormat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_format</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="n">M</span><span class="p">,</span> <span class="n">fwd_format</span><span class="p">:</span> <span class="n">FPFormat</span><span class="p">,</span> <span class="n">bwd_format</span><span class="p">:</span> <span class="n">FPFormat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;**[Experimental]** Given a module, uses TorchDynamo to return a new module which</span>
 <span class="sd">    simulates the effect of using the supplied formats for matmuls.</span>
 
@@ -240,7 +240,7 @@
 
 <div class="viewcode-block" id="simulate_fp8">
 <a class="viewcode-back" href="../../../generated/unit_scaling.transforms.simulate_fp8.html#unit_scaling.transforms.simulate_fp8">[docs]</a>
-<span class="k">def</span> <span class="nf">simulate_fp8</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="n">M</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_fp8</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="n">M</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;**[Experimental]** Given a module, uses TorchDynamo to return a new module which</span>
 <span class="sd">    simulates the effect of running matmuls in FP8. As is standard in the literature</span>
 <span class="sd">    (Noune et al., 2022; Micikevicius et al., 2022), we use the FP8 E4 format in the</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>unit_scaling.transforms.utils &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -76,9 +76,9 @@
 
 <span class="sd">&quot;&quot;&quot;Utilities for working with transforms.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
@@ -89,17 +89,17 @@
     <span class="n">TypeVar</span><span class="p">,</span>
     <span class="n">no_type_check</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">patch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">patch</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch._dynamo</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
-<span class="kn">from</span> <span class="nn">torch.fx.graph</span> <span class="kn">import</span> <span class="n">Graph</span>
-<span class="kn">from</span> <span class="nn">torch.fx.graph_module</span> <span class="kn">import</span> <span class="n">GraphModule</span>
-<span class="kn">from</span> <span class="nn">torch.fx.node</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch._dynamo</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.fx.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.fx.graph_module</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphModule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.fx.node</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">U</span>
-<span class="kn">from</span> <span class="nn">.._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">U</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internal_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate__all__</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 
@@ -110,7 +110,7 @@
 
 <div class="viewcode-block" id="torch_nn_modules_to_user_modules">
 <a class="viewcode-back" href="../../../generated/unit_scaling.transforms.utils.torch_nn_modules_to_user_modules.html#unit_scaling.transforms.utils.torch_nn_modules_to_user_modules">[docs]</a>
-<span class="k">def</span> <span class="nf">torch_nn_modules_to_user_modules</span><span class="p">(</span><span class="n">mod</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">torch_nn_modules_to_user_modules</span><span class="p">(</span><span class="n">mod</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert torch.nn.module classes to `trivial_subclass` versions.</span>
 
@@ -150,7 +150,7 @@
 
 <div class="viewcode-block" id="patch_to_expand_modules">
 <a class="viewcode-back" href="../../../generated/unit_scaling.transforms.utils.patch_to_expand_modules.html#unit_scaling.transforms.utils.patch_to_expand_modules">[docs]</a>
-<span class="k">def</span> <span class="nf">patch_to_expand_modules</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">patch_to_expand_modules</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;By default TorchDynamo doesn&#39;t recurse into :mod:`torch.nn` modules or</span>
 <span class="sd">    :mod:`torch.nn.functional` functions when capturing the FX graph.</span>
 <span class="sd">    Any function which is wrapped in</span>
@@ -171,7 +171,7 @@
 <span class="sd">        Callable[..., T]: the new version of `fn` with patching applied.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_patched_call_function</span><span class="p">(</span>  <span class="c1"># type: ignore[no-untyped-def]</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_patched_call_function</span><span class="p">(</span>  <span class="c1"># type: ignore[no-untyped-def]</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">tx</span><span class="p">,</span>
         <span class="n">args</span><span class="p">,</span>
@@ -183,7 +183,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">call_function</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">new_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">new_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">patch</span><span class="p">(</span>
             <span class="s2">&quot;torch._dynamo.variables.functions.UserMethodVariable.call_function&quot;</span><span class="p">,</span>
             <span class="n">new</span><span class="o">=</span><span class="n">_patched_call_function</span><span class="p">,</span>
@@ -196,7 +196,7 @@
 
 <div class="viewcode-block" id="replace_node_with_function">
 <a class="viewcode-back" href="../../../generated/unit_scaling.transforms.utils.replace_node_with_function.html#unit_scaling.transforms.utils.replace_node_with_function">[docs]</a>
-<span class="k">def</span> <span class="nf">replace_node_with_function</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">replace_node_with_function</span><span class="p">(</span>
     <span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span>
     <span class="n">source</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span>
     <span class="n">target_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
@@ -230,8 +230,8 @@
 
 
 
-<span class="k">def</span> <span class="nf">_compose_backends</span><span class="p">(</span><span class="n">backends</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Backend</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Backend</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">composite_backend</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compose_backends</span><span class="p">(</span><span class="n">backends</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Backend</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Backend</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">composite_backend</span><span class="p">(</span>
         <span class="n">gm</span><span class="p">:</span> <span class="n">GraphModule</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">backends</span><span class="p">:</span>
@@ -253,7 +253,7 @@
 <div class="viewcode-block" id="apply_transform">
 <a class="viewcode-back" href="../../../generated/unit_scaling.transforms.utils.apply_transform.html#unit_scaling.transforms.utils.apply_transform">[docs]</a>
 <span class="nd">@no_type_check</span>
-<span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_transform</span><span class="p">(</span>
     <span class="n">module</span><span class="p">:</span> <span class="n">M</span><span class="p">,</span>
     <span class="n">backend</span><span class="p">:</span> <span class="n">Backend</span><span class="p">,</span>
     <span class="n">non_recurse_functions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span>
@@ -305,7 +305,7 @@
 
     <span class="n">backend</span> <span class="o">=</span> <span class="n">_compose_backends</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">backends</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">new_forward</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">new_forward</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">module</span><span class="o">.</span><span class="n">rerun_transform</span><span class="p">:</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">_dynamo</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
             <span class="n">dynamo_module</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">_dynamo</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">backend</span><span class="p">)(</span><span class="n">module</span><span class="p">)</span>

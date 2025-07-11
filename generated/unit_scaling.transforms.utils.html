@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3.7. unit_scaling.transforms.utils &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
@@ -52,8 +52,8 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">3.2. unit_scaling.analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">3.3. unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">3.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">3.1.22. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.23. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">3.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.22. unit_scaling.optim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">3.5. unit_scaling.scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">3.6. unit_scaling.transforms</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">3.7. unit_scaling.transforms.utils</a><ul>
@@ -64,7 +64,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">3.8. unit_scaling.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.21.1. unit_scaling.core.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -104,7 +104,7 @@
 <td><p>Applies a graph transformation to a module.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="unit_scaling.transforms.utils.patch_to_expand_modules.html#unit_scaling.transforms.utils.patch_to_expand_modules" title="unit_scaling.transforms.utils.patch_to_expand_modules"><code class="xref py py-obj docutils literal notranslate"><span class="pre">patch_to_expand_modules</span></code></a>(fn)</p></td>
-<td><p>By default TorchDynamo doesn't recurse into <a class="reference external" href="https://pytorch.org/docs/stable/nn.html#module-torch.nn" title="(in PyTorch v2.5)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch.nn</span></code></a> modules or <a class="reference external" href="https://pytorch.org/docs/stable/nn.html#module-torch.nn.functional" title="(in PyTorch v2.5)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch.nn.functional</span></code></a> functions when capturing the FX graph.</p></td>
+<td><p>By default TorchDynamo doesn't recurse into <a class="reference external" href="https://docs.pytorch.org/docs/stable/nn.html#module-torch.nn" title="(in PyTorch v2.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch.nn</span></code></a> modules or <a class="reference external" href="https://docs.pytorch.org/docs/stable/nn.html#module-torch.nn.functional" title="(in PyTorch v2.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch.nn.functional</span></code></a> functions when capturing the FX graph.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="unit_scaling.transforms.utils.replace_node_with_function.html#unit_scaling.transforms.utils.replace_node_with_function" title="unit_scaling.transforms.utils.replace_node_with_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">replace_node_with_function</span></code></a>(graph, source, ...)</p></td>
 <td><p>Given a source node and its accompanying graph, remove the node and replace it with a new node that represents calling the target function.</p></td>

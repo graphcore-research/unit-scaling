@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3.6.6. unit_scaling.transforms.simulate_fp8 &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
@@ -52,8 +52,8 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">3.2. unit_scaling.analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">3.3. unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">3.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">3.1.22. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.23. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">3.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.22. unit_scaling.optim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">3.5. unit_scaling.scale</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.transforms.html">3.6. unit_scaling.transforms</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.transforms.compile.html">3.6.1. unit_scaling.transforms.compile</a></li>
@@ -72,7 +72,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">3.7. unit_scaling.transforms.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">3.8. unit_scaling.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.21.1. unit_scaling.core.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -112,14 +112,14 @@
 simulates the effect of running matmuls in FP8. As is standard in the literature
 (Noune et al., 2022; Micikevicius et al., 2022), we use the FP8 E4 format in the
 forwards pass, and FP8 E5 in the backward pass.</p>
-<p>Specifically, before each <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.functional.linear.html#torch.nn.functional.linear" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.functional.linear()</span></code></a> and
-<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html#torch.nn.functional.scaled_dot_product_attention" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.functional.scaled_dot_product_attention()</span></code></a> call, a quantisation op
+<p>Specifically, before each <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.linear.html#torch.nn.functional.linear" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.functional.linear()</span></code></a> and
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html#torch.nn.functional.scaled_dot_product_attention" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.functional.scaled_dot_product_attention()</span></code></a> call, a quantisation op
 is inserted which simulates the effect of using FP8. This op
 reduces the range of values to that of the format, and (stochastically) rounds
 values to only those representable by the format.</p>
 <p>The same is true for the backward pass.
 Models which use modules that contain these functions internally
-(such as <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Linear</span></code></a>) will be inspected by TorchDynamo and have the
+(such as <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Linear</span></code></a>) will be inspected by TorchDynamo and have the
 correct quantisation ops inserted.</p>
 <p>If the equivalent unit-scaled functions from <a class="reference internal" href="unit_scaling.functional.html#module-unit_scaling.functional" title="unit_scaling.functional"><code class="xref py py-mod docutils literal notranslate"><span class="pre">unit_scaling.functional</span></code></a> are
 used in the module, these too will be quantised.</p>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>unit_scaling.optim &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -86,20 +86,20 @@
 
 <span class="c1"># mypy: disable-error-code=&quot;no-any-return&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
-<span class="kn">from</span> <span class="nn">torch.optim.optimizer</span> <span class="kn">import</span> <span class="n">ParamsT</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.optim.optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParamsT</span>
 
-<span class="kn">from</span> <span class="nn">._internal_utils</span> <span class="kn">import</span> <span class="n">generate__all__</span>
-<span class="kn">from</span> <span class="nn">.docs</span> <span class="kn">import</span> <span class="n">inherit_docstring</span>
-<span class="kn">from</span> <span class="nn">.parameter</span> <span class="kn">import</span> <span class="n">ParameterData</span><span class="p">,</span> <span class="n">has_parameter_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._internal_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate__all__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.docs</span><span class="w"> </span><span class="kn">import</span> <span class="n">inherit_docstring</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterData</span><span class="p">,</span> <span class="n">has_parameter_data</span>
 
 
 <div class="viewcode-block" id="lr_scale_for_depth">
 <a class="viewcode-back" href="../../generated/unit_scaling.optim.lr_scale_for_depth.html#unit_scaling.optim.lr_scale_for_depth">[docs]</a>
-<span class="k">def</span> <span class="nf">lr_scale_for_depth</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lr_scale_for_depth</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the LR scaling factor for depth only.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_scaling_depth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">1</span>
@@ -107,7 +107,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_get_fan_in</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_fan_in</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="c1"># Note: the &quot;fan_in&quot; of an embedding layer is the hidden (output) dimension</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">param</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -122,7 +122,7 @@
 
 <div class="viewcode-block" id="lr_scale_func_sgd">
 <a class="viewcode-back" href="../../generated/unit_scaling.optim.lr_scale_func_sgd.html#unit_scaling.optim.lr_scale_func_sgd">[docs]</a>
-<span class="k">def</span> <span class="nf">lr_scale_func_sgd</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lr_scale_func_sgd</span><span class="p">(</span>
     <span class="n">readout_constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ParameterData</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the LR scaling factor for :class:`torch.optim.SGD`.&quot;&quot;&quot;</span>
@@ -134,7 +134,7 @@
         <span class="k">return</span> <span class="n">lr_scale_func_adam</span>
     <span class="k">elif</span> <span class="n">readout_constraint</span> <span class="o">==</span> <span class="s2">&quot;to_output_scale&quot;</span><span class="p">:</span>
 
-        <span class="k">def</span> <span class="nf">lr_scale_func_sgd_inner</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">lr_scale_func_sgd_inner</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
             <span class="n">scale</span> <span class="o">=</span> <span class="n">lr_scale_for_depth</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mup_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="s2">&quot;norm&quot;</span><span class="p">):</span>
@@ -153,7 +153,7 @@
 
 <div class="viewcode-block" id="lr_scale_func_adam">
 <a class="viewcode-back" href="../../generated/unit_scaling.optim.lr_scale_func_adam.html#unit_scaling.optim.lr_scale_func_adam">[docs]</a>
-<span class="k">def</span> <span class="nf">lr_scale_func_adam</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lr_scale_func_adam</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">ParameterData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the LR scaling factor for :class:`torch.optim.Adam`</span>
 <span class="sd">    and :class:`torch.optim.AdamW`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -170,7 +170,7 @@
 
 <div class="viewcode-block" id="scaled_parameters">
 <a class="viewcode-back" href="../../generated/unit_scaling.optim.scaled_parameters.html#unit_scaling.optim.scaled_parameters">[docs]</a>
-<span class="k">def</span> <span class="nf">scaled_parameters</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scaled_parameters</span><span class="p">(</span>
     <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
     <span class="n">lr_scale_func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ParameterData</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span>
     <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -254,9 +254,9 @@
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;An **lr-scaled** version of :class:`torch.optim.SGD` for u-muP.&quot;</span>
     <span class="s2">&quot;`readout_constraint` should match the `constraint` arg used in `LinearReadout`.&quot;</span>
 <span class="p">)</span>
-<span class="k">class</span> <span class="nc">SGD</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SGD</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
         <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
@@ -285,8 +285,8 @@
 <span class="nd">@inherit_docstring</span><span class="p">(</span>
     <span class="n">short_description</span><span class="o">=</span><span class="s2">&quot;An **lr-scaled** version of :class:`torch.optim.Adam` for u-muP.&quot;</span>
 <span class="p">)</span>
-<span class="k">class</span> <span class="nc">Adam</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Adam</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
         <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
@@ -316,8 +316,8 @@
         <span class="s2">&quot;An **lr-scaled** version of :class:`torch.optim.AdamW` for u-muP.&quot;</span>
     <span class="p">)</span>
 <span class="p">)</span>
-<span class="k">class</span> <span class="nc">AdamW</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AdamW</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
         <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>

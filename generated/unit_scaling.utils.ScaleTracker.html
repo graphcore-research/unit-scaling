@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3.8.3. unit_scaling.utils.ScaleTracker &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
@@ -52,8 +52,8 @@
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">3.2. unit_scaling.analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">3.3. unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">3.4. unit_scaling.formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">3.1.22. unit_scaling.functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.23. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.functional.html">3.1.21. unit_scaling.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.22. unit_scaling.optim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">3.5. unit_scaling.scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">3.6. unit_scaling.transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">3.7. unit_scaling.transforms.utils</a></li>
@@ -67,7 +67,7 @@
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.utils.ScaleTrackingInterpreter.html">3.8.4. unit_scaling.utils.ScaleTrackingInterpreter</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.21.1. unit_scaling.core.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -157,9 +157,9 @@ It doesn’t matter whether the function is called before or after
 modification.</p>
 <dl>
 <dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># xdoctest: +REQUIRES(env:TORCH_DOCTEST_AUTOGRAD)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Inplace</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Inplace</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">x_npy</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="c1"># x_npy shares storage with x</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">x_npy</span> <span class="o">+=</span> <span class="mi">1</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">ctx</span><span class="o">.</span><span class="n">mark_dirty</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -167,7 +167,7 @@ modification.</p>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@once_differentiable</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">grad_output</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">grad_output</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">grad_output</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">double</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
@@ -195,9 +195,9 @@ for each output in <code class="xref py py-meth docutils literal notranslate"><s
 be a zero tensor with the same shape as the shape of a corresponding
 output.</p>
 <dl>
-<dt>This is used e.g. for indices returned from a sort. See example::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Func</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
+<dt>This is used e.g. for indices returned from a sort. See example::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Func</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="nb">sorted</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">ctx</span><span class="o">.</span><span class="n">mark_non_differentiable</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">ctx</span><span class="o">.</span><span class="n">save_for_backward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
@@ -205,7 +205,7 @@ output.</p>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@once_differentiable</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g2</span><span class="p">):</span>  <span class="c1"># still need to accept g2</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g2</span><span class="p">):</span>  <span class="c1"># still need to accept g2</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">x</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">saved_tensors</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">grad_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">grad_input</span><span class="o">.</span><span class="n">index_add_</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">g1</span><span class="p">)</span>
@@ -225,7 +225,7 @@ output.</p>
 <p>All tensors intended to be used in the backward pass should be saved
 with <code class="docutils literal notranslate"><span class="pre">save_for_backward</span></code> (as opposed to directly on <code class="docutils literal notranslate"><span class="pre">ctx</span></code>) to prevent
 incorrect gradients and memory leaks, and enable the application of saved
-tensor hooks. See <a class="reference external" href="https://pytorch.org/docs/stable/autograd.html#torch.autograd.graph.saved_tensors_hooks" title="(in PyTorch v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.autograd.graph.saved_tensors_hooks</span></code></a>.</p>
+tensor hooks. See <a class="reference external" href="https://docs.pytorch.org/docs/stable/autograd.html#torch.autograd.graph.saved_tensors_hooks" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.autograd.graph.saved_tensors_hooks</span></code></a>.</p>
 <p>Note that if intermediary tensors, tensors that are neither inputs
 nor outputs of <code class="xref py py-func docutils literal notranslate"><span class="pre">forward()</span></code>, are saved for backward, your custom Function
 may not support double backward.
@@ -240,12 +240,12 @@ for more details.</p>
 attribute. Before returning them to the user, a check is made to ensure
 they weren’t used in any in-place operation that modified their content.</p>
 <p>Arguments can also be <code class="docutils literal notranslate"><span class="pre">None</span></code>. This is a no-op.</p>
-<p>See <a class="reference external" href="https://pytorch.org/docs/stable/notes/extending.html#extending-autograd" title="(in PyTorch v2.5)"><span>Extending torch.autograd</span></a> for more details on how to use this method.</p>
+<p>See <a class="reference external" href="https://docs.pytorch.org/docs/stable/notes/extending.html#extending-autograd" title="(in PyTorch v2.7)"><span>Extending torch.autograd</span></a> for more details on how to use this method.</p>
 <dl>
 <dt>Example::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># xdoctest: +REQUIRES(env:TORCH_DOCTEST_AUTOGRAD)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Func</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Func</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">w</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">z</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">out</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">y</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">ctx</span><span class="o">.</span><span class="n">save_for_backward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
@@ -254,7 +254,7 @@ they weren’t used in any in-place operation that modified their content.</p>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@once_differentiable</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">grad_out</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">grad_out</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">saved_tensors</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">z</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">z</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">gx</span> <span class="o">=</span> <span class="n">grad_out</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
@@ -282,25 +282,25 @@ should be tensors.</p>
 <p>In <a class="reference internal" href="#unit_scaling.utils.ScaleTracker.jvp" title="unit_scaling.utils.ScaleTracker.jvp"><code class="xref py py-func docutils literal notranslate"><span class="pre">jvp()</span></code></a>, saved objects can be accessed through the <code class="xref py py-attr docutils literal notranslate"><span class="pre">saved_tensors</span></code>
 attribute.</p>
 <p>Arguments can also be <code class="docutils literal notranslate"><span class="pre">None</span></code>. This is a no-op.</p>
-<p>See <a class="reference external" href="https://pytorch.org/docs/stable/notes/extending.html#extending-autograd" title="(in PyTorch v2.5)"><span>Extending torch.autograd</span></a> for more details on how to use this method.</p>
+<p>See <a class="reference external" href="https://docs.pytorch.org/docs/stable/notes/extending.html#extending-autograd" title="(in PyTorch v2.7)"><span>Extending torch.autograd</span></a> for more details on how to use this method.</p>
 <dl>
 <dt>Example::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># xdoctest: +SKIP</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Func</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Func</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">ctx</span><span class="o">.</span><span class="n">save_for_backward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">ctx</span><span class="o">.</span><span class="n">save_for_forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">ctx</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">z</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">jvp</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x_t</span><span class="p">,</span> <span class="n">y_t</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">jvp</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x_t</span><span class="p">,</span> <span class="n">y_t</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">saved_tensors</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">z</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">z</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">z</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">x_t</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y_t</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">vjp</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">grad_out</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">vjp</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">grad_out</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">saved_tensors</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">z</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">z</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">z</span> <span class="o">*</span> <span class="n">grad_out</span> <span class="o">*</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">*</span> <span class="n">grad_out</span> <span class="o">*</span> <span class="n">x</span><span class="p">,</span> <span class="kc">None</span>
@@ -329,27 +329,27 @@ attribute.</p>
 prior to calling the <a class="reference internal" href="#unit_scaling.utils.ScaleTracker.backward" title="unit_scaling.utils.ScaleTracker.backward"><code class="xref py py-func docutils literal notranslate"><span class="pre">backward()</span></code></a> and <a class="reference internal" href="#unit_scaling.utils.ScaleTracker.jvp" title="unit_scaling.utils.ScaleTracker.jvp"><code class="xref py py-func docutils literal notranslate"><span class="pre">jvp()</span></code></a> methods.</p>
 <dl>
 <dt>Example::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># xdoctest: +REQUIRES(env:TORCH_DOCTEST_AUTOGRAD)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">SimpleFunc</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">SimpleFunc</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@once_differentiable</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g2</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g2</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">g1</span> <span class="o">+</span> <span class="n">g2</span>  <span class="c1"># No check for None necessary</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># We modify SimpleFunc to handle non-materialized grad outputs</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Func</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Func</span><span class="p">(</span><span class="n">Function</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">ctx</span><span class="o">.</span><span class="n">set_materialize_grads</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">ctx</span><span class="o">.</span><span class="n">save_for_backward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@staticmethod</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nd">@once_differentiable</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g2</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g2</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">x</span><span class="p">,</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">saved_tensors</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">grad_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="k">if</span> <span class="n">g1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># We must check for None now</span>
@@ -379,7 +379,7 @@ happens inside the <code class="docutils literal notranslate"><span class="pre">
 override <code class="docutils literal notranslate"><span class="pre">setup_context</span></code>. Setting up the ctx for backward happens
 inside <code class="docutils literal notranslate"><span class="pre">setup_context</span></code> (as opposed to inside the <code class="docutils literal notranslate"><span class="pre">forward</span></code>)</p></li>
 </ol>
-<p>See <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.autograd.Function.forward.html#torch.autograd.Function.forward" title="(in PyTorch v2.5)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.autograd.Function.forward()</span></code></a> and <a class="reference external" href="https://pytorch.org/docs/stable/notes/extending.html#extending-autograd" title="(in PyTorch v2.5)"><span>Extending torch.autograd</span></a> for more details.</p>
+<p>See <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.autograd.Function.forward.html#torch.autograd.Function.forward" title="(in PyTorch v2.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.autograd.Function.forward()</span></code></a> and <a class="reference external" href="https://docs.pytorch.org/docs/stable/notes/extending.html#extending-autograd" title="(in PyTorch v2.7)"><span>Extending torch.autograd</span></a> for more details.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -407,16 +407,16 @@ output.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="unit_scaling.utils.ScaleTracker.vmap">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_dims</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#unit_scaling.utils.ScaleTracker.vmap" title="Link to this definition"></a></dt>
-<dd><p>Define the behavior for this autograd.Function underneath <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.vmap.html#torch.vmap" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.vmap()</span></code></a>.</p>
+<dd><p>Define the behavior for this autograd.Function underneath <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.vmap.html#torch.vmap" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.vmap()</span></code></a>.</p>
 <p>For a <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.autograd.Function()</span></code> to support
-<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.vmap.html#torch.vmap" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.vmap()</span></code></a>, you must either override this static method, or set
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.vmap.html#torch.vmap" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.vmap()</span></code></a>, you must either override this static method, or set
 <code class="docutils literal notranslate"><span class="pre">generate_vmap_rule</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (you may not do both).</p>
 <p>If you choose to override this staticmethod: it must accept</p>
 <ul class="simple">
 <li><p>an <code class="docutils literal notranslate"><span class="pre">info</span></code> object as the first argument. <code class="docutils literal notranslate"><span class="pre">info.batch_size</span></code>
 specifies the size of the dimension being vmapped over,
 while <code class="docutils literal notranslate"><span class="pre">info.randomness</span></code> is the randomness option passed to
-<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.vmap.html#torch.vmap" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.vmap()</span></code></a>.</p></li>
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.vmap.html#torch.vmap" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.vmap()</span></code></a>.</p></li>
 <li><p>an <code class="docutils literal notranslate"><span class="pre">in_dims</span></code> tuple as the second argument.
 For each arg in <code class="docutils literal notranslate"><span class="pre">args</span></code>, <code class="docutils literal notranslate"><span class="pre">in_dims</span></code> has a corresponding
 <code class="docutils literal notranslate"><span class="pre">Optional[int]</span></code>. It is <code class="docutils literal notranslate"><span class="pre">None</span></code> if the arg is not a Tensor or if
@@ -428,7 +428,7 @@ specifying what dimension of the Tensor is being vmapped over.</p></li>
 Similar to <code class="docutils literal notranslate"><span class="pre">in_dims</span></code>, <code class="docutils literal notranslate"><span class="pre">out_dims</span></code> should be of the same structure as
 <code class="docutils literal notranslate"><span class="pre">output</span></code> and contain one <code class="docutils literal notranslate"><span class="pre">out_dim</span></code> per output that specifies if the
 output has the vmapped dimension and what index it is in.</p>
-<p>Please see <a class="reference external" href="https://pytorch.org/docs/stable/notes/extending.func.html#func-autograd-function" title="(in PyTorch v2.5)"><span>Extending torch.func with autograd.Function</span></a> for more details.</p>
+<p>Please see <a class="reference external" href="https://docs.pytorch.org/docs/stable/notes/extending.func.html#func-autograd-function" title="(in PyTorch v2.7)"><span>Extending torch.func with autograd.Function</span></a> for more details.</p>
 </dd></dl>
 
 </dd></dl>

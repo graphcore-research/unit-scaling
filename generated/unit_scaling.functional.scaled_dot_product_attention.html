@@ -6,8 +6,8 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3.1.22.16. unit_scaling.functional.scaled_dot_product_attention &mdash; unit-scaling  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>3.1.21.16. unit_scaling.functional.scaled_dot_product_attention &mdash; unit-scaling  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="3.1.22.17. unit_scaling.functional.silu" href="unit_scaling.functional.silu.html" />
-    <link rel="prev" title="3.1.22.15. unit_scaling.functional.rms_norm" href="unit_scaling.functional.rms_norm.html" /> 
+    <link rel="next" title="3.1.21.17. unit_scaling.functional.silu" href="unit_scaling.functional.silu.html" />
+    <link rel="prev" title="3.1.21.15. unit_scaling.functional.rms_norm" href="unit_scaling.functional.rms_norm.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,85 +52,84 @@
 <li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.html">3.1. unit_scaling</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.Parameter.html">3.1.1. unit_scaling.Parameter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_scaling.transformer_residual_scaling_rule.html">3.1.2. unit_scaling.transformer_residual_scaling_rule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.visualiser.html">3.1.3. unit_scaling.visualiser</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Conv1d.html">3.1.4. unit_scaling.Conv1d</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.CrossEntropyLoss.html">3.1.5. unit_scaling.CrossEntropyLoss</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.DepthModuleList.html">3.1.6. unit_scaling.DepthModuleList</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.DepthSequential.html">3.1.7. unit_scaling.DepthSequential</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Dropout.html">3.1.8. unit_scaling.Dropout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Embedding.html">3.1.9. unit_scaling.Embedding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.GELU.html">3.1.10. unit_scaling.GELU</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.LayerNorm.html">3.1.11. unit_scaling.LayerNorm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Linear.html">3.1.12. unit_scaling.Linear</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.LinearReadout.html">3.1.13. unit_scaling.LinearReadout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MHSA.html">3.1.14. unit_scaling.MHSA</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MLP.html">3.1.15. unit_scaling.MLP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.RMSNorm.html">3.1.16. unit_scaling.RMSNorm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.SiLU.html">3.1.17. unit_scaling.SiLU</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Softmax.html">3.1.18. unit_scaling.Softmax</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerDecoder.html">3.1.19. unit_scaling.TransformerDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerLayer.html">3.1.20. unit_scaling.TransformerLayer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.core.html">3.1.21. unit_scaling.core</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="unit_scaling.functional.html">3.1.22. unit_scaling.functional</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.add.html">3.1.22.1. unit_scaling.functional.add</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.conv1d.html">3.1.22.2. unit_scaling.functional.conv1d</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">3.1.22.3. unit_scaling.functional.cross_entropy</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.dropout.html">3.1.22.4. unit_scaling.functional.dropout</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.embedding.html">3.1.22.5. unit_scaling.functional.embedding</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.gelu.html">3.1.22.6. unit_scaling.functional.gelu</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">3.1.22.7. unit_scaling.functional.layer_norm</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.linear.html">3.1.22.8. unit_scaling.functional.linear</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.linear_readout.html">3.1.22.9. unit_scaling.functional.linear_readout</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.matmul.html">3.1.22.10. unit_scaling.functional.matmul</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.mse_loss.html">3.1.22.11. unit_scaling.functional.mse_loss</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_add.html">3.1.22.12. unit_scaling.functional.residual_add</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_apply.html">3.1.22.13. unit_scaling.functional.residual_apply</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_split.html">3.1.22.14. unit_scaling.functional.residual_split</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.rms_norm.html">3.1.22.15. unit_scaling.functional.rms_norm</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">3.1.22.16. unit_scaling.functional.scaled_dot_product_attention</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.silu.html">3.1.22.17. unit_scaling.functional.silu</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.silu_glu.html">3.1.22.18. unit_scaling.functional.silu_glu</a></li>
-<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.softmax.html">3.1.22.19. unit_scaling.functional.softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Conv1d.html">3.1.3. unit_scaling.Conv1d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.CrossEntropyLoss.html">3.1.4. unit_scaling.CrossEntropyLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.DepthModuleList.html">3.1.5. unit_scaling.DepthModuleList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.DepthSequential.html">3.1.6. unit_scaling.DepthSequential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Dropout.html">3.1.7. unit_scaling.Dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Embedding.html">3.1.8. unit_scaling.Embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.GELU.html">3.1.9. unit_scaling.GELU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.LayerNorm.html">3.1.10. unit_scaling.LayerNorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Linear.html">3.1.11. unit_scaling.Linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.LinearReadout.html">3.1.12. unit_scaling.LinearReadout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MHSA.html">3.1.13. unit_scaling.MHSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.MLP.html">3.1.14. unit_scaling.MLP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.RMSNorm.html">3.1.15. unit_scaling.RMSNorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.SiLU.html">3.1.16. unit_scaling.SiLU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.Softmax.html">3.1.17. unit_scaling.Softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerDecoder.html">3.1.18. unit_scaling.TransformerDecoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.TransformerLayer.html">3.1.19. unit_scaling.TransformerLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.core.html">3.1.20. unit_scaling.core</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="unit_scaling.functional.html">3.1.21. unit_scaling.functional</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.add.html">3.1.21.1. unit_scaling.functional.add</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.conv1d.html">3.1.21.2. unit_scaling.functional.conv1d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">3.1.21.3. unit_scaling.functional.cross_entropy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.dropout.html">3.1.21.4. unit_scaling.functional.dropout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.embedding.html">3.1.21.5. unit_scaling.functional.embedding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.gelu.html">3.1.21.6. unit_scaling.functional.gelu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">3.1.21.7. unit_scaling.functional.layer_norm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.linear.html">3.1.21.8. unit_scaling.functional.linear</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.linear_readout.html">3.1.21.9. unit_scaling.functional.linear_readout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.matmul.html">3.1.21.10. unit_scaling.functional.matmul</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.mse_loss.html">3.1.21.11. unit_scaling.functional.mse_loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_add.html">3.1.21.12. unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_apply.html">3.1.21.13. unit_scaling.functional.residual_apply</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.residual_split.html">3.1.21.14. unit_scaling.functional.residual_split</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.rms_norm.html">3.1.21.15. unit_scaling.functional.rms_norm</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">3.1.21.16. unit_scaling.functional.scaled_dot_product_attention</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.silu.html">3.1.21.17. unit_scaling.functional.silu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.silu_glu.html">3.1.21.18. unit_scaling.functional.silu_glu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unit_scaling.functional.softmax.html">3.1.21.19. unit_scaling.functional.softmax</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.optim.html">3.1.23. unit_scaling.optim</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.parameter.html">3.1.24. unit_scaling.parameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.optim.html">3.1.22. unit_scaling.optim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.parameter.html">3.1.23. unit_scaling.parameter</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.analysis.html">3.2. unit_scaling.analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.constraints.html">3.3. unit_scaling.constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.formats.html">3.4. unit_scaling.formats</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.functional.html">3.1.22. unit_scaling.functional</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.add.html">3.1.22.1. unit_scaling.functional.add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.conv1d.html">3.1.22.2. unit_scaling.functional.conv1d</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">3.1.22.3. unit_scaling.functional.cross_entropy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">3.1.22.4. unit_scaling.functional.dropout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">3.1.22.5. unit_scaling.functional.embedding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">3.1.22.6. unit_scaling.functional.gelu</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">3.1.22.7. unit_scaling.functional.layer_norm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">3.1.22.8. unit_scaling.functional.linear</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear_readout.html">3.1.22.9. unit_scaling.functional.linear_readout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">3.1.22.10. unit_scaling.functional.matmul</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.mse_loss.html">3.1.22.11. unit_scaling.functional.mse_loss</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">3.1.22.12. unit_scaling.functional.residual_add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_apply.html">3.1.22.13. unit_scaling.functional.residual_apply</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">3.1.22.14. unit_scaling.functional.residual_split</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.rms_norm.html">3.1.22.15. unit_scaling.functional.rms_norm</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">3.1.22.16. unit_scaling.functional.scaled_dot_product_attention</a><ul>
+<li class="toctree-l2 current"><a class="reference internal" href="unit_scaling.functional.html">3.1.21. unit_scaling.functional</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.add.html">3.1.21.1. unit_scaling.functional.add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.conv1d.html">3.1.21.2. unit_scaling.functional.conv1d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.cross_entropy.html">3.1.21.3. unit_scaling.functional.cross_entropy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.dropout.html">3.1.21.4. unit_scaling.functional.dropout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.embedding.html">3.1.21.5. unit_scaling.functional.embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.gelu.html">3.1.21.6. unit_scaling.functional.gelu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.layer_norm.html">3.1.21.7. unit_scaling.functional.layer_norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear.html">3.1.21.8. unit_scaling.functional.linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.linear_readout.html">3.1.21.9. unit_scaling.functional.linear_readout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.matmul.html">3.1.21.10. unit_scaling.functional.matmul</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.mse_loss.html">3.1.21.11. unit_scaling.functional.mse_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_add.html">3.1.21.12. unit_scaling.functional.residual_add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_apply.html">3.1.21.13. unit_scaling.functional.residual_apply</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.residual_split.html">3.1.21.14. unit_scaling.functional.residual_split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.rms_norm.html">3.1.21.15. unit_scaling.functional.rms_norm</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3.1.21.16. unit_scaling.functional.scaled_dot_product_attention</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#unit_scaling.functional.scaled_dot_product_attention"><code class="docutils literal notranslate"><span class="pre">scaled_dot_product_attention()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.silu.html">3.1.22.17. unit_scaling.functional.silu</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.silu_glu.html">3.1.22.18. unit_scaling.functional.silu_glu</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">3.1.22.19. unit_scaling.functional.softmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.silu.html">3.1.21.17. unit_scaling.functional.silu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.silu_glu.html">3.1.21.18. unit_scaling.functional.silu_glu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_scaling.functional.softmax.html">3.1.21.19. unit_scaling.functional.softmax</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.23. unit_scaling.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.optim.html">3.1.22. unit_scaling.optim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.scale.html">3.5. unit_scaling.scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.html">3.6. unit_scaling.transforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.transforms.utils.html">3.7. unit_scaling.transforms.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_scaling.utils.html">3.8. unit_scaling.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.21.1. unit_scaling.core.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_scaling.core.functional.html">3.1.20.1. unit_scaling.core.functional</a></li>
 </ul>
 </li>
 </ul>
@@ -151,8 +150,8 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api_reference.html"><span class="section-number">3. </span>API reference</a></li>
           <li class="breadcrumb-item"><a href="unit_scaling.html"><span class="section-number">3.1. </span>unit_scaling</a></li>
-          <li class="breadcrumb-item"><a href="unit_scaling.functional.html"><span class="section-number">3.1.22. </span>unit_scaling.functional</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">3.1.22.16. </span>unit_scaling.functional.scaled_dot_product_attention</li>
+          <li class="breadcrumb-item"><a href="unit_scaling.functional.html"><span class="section-number">3.1.21. </span>unit_scaling.functional</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.1.21.16. </span>unit_scaling.functional.scaled_dot_product_attention</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/generated/unit_scaling.functional.scaled_dot_product_attention.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -163,7 +162,7 @@
            <div itemprop="articleBody">
              
   <section id="unit-scaling-functional-scaled-dot-product-attention">
-<h1><span class="section-number">3.1.22.16. </span>unit_scaling.functional.scaled_dot_product_attention<a class="headerlink" href="#unit-scaling-functional-scaled-dot-product-attention" title="Link to this heading"></a></h1>
+<h1><span class="section-number">3.1.21.16. </span>unit_scaling.functional.scaled_dot_product_attention<a class="headerlink" href="#unit-scaling-functional-scaled-dot-product-attention" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="unit_scaling.functional.scaled_dot_product_attention">
 <span class="sig-prename descclassname"><span class="pre">unit_scaling.functional.</span></span><span class="sig-name descname"><span class="pre">scaled_dot_product_attention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attn_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_causal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="unit_scaling.parameter.Tensor.html#unit_scaling.parameter.Tensor" title="torch.Tensor"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/unit_scaling/functional.html#scaled_dot_product_attention"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#unit_scaling.functional.scaled_dot_product_attention" title="Link to this definition"></a></dt>
@@ -175,7 +174,7 @@ is_causal=False, scale=None, enable_gqa=False) -&gt; Tensor:</p>
 and applying dropout if a probability greater than 0.0 is specified. The optional scale argument can only be
 specified as a keyword argument.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Efficient implementation equivalent to the following:</span>
-<span class="k">def</span> <span class="nf">scaled_dot_product_attention</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attn_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dropout_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scaled_dot_product_attention</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attn_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dropout_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">is_causal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enable_gqa</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
     <span class="n">L</span><span class="p">,</span> <span class="n">S</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="n">key</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">scale_factor</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="k">if</span> <span class="n">scale</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">scale</span>
@@ -213,12 +212,12 @@ specified as a keyword argument.</p>
 To disable dropout during evaluation, be sure to pass a value of <code class="docutils literal notranslate"><span class="pre">0.0</span></code> when the module
 that makes the function call is not in training mode.</p>
 <p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
 
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">scaled_dot_product_attention</span><span class="p">(</span><span class="o">...</span><span class="p">,</span>
             <span class="n">dropout_p</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">))</span>
 </pre></div>
@@ -242,14 +241,14 @@ is used, the following functions are provided for enabling and disabling impleme
 The context manager is the preferred mechanism:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.attention.sdpa_kernel.html#torch.nn.attention.sdpa_kernel" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.attention.sdpa_kernel()</span></code></a>: A context manager used to enable or disable any of the implementations.</p></li>
-<li><p><a class="reference external" href="https://pytorch.org/docs/stable/backends.html#torch.backends.cuda.enable_flash_sdp" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.backends.cuda.enable_flash_sdp()</span></code></a>: Globally enables or disables FlashAttention.</p></li>
-<li><p><a class="reference external" href="https://pytorch.org/docs/stable/backends.html#torch.backends.cuda.enable_mem_efficient_sdp" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.backends.cuda.enable_mem_efficient_sdp()</span></code></a>: Globally enables or disables  Memory-Efficient Attention.</p></li>
-<li><p><a class="reference external" href="https://pytorch.org/docs/stable/backends.html#torch.backends.cuda.enable_math_sdp" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.backends.cuda.enable_math_sdp()</span></code></a>: Globally enables or disables  the PyTorch C++ implementation.</p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.attention.sdpa_kernel.html#torch.nn.attention.sdpa_kernel" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.attention.sdpa_kernel()</span></code></a>: A context manager used to enable or disable any of the implementations.</p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/backends.html#torch.backends.cuda.enable_flash_sdp" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.backends.cuda.enable_flash_sdp()</span></code></a>: Globally enables or disables FlashAttention.</p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/backends.html#torch.backends.cuda.enable_mem_efficient_sdp" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.backends.cuda.enable_mem_efficient_sdp()</span></code></a>: Globally enables or disables  Memory-Efficient Attention.</p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/backends.html#torch.backends.cuda.enable_math_sdp" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.backends.cuda.enable_math_sdp()</span></code></a>: Globally enables or disables  the PyTorch C++ implementation.</p></li>
 </ul>
 </div></blockquote>
 <p>Each of the fused kernels has specific input limitations. If the user requires the use of a specific fused implementation,
-disable the PyTorch C++ implementation using <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.attention.sdpa_kernel.html#torch.nn.attention.sdpa_kernel" title="(in PyTorch v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.attention.sdpa_kernel()</span></code></a>.
+disable the PyTorch C++ implementation using <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.attention.sdpa_kernel.html#torch.nn.attention.sdpa_kernel" title="(in PyTorch v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.attention.sdpa_kernel()</span></code></a>.
 In the event that a fused implementation is not available, a warning will be raised with the
 reasons why the fused implementation cannot run.</p>
 <p>Due to the nature of fusing floating point operations, the output of this function may be different
@@ -286,7 +285,7 @@ A float mask of the same type as query, key, value that is added to the attentio
 <li><p><strong>dropout_p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Dropout probability; if greater than 0.0, dropout is applied</p></li>
 <li><p><strong>is_causal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If set to true, the attention masking is a lower triangular matrix when the mask is a
 square matrix. The attention masking has the form of the upper left causal bias due to the alignment
-(see <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.attention.bias.CausalBias.html#torch.nn.attention.bias.CausalBias" title="(in PyTorch v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.attention.bias.CausalBias</span></code></a>) when the mask is a non-square matrix.
+(see <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.attention.bias.CausalBias.html#torch.nn.attention.bias.CausalBias" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.attention.bias.CausalBias</span></code></a>) when the mask is a non-square matrix.
 An error is thrown if both attn_mask and is_causal are set.</p></li>
 <li><p><strong>scale</strong> (<em>optional float</em><em>, </em><em>keyword-only</em>) – Scaling factor applied prior to softmax. If None, the default value is set
 to <span class="math notranslate nohighlight">\(\frac{1}{\sqrt{E}}\)</span>.</p></li>
@@ -323,8 +322,8 @@ to <span class="math notranslate nohighlight">\(\frac{1}{\sqrt{E}}\)</span>.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unit_scaling.functional.rms_norm.html" class="btn btn-neutral float-left" title="3.1.22.15. unit_scaling.functional.rms_norm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_scaling.functional.silu.html" class="btn btn-neutral float-right" title="3.1.22.17. unit_scaling.functional.silu" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="unit_scaling.functional.rms_norm.html" class="btn btn-neutral float-left" title="3.1.21.15. unit_scaling.functional.rms_norm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_scaling.functional.silu.html" class="btn btn-neutral float-right" title="3.1.21.17. unit_scaling.functional.silu" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
