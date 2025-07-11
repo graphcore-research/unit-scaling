@@ -44,6 +44,12 @@ Key development functionality is contained within the `./dev` script. This inclu
 
 We encourage pull requests from the community. Please reach out to us with any questions about contributing.
 
+**Releasing:**
+
+1. `git push origin origin/main:refs/tags/v<MAJOR>.<MINOR>.<PATCH>`
+2. Create a release at https://github.com/graphcore-research/unit-scaling/releases/
+3. Check [GitHub Actions](https://github.com/graphcore-research/unit-scaling/actions) and [PyPI](https://pypi.org/project/unit-scaling/), which should auto-publish the project
+
 ## What is u-μP?
 
 u-μP inserts scaling factors into the model to make activations, gradients and weights unit-scaled (RMS ≈ 1) at initialisation, and into optimiser learning rates to keep updates stable as models are scaled in width and depth. This results in hyperparameter transfer from small to large models and easy support for low-precision training.
